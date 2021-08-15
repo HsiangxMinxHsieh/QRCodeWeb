@@ -7,19 +7,20 @@ import android.view.WindowManager
 import androidx.databinding.DataBindingUtil
 import com.afollestad.materialdialogs.MaterialDialog
 import com.buddha.qrcodeweb.R
-import com.buddha.qrcodeweb.databinding.DialogEditTextBinding
+import com.buddha.qrcodeweb.databinding.DialogPasswordInputBinding
+import com.buddha.qrcodeweb.databinding.DialogProgressBinding
 import uitool.getRectangleBg
 import uitool.setTextSize
 
 
-class EditTextDialog(val context: Context) {
+class PasswordInputDialog(val context: Context) : Dialog {
     var title = ""
     var editText = ""
     var hintText = ""
     var limitTextSize = 30
     val dialog by lazy { MaterialDialog(context) }
-    val dialogBinding by lazy { DataBindingUtil.inflate<DialogEditTextBinding>(LayoutInflater.from(context), R.layout.dialog_edit_text, null, false) }
-    fun show() {
+    val dialogBinding by lazy { DataBindingUtil.inflate<DialogPasswordInputBinding>(LayoutInflater.from(context), R.layout.dialog_password_input, null, false) }
+    override fun show() {
         if (dialog.isShowing) {
             return
         }
@@ -40,7 +41,6 @@ class EditTextDialog(val context: Context) {
                 tvTextSizeLimit.text = "(0/$limitTextSize)"
                 tvTextSizeLimit.visibility = View.VISIBLE
             }
-
 
             edtText.setText(editText)
             edtText.hint = hintText

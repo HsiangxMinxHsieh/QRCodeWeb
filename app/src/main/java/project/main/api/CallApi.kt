@@ -13,7 +13,7 @@ fun Context.getURLResponse(url: String, TAG: String = "getURLResponse"): Respons
     logi(TAG, "getURLResponse 送出的資料是===>${response ?: "null"}")
 
     return if (response.isSuccessful) {
-//        logi(TAG,"getURLResponse 取到的結果是=>${response.body()}")
+        logi(TAG,"getURLResponse 取到的結果是=>${response.body()}")
         null
     } else{
         response

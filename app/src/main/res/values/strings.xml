@@ -1,7 +1,21 @@
 <resources>
     <string name="app_name">QRCodeWeb</string>
     <string name="permission_request">請給App相機權限以完成此作業。</string>
-    <string name="dialog_progress_default_title">請稍等…</string>
-    <string name="ok">確定</string>
-    <string name="cancel">取消</string>
+
+    <!--對話框共用-->
+    <string name="dialog_ok">確定</string>
+    <string name="dialog_cancel">取消</string>
+
+    <!--訊息對話框-->
+    <string name="dialog_notice_title">注意</string>
+    <string name="dialog_error_message">簽到錯誤，請確認掃描的碼是否正確。</string>
+    <string name="dialog_sign_in_success_title">簽到成功</string>
+
+    <!--檢核密碼輸入框-->
+    <string name="password_dialog_title">請輸入檢核密碼</string>
+    <string name="password_dialog_hint">檢核密碼不可為空</string>
+
+    <!--進度框-->
+    <string name="dialog_progress_default_title">傳輸中，請稍等…</string>
+
 </resources>

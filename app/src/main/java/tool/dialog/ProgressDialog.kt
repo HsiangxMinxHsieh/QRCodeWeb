@@ -12,7 +12,7 @@ import tool.AnimationFileName
 import uitool.getRectangleBg
 import uitool.setTextSize
 
-class ProgressDialog(val context: Context) {
+class ProgressDialog(val context: Context) : Dialog {
     var title = context.getString(R.string.dialog_progress_default_title)
 
     val dialog by lazy { MaterialDialog(context) }
@@ -21,7 +21,7 @@ class ProgressDialog(val context: Context) {
     fun isShowing(): Boolean = dialog.isShowing
     fun dismiss() = dialog.dismiss()
 
-    fun show(){
+    override fun show(){
         if (dialog.isShowing){
             return
         }

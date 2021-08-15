@@ -19,10 +19,7 @@ import kotlinx.coroutines.launch
 import project.main.api.getURLResponse
 import pub.devrel.easypermissions.EasyPermissions
 import tool.AnimationFileName
-import tool.dialog.EditTextDialog
-import tool.dialog.ProgressDialog
-import tool.dialog.TextDialog
-import tool.dialog.showMessageDialogOnlyOKButton
+import tool.dialog.*
 import tool.getShare
 import tool.getUrlKey
 import tool.initialLottieByFileName
@@ -56,24 +53,28 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     override fun onResume() {
         super.onResume()
         requestPermissions() //若沒有請求權限會是一片黑屏 // 無論之前是否有權限都要再次請求權限，因為要開相機(實測過後發現)
-        if(checkPermission()){
-            mBinding.zxingQrcodeScanner.resume()
-        }
+
         // 顯示簽到完成對話框。
         showSignInCompleteDialog() {
             signInResult = ""
-            resumeScreenAnimation()
         }
+
+        resumeScreenAnimation()
     }
 
-    private fun showSignInCompleteDialog(okButtonClickAction: () -> Unit = {}): TextDialog? {
-        if (signInResult.isNotEmpty()) {
+    override fun onPause() {
+        super.onPause()
+        pauseScrennAnimation()
+    }
 
-            return showMessageDialogOnlyOKButton(context, signInResult) {
+    private fun showSignInCompleteDialog(okButtonClickAction: () -> Unit = {}): Dialog? {
+        if (signInResult.isNotEmpty() && textDialog == null) {
+            textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_sign_in_success_title), signInResult) {
                 okButtonClickAction.invoke()
+                textDialog = null
             }
         }
-        return null
+        return textDialog
     }
 
     private var signInResult = ""
@@ -98,17 +99,18 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             val progressDialog = ProgressDialog(context)
             CoroutineScope(Dispatchers.IO).launch {
                 MainScope().launch { // 顯示進度框
-                    mBinding.zxingQrcodeScanner.pause() // 暫停QRCode鏡頭更新
-                    mBinding.lvScanQrcodeMotion.pauseAnimation() // 暫停播放動畫
+                    pauseScrennAnimation() // 暫停播放動畫
                     progressDialog.show()
                 }
                 val response = getURLResponse("$it&entry.1199127502=${context.getShare().getStorePassword()}")
                 MainScope().launch { // 關閉進度框、顯示簽到完成視窗。
                     progressDialog.dismiss()
                     if (response == null) {
-                        showSignInCompleteDialog {
-                            signInResult = ""
-                            resumeScreenAnimation()
+                        if (textDialog == null) {
+                            showSignInCompleteDialog {
+                                signInResult = ""
+                                resumeScreenAnimation()
+                            }
                         }
                     } else {
 //
@@ -127,14 +129,12 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun showSignInErrorDialog() {
-        showMessageDialogOnlyOKButton(context, "注意", "簽到錯誤，請確認掃描的碼是否正確。") {
-            resumeScreenAnimation()
+        if (textDialog == null) {
+            textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), context.getString(R.string.dialog_error_message)) {
+                resumeScreenAnimation()
+                textDialog = null
+            }
         }
-    }
-
-    private fun resumeScreenAnimation() {
-        mBinding.zxingQrcodeScanner.resume()
-        mBinding.lvScanQrcodeMotion.resumeAnimation()
     }
 
     private fun initData() {
@@ -145,13 +145,13 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         mBinding.lvScanQrcodeMotion.initialLottieByFileName(context, AnimationFileName.SCAN_MOTION, true)
     }
 
+    var textDialog: Dialog? = null
+    var inputDialog: Dialog? = null
     private fun initEvent() {
         mBinding.zxingQrcodeScanner.decodeContinuous(object : BarcodeCallback {
             override fun barcodeResult(result: BarcodeResult) {
-                mBinding.zxingQrcodeScanner.pause() // 暫停QRCode鏡頭更新
-                mBinding.lvScanQrcodeMotion.pauseAnimation() // 暫停播放動畫
+                pauseScrennAnimation() // 暫停播放動畫
 
-//                Log.e(TAG, result.text)
                 liveResult.postValue(result.text)
             }
 
@@ -161,27 +161,54 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         })
 
         mBinding.fab.setOnClickListener {
-            EditTextDialog(context).apply {
-                title = "請輸入密碼"
+            clickPasswordInputAction()
+        }
+    }
+
+    private fun clickPasswordInputAction() {
+        if (inputDialog == null) {
+            inputDialog = PasswordInputDialog(context).apply {
+
+                title = context.getString(R.string.password_dialog_title)
                 limitTextSize = 0
                 editText = context.getShare().getStorePassword()
-                hintText = "密碼不可為空"
-//                var editString = context.getShare().getStorePassword()
+                hintText = context.getString(R.string.password_dialog_hint)
+                //                var editString = context.getShare().getStorePassword()
                 dialogBinding.edtText.addTextChangedListener {
                     editText = it.toString()
                 }
                 dialogBinding.btnLift.setOnClickListener {
+                    inputDialog = null
                     dialog.dismiss()
                 }
                 dialogBinding.btnRight.setOnClickListener {
-                    livePassword.postValue(editText)
-                    context.getShare().setPassword(editText)
-                    dialog.dismiss()
+                    inputDialog = null
+                    if (editText.isNotEmpty()) {
+                        livePassword.postValue(editText)
+                        context.getShare().setPassword(editText)
+                        dialog.dismiss()
+                    } else {
+                        if (textDialog == null) {
+                            textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), "${context.getString(R.string.password_dialog_hint)}!") {
+                                textDialog = null
+                            }
+                        }
+                    }
                 }
 
-            }.show()
-
+            }
+            inputDialog?.show()
         }
+    }
+
+    private fun pauseScrennAnimation() {
+        mBinding.zxingQrcodeScanner.pause()
+        mBinding.lvScanQrcodeMotion.pauseAnimation()
+    }
+
+    private fun resumeScreenAnimation() {
+        mBinding.zxingQrcodeScanner.resume()
+        mBinding.lvScanQrcodeMotion.resumeAnimation()
     }
 
     private fun checkPermission(): Boolean {

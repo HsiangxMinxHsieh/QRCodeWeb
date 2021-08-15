@@ -16,18 +16,18 @@ import uitool.getRectangleBg
 import uitool.getScreenHeightPixels
 import uitool.setTextSize
 
-fun showMessageDialogOnlyOKButton(context: Context, message: String, lambda: () -> Unit = {}): TextDialog {
-    return TextDialog(context).apply {
-        title = message
-        dialogBinding.btnLift.visibility = View.GONE
-        dialogBinding.btnRight.text = context.getString(R.string.ok)
-        dialogBinding.btnRight.setOnClickListener {
-            lambda()
-            dialog.dismiss()
-        }
-        show()
-    }
-}
+//fun showMessageDialogOnlyOKButton(context: Context, message: String, lambda: () -> Unit = {}): TextDialog {
+//    return TextDialog(context).apply {
+//        title = message
+//        dialogBinding.btnLift.visibility = View.GONE
+//        dialogBinding.btnRight.text = context.getString(R.string.dialog_ok)
+//        dialogBinding.btnRight.setOnClickListener {
+//            lambda()
+//            dialog.dismiss()
+//        }
+//        show()
+//    }
+//}
 
 fun showMessageDialogOnlyOKButton(context: Context, title: String, message: String, lambda: () -> Unit = {}): TextDialog {
     return TextDialog(context).apply {
@@ -35,7 +35,7 @@ fun showMessageDialogOnlyOKButton(context: Context, title: String, message: Stri
         this.message = message
         GlobalScope.launch(Dispatchers.Main) {
             dialogBinding.btnLift.visibility = View.GONE
-            dialogBinding.btnRight.text = context.getString(R.string.ok)
+            dialogBinding.btnRight.text = context.getString(R.string.dialog_ok)
             dialogBinding.btnRight.setOnClickListener {
 
                 lambda()
@@ -47,13 +47,13 @@ fun showMessageDialogOnlyOKButton(context: Context, title: String, message: Stri
 }
 
 
-class TextDialog(val context: Context) {
+class TextDialog(val context: Context): Dialog {
     var title = ""
     var message = ""
 
     val dialog by lazy { MaterialDialog(context) }
     val dialogBinding by lazy { DataBindingUtil.inflate<DialogTextBinding>(LayoutInflater.from(context), R.layout.dialog_text, null, false) }
-    fun show() {
+    override fun show() {
         if (dialog.isShowing) {
             return
         }
