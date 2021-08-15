@@ -1,10 +1,10 @@
-# QRCodeWeb
+# 行動裝置QRCODE APP
 
 製作目的：道場點名系統使用QRCODE進行線上簽到, 但隨著功能的增加, 一般的APP無法有相應的調整, 因此需要有一個自行開發的APP, 來支援未來的功能增益。
 
 <h2>執行方法：</h2>
 <h3>一、直接執行</h3>
-請直接下載<a href="https://github.com/HsiangxMinxHsieh/CallMachine_Influenxio/blob/master/answer/bank_counter.apk">此處</a>的APK並安裝到Android手機上即可執行
+請直接下載<a href="https://github.com/HsiangxMinxHsieh/QRCodeWeb/blob/master/readme/apk/qrcode_send_web.apk">此處</a>的APK並安裝到Android手機上即可執行
 
 <h3>二、下載源碼後Build與執行：</h3>
 (一)請先依照<a href="https://ithelp.ithome.com.tw/articles/10200176">此篇</a>內容下載Android Studio</br></br>
