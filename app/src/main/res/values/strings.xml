@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">QRCodeWeb</string>
+    <string name="permission_request">請給App相機權限以完成此作業。</string>
+    <string name="dialog_progress_default_title">請稍等…</string>
+    <string name="ok">確定</string>
+    <string name="cancel">取消</string>
+</resources>
