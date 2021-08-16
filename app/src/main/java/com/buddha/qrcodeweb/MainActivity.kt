@@ -192,7 +192,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun clickToRecordPage() {
-        
+
     }
 
     private fun clickPasswordInputAction() {
