@@ -6,6 +6,8 @@ import android.os.ParcelUuid
 import android.provider.Settings.System.DATE_FORMAT
 import android.util.Log
 import com.buddha.qrcodeweb.BuildConfig
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.io.*
 import java.text.DecimalFormat
 import java.text.Format
@@ -25,8 +27,9 @@ fun Double.format(format: String = "#.#"): String {
     return DecimalFormat(format).format(this)
 }
 
-//fun Any.toJson() = Gson().toJson(this)
-//
+fun Any.toJson() = Gson().toJson(this)
+
+inline fun <reified T> String.toGson(param: T) = Gson().fromJson<T>(this, object: TypeToken<T>() {}.type)
 //inline fun <reified T> String.toGson(param: T) = Gson().fromJson<T>(this, T::class.java) as T
 
 fun getRaw(context: Context, id: Int): String {

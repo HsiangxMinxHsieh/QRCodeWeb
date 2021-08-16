@@ -25,6 +25,9 @@ import tool.getUrlKey
 import tool.initialLottieByFileName
 import utils.toString
 import java.util.*
+import androidx.constraintlayout.widget.ConstraintSet
+import uitool.ViewTool
+
 
 class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
@@ -60,6 +63,25 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         }
 
         resumeScreenAnimation()
+
+        setSettingFabText()
+    }
+
+    private fun setSettingFabText() { // 如果有儲存的設定值才要設定fab按鍵內容(要顯示當前的設定檔名稱)。
+
+        val nowSetting = context.getShare().getNowUseSetting()
+        if (nowSetting != null && !context.getShare().getStoreSettings().isNullOrEmpty()) {
+            mBinding.fabSetting.icon = null
+            mBinding.fabSetting.text = nowSetting.name
+
+            ConstraintSet().apply { // 動態設定ConstraintLayout相依關係：
+                clone(mBinding.clMain)
+                setMargin(R.id.fab_setting, ConstraintSet.TOP, ViewTool.DpToPx(context, 16f))
+                connect(R.id.fab_record, ConstraintSet.BOTTOM, R.id.fab_setting, ConstraintSet.TOP, ViewTool.DpToPx(context, 16f))
+                constrainWidth(R.id.fab_setting, ConstraintSet.WRAP_CONTENT)
+                applyTo(mBinding.clMain)
+            }
+        }
     }
 
     override fun onPause() {
@@ -160,9 +182,17 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             }
         })
 
-        mBinding.fab.setOnClickListener {
+        mBinding.fabRecord.setOnClickListener {
+            clickToRecordPage()
+        }
+
+        mBinding.fabSetting.setOnClickListener {
             clickPasswordInputAction()
         }
+    }
+
+    private fun clickToRecordPage() {
+        
     }
 
     private fun clickPasswordInputAction() {
