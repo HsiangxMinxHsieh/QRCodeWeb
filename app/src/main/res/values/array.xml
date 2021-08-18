@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="loading_status">
+        <item>正在載入中…</item>
+        <item>正在載入相機模組…</item>
+        <item>正在載入設定檔…</item>
+        <item>正在載入掃碼資料庫…</item>
+        <item>載入完成，即將跳轉到掃碼頁面…</item>
+    </string-array>
+
+    <string-array name="initial_status">
+        <item>正在初始化中…</item>
+        <item>正在請求相機權限…</item>
+        <item>正在初始化設定檔…</item>
+        <item>正在初始化掃碼資料庫…</item>
+        <item>初始化完成，即將跳轉到掃碼頁面…</item>
+    </string-array>
+
+    <string-array name="loading_percent">
+        <item>0.1</item>
+        <item>0.2</item>
+        <item>0.3</item>
+        <item>0.4</item>
+        <item>1.0</item>
+    </string-array>
+
+
+</resources>

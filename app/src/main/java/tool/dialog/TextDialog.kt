@@ -97,6 +97,8 @@ class TextDialog(val context: Context): Dialog {
 //            )
 
         }
+
+
         //
         dialog.apply {
 
@@ -107,4 +109,6 @@ class TextDialog(val context: Context): Dialog {
             show()
         }
     }
+
+    fun dismiss()= dialog.dismiss()
 }

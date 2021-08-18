@@ -1,11 +1,10 @@
 package tool
 
 import android.content.Context
-import android.os.Build
 import com.buddha.qrcodeweb.BuildConfig
 import project.main.model.SettingData
 import project.main.model.SettingDataItem
-import utils.toGson
+import utils.toDataBean
 import utils.toJson
 
 
@@ -91,6 +90,9 @@ class BaseSharePreference(val context: Context) {
         editor.apply()
     }
 
+    /**判斷是否是第一次進入此App的基準：是否有儲存過設定檔*/
+    fun isFirstTimeStartThisApp()=  getNowUseSetting() == null || getStoreSettings().isNullOrEmpty()
+
     /**取得送出網頁的Password  */
     fun getStorePassword(): String {
         return getString(context, KEY_HTML_PASSWORD, "")
@@ -104,7 +106,7 @@ class BaseSharePreference(val context: Context) {
     /**取得現在使用的設定檔*/
     fun getNowUseSetting(): SettingDataItem? {
         return try {
-            getString(context, KEY_NOW_USE_SETTING, "").toGson(SettingDataItem())
+            getString(context, KEY_NOW_USE_SETTING, "").toDataBean(SettingDataItem())
         } catch (e: Exception) {
             null
         }
@@ -118,7 +120,7 @@ class BaseSharePreference(val context: Context) {
     /**取得所有設定檔*/
     fun getStoreSettings(): SettingData? {
         return try {
-            getString(context, KEY_STORE_SETTING_FILE, "").toGson(SettingData())
+            getString(context, KEY_STORE_SETTING_FILE, "").toDataBean(SettingData())
         } catch (e: Exception) {
             null
         }

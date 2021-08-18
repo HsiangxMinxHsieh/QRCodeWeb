@@ -1,8 +1,9 @@
 package utils
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Build
-import android.os.ParcelUuid
 import android.provider.Settings.System.DATE_FORMAT
 import android.util.Log
 import com.buddha.qrcodeweb.BuildConfig
@@ -22,7 +23,7 @@ fun Double.format(format: String = "#.#"): String {
 
 fun Any.toJson() = Gson().toJson(this)
 
-inline fun <reified T> String.toGson(param: T) = Gson().fromJson<T>(this, object : TypeToken<T>() {}.type)
+inline fun <reified T> String.toDataBean(param: T) = Gson().fromJson<T>(this, object : TypeToken<T>() {}.type)
 
 fun getRaw(context: Context, id: Int): String {
     val stream: InputStream = context.resources.openRawResource(id)

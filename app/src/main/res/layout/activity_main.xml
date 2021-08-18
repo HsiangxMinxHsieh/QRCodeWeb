@@ -7,7 +7,7 @@
         android:id="@+id/cl_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:context="project.main.activity.MainActivity">
 
         <com.journeyapps.barcodescanner.DecoratedBarcodeView
             android:id="@+id/zxing_qrcode_scanner"

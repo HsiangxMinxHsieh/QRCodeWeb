@@ -1,13 +1,15 @@
-package com.buddha.qrcodeweb
+package project.main.activity
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.databinding.DataBindingUtil
 import com.buddha.qrcodeweb.databinding.ActivityMainBinding
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
@@ -26,10 +28,15 @@ import tool.initialLottieByFileName
 import utils.toString
 import java.util.*
 import androidx.constraintlayout.widget.ConstraintSet
+import com.buddha.qrcodeweb.R
+import project.main.activity.const.PERMISSIONS_REQUEST_CODE
+import project.main.activity.const.permissionPerms
+import project.main.base.BaseActivity
 import uitool.ViewTool
+import utils.logi
 
 
-class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
+class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inflate(it) }), EasyPermissions.PermissionCallbacks {
 
     private val activity = this
     private val context: Context = this
@@ -37,11 +44,16 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private val liveResult by lazy { MutableLiveData<String>() }
     private val livePassword by lazy { MutableLiveData<String>() }
 
-    lateinit var mBinding: ActivityMainBinding
+    var textDialog: Dialog? = null
+    var inputDialog: Dialog? = null
+
+    private lateinit var forSettingResult: ActivityResultLauncher<Intent>
+
+    //    lateinit var mBinding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        setContentView(R.layout.activity_main)
-        mBinding = DataBindingUtil.setContentView(activity, R.layout.activity_main)
+//        mBinding = DataBindingUtil.setContentView(activity, R.layout.activity_main)
 
         initData()
 
@@ -53,26 +65,14 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        requestPermissions() //若沒有請求權限會是一片黑屏 // 無論之前是否有權限都要再次請求權限，因為要開相機(實測過後發現)
 
-        // 顯示簽到完成對話框。
-        showSignInCompleteDialog() {
-            signInResult = ""
-        }
-
-        resumeScreenAnimation()
-
-        setSettingFabText()
-    }
 
     private fun setSettingFabText() { // 如果有儲存的設定值才要設定fab按鍵內容(要顯示當前的設定檔名稱)。
 
-        val nowSetting = context.getShare().getNowUseSetting()
-        if (nowSetting != null && !context.getShare().getStoreSettings().isNullOrEmpty()) {
+        if (!context.getShare().isFirstTimeStartThisApp()) { //不是第一次進入才要顯示設定檔名稱
+            val nowSetting = context.getShare().getNowUseSetting()
             mBinding.fabSetting.icon = null
-            mBinding.fabSetting.text = nowSetting.name
+            mBinding.fabSetting.text = nowSetting?.name ?: ""
 
             ConstraintSet().apply { // 動態設定ConstraintLayout相依關係：
                 clone(mBinding.clMain)
@@ -84,10 +84,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        pauseScrennAnimation()
-    }
+
 
     private fun showSignInCompleteDialog(okButtonClickAction: () -> Unit = {}): Dialog? {
         if (signInResult.isNotEmpty() && textDialog == null) {
@@ -167,8 +164,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         mBinding.lvScanQrcodeMotion.initialLottieByFileName(context, AnimationFileName.SCAN_MOTION, true)
     }
 
-    var textDialog: Dialog? = null
-    var inputDialog: Dialog? = null
+
     private fun initEvent() {
         mBinding.zxingQrcodeScanner.decodeContinuous(object : BarcodeCallback {
             override fun barcodeResult(result: BarcodeResult) {
@@ -187,12 +183,32 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         }
 
         mBinding.fabSetting.setOnClickListener {
-            clickPasswordInputAction()
+            clickToSettingPage()
+//            clickPasswordInputAction()
+        }
+
+        forSettingResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                logi("clickToSettingPage", "OK，我正確的返回了。")
+            } else {
+                logi("clickToSettingPage", "我不正確的返回了。")
+            }
         }
     }
 
-    private fun clickToRecordPage() {
 
+    private fun clickToRecordPage() {
+        val intent = Intent(activity, RecordActivity::class.java)
+        activity.startActivity(intent)
+        activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+
+    }
+
+    private fun clickToSettingPage() {
+        val intent = Intent(activity, SettingActivity::class.java)
+
+        forSettingResult.launch(intent)
+        activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
     private fun clickPasswordInputAction() {
@@ -231,6 +247,30 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+//        requestPermissions() //若沒有請求權限會是一片黑屏 // 無論之前是否有權限都要再次請求權限，因為要開相機(實測過後發現)
+
+//        // 顯示簽到完成對話框。
+//        showSignInCompleteDialog() {
+//            signInResult = ""
+//        }
+
+        resumeScreenAnimation()
+
+        setSettingFabText()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pauseScrennAnimation()
+    }
+
+    override fun finish() {
+        super.finish()
+        activity.overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_up)
+    }
+
     private fun pauseScrennAnimation() {
         mBinding.zxingQrcodeScanner.pause()
         mBinding.lvScanQrcodeMotion.pauseAnimation()
@@ -242,15 +282,11 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun checkPermission(): Boolean {
-        val perms = arrayOf(Manifest.permission.CAMERA)
-        return EasyPermissions.hasPermissions(this, *perms)
+        return EasyPermissions.hasPermissions(this, *permissionPerms)
     }
 
-    private val PERMISSIONS_REQUEST_CODE = 548
-
     private fun requestPermissions() {
-        val perms = arrayOf(Manifest.permission.CAMERA)
-        EasyPermissions.requestPermissions(this, activity.getString(R.string.permission_request), PERMISSIONS_REQUEST_CODE, *perms)
+        EasyPermissions.requestPermissions(this, activity.getString(R.string.permission_request), PERMISSIONS_REQUEST_CODE,  *permissionPerms)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

@@ -1,6 +1,18 @@
 <resources>
     <string name="app_name">QRCodeWeb</string>
-    <string name="permission_request">請給App相機權限以完成此作業。</string>
+    <string name="permission_request">請給App相機權限以開啟掃碼功能。</string>
+
+    <!--Splash-->
+    <string name="splash_title">QRCode簽到器</string>
+    <string name="splash_loading_status_start">開始載入</string>
+    <string name="splash_permission_key_word">權限</string> <!--如果Splash載入中出現這個字串，會請求權限。-->
+
+    <!--Setting Page-->
+
+
+    <!--Record Page-->
+
+
 
     <!--對話框共用-->
     <string name="dialog_ok">確定</string>
@@ -17,5 +29,6 @@
 
     <!--進度框-->
     <string name="dialog_progress_default_title">傳輸中，請稍等…</string>
+
 
 </resources>
