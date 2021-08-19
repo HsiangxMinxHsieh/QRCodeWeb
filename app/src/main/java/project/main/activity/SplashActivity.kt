@@ -41,10 +41,10 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
 
     private var nextIndex = 0
 
-    //如果在未取得權限的onResume，要判斷是否權限取得成功。
+    //如果在未取得權限的情況下onResume，要判斷是否權限取得成功。
     private var isGettingPermission = false
 
-    private var textDialog:TextDialog? = null
+    private var textDialog: TextDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,18 +124,14 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         //權限被拒
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            if (textDialog == null) {
-                textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), context.getString(R.string.permission_request)) {
-                    logi("onPermissionsDenied","收到對話框按下確定。")
-                    textDialog = null
-                    //連續拒絕，導向設定頁設定權限。
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                    val uri: Uri = Uri.fromParts("package", packageName, null)
-                    intent.data = uri
-                    startActivity(intent)
-                    isGettingPermission = true
-
-                }
+            showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), context.getString(R.string.permission_request)) {
+                textDialog = null
+                //連續拒絕，導向設定頁設定權限。
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                val uri: Uri = Uri.fromParts("package", packageName, null)
+                intent.data = uri
+                startActivity(intent)
+                isGettingPermission = true
             }
         }
     }
@@ -150,9 +146,8 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
     override fun onResume() {
         super.onResume()
         if (isGettingPermission) {
-            logi("onPermissionsDenied","於onResume內即將requestPermissions")
             requestPermissions()
-            isGettingPermission = false
+            isGettingPermission = false //避免重複進入
         }
     }
 }
