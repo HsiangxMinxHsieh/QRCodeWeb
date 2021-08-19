@@ -1,6 +1,7 @@
 package project.main.model
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 
 /***
@@ -30,8 +31,15 @@ enum class ActionMode {
 }
 
 data class SettingDataItem(
+
+    @SerializedName("themeColor")
+    var themeColor: Int = 0, // 此設定檔的主題顏色
+
+    @SerializedName("haveSaved")
+    var haveSaved: Boolean = false, // 是否儲存過(用於不能讓使用者連續新增設定檔)(一定要為true才能新增下一個)
+
     @SerializedName("SettingName")
-    val name: String = "", // 設定檔案名稱
+    var name: String = "", // 設定檔案名稱
     @SerializedName("GoWebSiteByScan")
     val goWebSiteByScan: GoWebSiteByScan = GoWebSiteByScan(),  // 是否依照QRcode掃到的網址去導向(否的時候能提供文字框輸入)
     // 依照掃碼掃到什麼送什麼              // sendByScan
@@ -43,8 +51,9 @@ data class SettingDataItem(
     //2.打開瀏覽器做後續動作               // openBrowser
     //3.打出去以後想看結果頁(多一個輸入框)   // anotherWeb
     @SerializedName("SettingField")
-    val settingField: List<SettingField> = listOf() //設定值 (多個)
-) {
+    val fields: ArrayList<SettingField> = arrayListOf() //設定值 (多個)
+):Serializable {
+
     data class GoWebSiteByScan(
         @SerializedName("ScanMode")
         val scanMode: SendMode = SendMode.ByScan,
@@ -63,7 +72,7 @@ data class SettingDataItem(
         @SerializedName("fieldName")
         val fieldName: String = "",
         @SerializedName("ColumnName")
-        val columnName: String = "",
+        val columnKey: String = "",
         @SerializedName("ColumnValue")
         val columnValue: String = ""
     )

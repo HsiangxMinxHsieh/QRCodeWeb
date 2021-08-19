@@ -3,20 +3,8 @@
     <dimen name="btn_text_size">16px</dimen>
     <dimen name="btn_stroke_width">1px</dimen>
     <dimen name="dialog_background_corner">10px</dimen>
-    <dimen name="dialog_button_corner">0px</dimen>
+    <dimen name="dialog_button_corner">10dp</dimen>
+    <dimen name="setting_item_ratio">0.08</dimen>
     <dimen name="icon_size">40dp</dimen>
-    <dimen name="icon_logo_width_percent">0.16</dimen>
-    <dimen name="title_size">24px</dimen>
-    <dimen name="icon_margin_dp">10dp</dimen>
-    <dimen name="title_icon_width_percent">0.064</dimen>
-    <dimen name="card_to_boundary_margin">8dp</dimen>
-    <dimen name="card_content_to_boundary_margin">12dp</dimen>
-    <dimen name="ratio_in_record_1">0.2</dimen>
-    <dimen name="ratio_in_record_2">0.45</dimen>
-    <dimen name="ratio_in_record_3">0.65</dimen>
-    <dimen name="ratio_in_record_4">1.0</dimen>
-    <dimen name="setting_margin">10dp</dimen>
-    <item name="title_area_percent" format="float" type="dimen">0.1</item>
-    <dimen name="content_width_percent">0.98</dimen>
 
 </resources>

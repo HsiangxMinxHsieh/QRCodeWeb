@@ -1,13 +1,10 @@
 package project.main.activity
 
-import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.widget.addTextChangedListener
+import android.provider.Settings
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.buddha.qrcodeweb.databinding.ActivityMainBinding
@@ -33,7 +30,6 @@ import project.main.activity.const.PERMISSIONS_REQUEST_CODE
 import project.main.activity.const.permissionPerms
 import project.main.base.BaseActivity
 import uitool.ViewTool
-import utils.logi
 
 
 class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inflate(it) }), EasyPermissions.PermissionCallbacks {
@@ -44,10 +40,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inf
     private val liveResult by lazy { MutableLiveData<String>() }
     private val livePassword by lazy { MutableLiveData<String>() }
 
-    var textDialog: Dialog? = null
-    var inputDialog: Dialog? = null
+    private var textDialog: Dialog? = null
+//    var inputDialog: Dialog? = null
 
-    private lateinit var forSettingResult: ActivityResultLauncher<Intent>
+//    private lateinit var forSettingResult: ActivityResultLauncher<Intent>
+
+
+    //如果在未取得權限的情況下onResume，要判斷是否權限取得成功。
 
     //    lateinit var mBinding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,7 +65,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inf
     }
 
 
-
     private fun setSettingFabText() { // 如果有儲存的設定值才要設定fab按鍵內容(要顯示當前的設定檔名稱)。
 
         if (!context.getShare().isFirstTimeStartThisApp()) { //不是第一次進入才要顯示設定檔名稱
@@ -83,8 +81,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inf
             }
         }
     }
-
-
 
     private fun showSignInCompleteDialog(okButtonClickAction: () -> Unit = {}): Dialog? {
         if (signInResult.isNotEmpty() && textDialog == null) {
@@ -187,13 +183,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inf
 //            clickPasswordInputAction()
         }
 
-        forSettingResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                logi("clickToSettingPage", "OK，我正確的返回了。")
-            } else {
-                logi("clickToSettingPage", "我不正確的返回了。")
-            }
-        }
+//        forSettingResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+//            if (it.resultCode == Activity.RESULT_OK) {
+//
+//                logi("clickToSettingPage", "OK，我正確的返回了。")
+//            } else {
+//                logi("clickToSettingPage", "我不正確的返回了。")
+//            }
+//        }
     }
 
 
@@ -206,50 +203,49 @@ class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inf
 
     private fun clickToSettingPage() {
         val intent = Intent(activity, SettingActivity::class.java)
-
-        forSettingResult.launch(intent)
+        activity.startActivity(intent)
         activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
-    private fun clickPasswordInputAction() {
-        if (inputDialog == null) {
-            inputDialog = PasswordInputDialog(context).apply {
-
-                title = context.getString(R.string.password_dialog_title)
-                limitTextSize = 0
-                editText = context.getShare().getStorePassword()
-                hintText = context.getString(R.string.password_dialog_hint)
-                //                var editString = context.getShare().getStorePassword()
-                dialogBinding.edtText.addTextChangedListener {
-                    editText = it.toString()
-                }
-                dialogBinding.btnLift.setOnClickListener {
-                    inputDialog = null
-                    dialog.dismiss()
-                }
-                dialogBinding.btnRight.setOnClickListener {
-                    inputDialog = null
-                    if (editText.isNotEmpty()) {
-                        livePassword.postValue(editText)
-                        context.getShare().setPassword(editText)
-                        dialog.dismiss()
-                    } else {
-                        if (textDialog == null) {
-                            textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), "${context.getString(R.string.password_dialog_hint)}!") {
-                                textDialog = null
-                            }
-                        }
-                    }
-                }
-
-            }
-            inputDialog?.show()
-        }
-    }
+//    private fun clickPasswordInputAction() {
+//        if (inputDialog == null) {
+//            inputDialog = PasswordInputDialog(context).apply {
+//
+//                title = context.getString(R.string.password_dialog_title)
+//                limitTextSize = 0
+//                editText = context.getShare().getStorePassword()
+//                hintText = context.getString(R.string.password_dialog_hint)
+//                //                var editString = context.getShare().getStorePassword()
+//                dialogBinding.edtText.addTextChangedListener {
+//                    editText = it.toString()
+//                }
+//                dialogBinding.btnLift.setOnClickListener {
+//                    inputDialog = null
+//                    dialog.dismiss()
+//                }
+//                dialogBinding.btnRight.setOnClickListener {
+//                    inputDialog = null
+//                    if (editText.isNotEmpty()) {
+//                        livePassword.postValue(editText)
+//                        context.getShare().setPassword(editText)
+//                        dialog.dismiss()
+//                    } else {
+//                        if (textDialog == null) {
+//                            textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), "${context.getString(R.string.password_dialog_hint)}!") {
+//                                textDialog = null
+//                            }
+//                        }
+//                    }
+//                }
+//
+//            }
+//            inputDialog?.show()
+//        }
+//    }
 
     override fun onResume() {
         super.onResume()
-//        requestPermissions() //若沒有請求權限會是一片黑屏 // 無論之前是否有權限都要再次請求權限，因為要開相機(實測過後發現)
+        requestPermissions() //若沒有請求權限會是一片黑屏 // 無論之前是否有權限都要再次請求權限，因為要開相機(實測過後發現)
 
 //        // 顯示簽到完成對話框。
 //        showSignInCompleteDialog() {
@@ -281,12 +277,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inf
         mBinding.lvScanQrcodeMotion.resumeAnimation()
     }
 
-    private fun checkPermission(): Boolean {
-        return EasyPermissions.hasPermissions(this, *permissionPerms)
-    }
-
+    //    private fun checkPermission(): Boolean {
+//        return EasyPermissions.hasPermissions(this, *permissionPerms)
+//    }
+//
     private fun requestPermissions() {
-        EasyPermissions.requestPermissions(this, activity.getString(R.string.permission_request), PERMISSIONS_REQUEST_CODE,  *permissionPerms)
+        EasyPermissions.requestPermissions(this, activity.getString(R.string.permission_request), PERMISSIONS_REQUEST_CODE, *permissionPerms)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -297,7 +293,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inf
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         //權限被拒
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            if (textDialog == null) {
+                textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), context.getString(R.string.permission_request)) {
+                    textDialog = null
+                    //連續拒絕，導向設定頁設定權限。
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    val uri: Uri = Uri.fromParts("package", packageName, null)
+                    intent.data = uri
+                    startActivity(intent)
 
+                }
+            }
         }
     }
 

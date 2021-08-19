@@ -1,14 +1,11 @@
 package project.main.activity
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.widget.TextView
-import com.airbnb.lottie.LottieAnimationView
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.ActivitySplashBinding
 import kotlinx.coroutines.MainScope
@@ -18,13 +15,10 @@ import project.main.activity.const.PERMISSIONS_REQUEST_CODE
 import project.main.activity.const.permissionPerms
 import project.main.base.BaseActivity
 import pub.devrel.easypermissions.EasyPermissions
-import pub.devrel.easypermissions.helper.PermissionHelper
 import tool.*
-import tool.dialog.TextDialog
 import tool.dialog.showMessageDialogOnlyOKButton
 import utils.DateTool
 import utils.goToNextPageFinishThisPage
-import utils.logi
 
 
 class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBinding.inflate(it) }), EasyPermissions.PermissionCallbacks {
@@ -44,7 +38,12 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
     //如果在未取得權限的情況下onResume，要判斷是否權限取得成功。
     private var isGettingPermission = false
 
-    private var textDialog: TextDialog? = null
+    private val loadingTextArray by lazy { // 載入狀態文字陣列
+        if (context.getShare().isFirstTimeStartThisApp())
+            context.resources.getStringArray(R.array.initial_status).asList()
+        else
+            context.resources.getStringArray(R.array.loading_status).asList()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,12 +58,6 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
         mBinding.lvLoadingProgress.initialLottieByFileName(context, AnimationFileName.SPLASH_LOADING, startAfterLoading = false)
     }
 
-    private val loadingTextArray by lazy {
-        if (context.getShare().isFirstTimeStartThisApp())
-            context.resources.getStringArray(R.array.initial_status).asList()
-        else
-            context.resources.getStringArray(R.array.loading_status).asList()
-    }
 
 
     private fun initLoading() {
@@ -125,7 +118,6 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
         //權限被拒
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), context.getString(R.string.permission_request)) {
-                textDialog = null
                 //連續拒絕，導向設定頁設定權限。
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 val uri: Uri = Uri.fromParts("package", packageName, null)

@@ -3,7 +3,7 @@
 
     <string-array name="loading_status">
         <item>正在載入中…</item>
-        <item>正在載入相機模組…</item>
+        <item>正在載入相機模組與確認相機權限…</item>
         <item>正在載入設定檔…</item>
         <item>正在載入掃碼資料庫…</item>
         <item>載入完成，即將跳轉到掃碼頁面…</item>

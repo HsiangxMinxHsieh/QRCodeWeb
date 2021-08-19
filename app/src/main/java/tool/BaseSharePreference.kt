@@ -118,11 +118,11 @@ class BaseSharePreference(val context: Context) {
     }
 
     /**取得所有設定檔*/
-    fun getStoreSettings(): SettingData? {
+    fun getStoreSettings(): SettingData {
         return try {
             getString(context, KEY_STORE_SETTING_FILE, "").toDataBean(SettingData())
         } catch (e: Exception) {
-            null
+            SettingData()
         }
     }
 

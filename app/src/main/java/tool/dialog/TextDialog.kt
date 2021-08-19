@@ -78,9 +78,9 @@ class TextDialog(val context: Context): Dialog {
                 tvMessage.visibility = View.GONE
             }
             //按鈕設定參數：
-            val corner = context.resources.getDimensionPixelSize(R.dimen.dialog_button_corner)   //圓角弧度
+//            val corner = context.resources.getDimensionPixelSize(R.dimen.dialog_button_corner)   //圓角弧度
             val btnTextSize = context.resources.getDimensionPixelSize(R.dimen.btn_text_size) //按鍵文字大小
-            val strokeWidth = context.resources.getDimensionPixelSize(R.dimen.btn_stroke_width) //按鈕邊界寬度
+//            val strokeWidth = context.resources.getDimensionPixelSize(R.dimen.btn_stroke_width) //按鈕邊界寬度
 
             btnRight.setTextSize(btnTextSize)
 //            btnRight.background = null
