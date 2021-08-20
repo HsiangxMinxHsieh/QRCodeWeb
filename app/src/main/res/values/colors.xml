@@ -11,14 +11,7 @@
     <color name="transparent">#00000000</color>
 
     <color name="dialog_bg">#FFFFFF</color>
-    <color name="dialog_txt_title">#222222</color>
     <color name="dialog_txt_message">#666666</color>
-    <color name="dialog_btn_right">#00AD97</color>
-    <color name="dialog_btn_right2">#03C8E0</color>
-    <color name="dialog_btn_lift">#222222</color>
-    <color name="dialog_btn_lift2">#D81BE0</color>
-    <color name="dialog_divider">#999999</color>
-
 
     <color name="theme_blue">#1266c7</color>
     <color name="theme_green">#009924</color>

@@ -38,6 +38,11 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <View
+                android:background="@color/gray"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                app:layout_constraintBottom_toBottomOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,6 +17,7 @@ import project.main.base.BaseActivity
 import pub.devrel.easypermissions.EasyPermissions
 import tool.*
 import tool.dialog.showMessageDialogOnlyOKButton
+import uitool.setTextSize
 import utils.DateTool
 import utils.goToNextPageFinishThisPage
 
@@ -56,6 +57,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
 
     private fun initView() {
         mBinding.lvLoadingProgress.initialLottieByFileName(context, AnimationFileName.SPLASH_LOADING, startAfterLoading = false)
+        mBinding.tvLoadingStatus.setTextSize(16)
     }
 
 
