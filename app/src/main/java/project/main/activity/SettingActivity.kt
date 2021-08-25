@@ -31,9 +31,6 @@ import utils.logi
 
 class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBinding.inflate(it) }) {
 
-    private val activity = this
-    private val context: Context = this
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -292,7 +289,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         activity.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
-    private inner class PagerAdapter(activity: SettingActivity, val setting: SettingData) : FragmentStateAdapter(activity) {
+    private inner class PagerAdapter(activity: BaseActivity<ActivitySettingBinding>, val setting: SettingData) : FragmentStateAdapter(activity) {
 
         private val NUM_PAGES = setting.size //至少顯示一個未命名的設定檔
 

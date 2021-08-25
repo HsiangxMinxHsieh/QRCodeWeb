@@ -24,8 +24,6 @@ import utils.goToNextPageFinishThisPage
 
 class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBinding.inflate(it) }), EasyPermissions.PermissionCallbacks {
 
-    private val activity = this
-    private val context: Context = this
 
     private val loadingPercent by lazy { context.resources.getStringArray(R.array.loading_percent).asList().map { it.toDouble() } }
 

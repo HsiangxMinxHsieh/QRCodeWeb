@@ -34,8 +34,6 @@ import uitool.ViewTool
 
 class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inflate(it) }), EasyPermissions.PermissionCallbacks {
 
-    private val activity = this
-    private val context: Context = this
 
     private val liveResult by lazy { MutableLiveData<String>() }
     private val livePassword by lazy { MutableLiveData<String>() }

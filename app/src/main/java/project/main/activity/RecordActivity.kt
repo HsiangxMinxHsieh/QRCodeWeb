@@ -35,8 +35,6 @@ import uitool.ViewTool
 
 class RecordActivity : BaseActivity<ActivityRecordBinding>({ ActivityRecordBinding.inflate(it) }) {
 
-    private val activity = this
-    private val context: Context = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

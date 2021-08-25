@@ -34,8 +34,6 @@ import uitool.ViewTool
 
 class SampleActivity : BaseActivity<ActivitySampleBinding>({ ActivitySampleBinding.inflate(it) }) {
 
-    private val activity = this
-    private val context: Context = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
