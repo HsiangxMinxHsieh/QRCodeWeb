@@ -32,6 +32,8 @@ import android.content.Intent
 
 class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBinding.inflate(it) }) {
 
+    private val maxSettingSize by lazy { context.resources.getInteger(R.integer.setting_size_max_size) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -118,7 +120,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
     }
 
     private fun getDefaultSetting(id: Int) =
-        SettingDataItem(id = id, name = (context.getString(R.string.setting_file_name_default) + (0..100).random().toString())).apply {
+        SettingDataItem(id = id, name = (context.getString(R.string.setting_file_name_default))).apply {
             fields.add(SettingDataItem.SettingField(fieldName = context.getString(R.string.password_title_default), columnKey = "entry.1199127502"))
         }
 
@@ -225,6 +227,16 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             return
         }
 
+        if (settings.size >= maxSettingSize) {
+            if (textDialog == null) {
+                textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_over_max_size).format(maxSettingSize)) {
+                    textDialog = null
+                }
+            }
+            return
+
+        }
+
         context.getShare().addID() //ID + 1
 
         // 新增預設資料
@@ -297,7 +309,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         //先設定為已編輯在判斷否有和之前的內容相同，否則會造成「明明已儲存過，卻無法新增的問題」
 
-        logi("saveData", "saveData時，儲存內容是=>${ context.getShare().getStoreSettings().getOrNull(nowTabIndex)}")
+        logi("saveData", "saveData時，儲存內容是=>${context.getShare().getStoreSettings().getOrNull(nowTabIndex)}")
         //內容與儲存內容相同，不儲存。
         if (saveData == context.getShare().getStoreSettings().getOrNull(nowTabIndex))
             return

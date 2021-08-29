@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="amin_duration">800</integer>
-    <integer name="edit_text_max_size">15</integer>
+    <integer name="edit_text_max_size">7</integer>
+    <integer name="setting_size_max_size">20</integer>
 </resources>
