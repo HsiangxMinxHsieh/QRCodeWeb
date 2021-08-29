@@ -82,6 +82,14 @@ fun Date.thisMinOfThisHrlbl(): Int {
     return sdf.format(this).toInt()
 }
 
+fun Collection<Any>.logAllData(TAG: String = "logAllData") {
+    this.forEach {
+        logi(TAG, it.toString())
+    }
+
+}
+
+
 fun logi(tag: String, log: Any) {
 
     if (BuildConfig.DEBUG_MODE) Log.i(tag, log.toString())

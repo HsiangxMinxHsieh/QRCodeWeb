@@ -1,6 +1,5 @@
 package project.main.activity
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -26,7 +25,9 @@ import tool.dialog.showMessageDialogOnlyOKButton
 import uitool.setMarginByDpUnit
 import uitool.setTextSize
 import uitool.setViewSize
+import utils.logAllData
 import utils.logi
+import android.content.Intent
 
 
 class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBinding.inflate(it) }) {
@@ -48,7 +49,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         if (context.getShare().isFirstTimeStartThisApp()) {
             logi("initData", "偵測到是第一次進入！無設定檔，即將新增一筆預設的")
-            settings.add(getDefaultSetting())
+            settings.add(getDefaultSetting(0))
         }
 
 
@@ -83,12 +84,12 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             0
         } else {
             //有設定檔，找到這筆設定檔的位置
-            settings.indexOf(settings.find { it.name == storeSetting.name })
+            settings.indexOf(settings.find { it.id == storeSetting.id })
         }
         logi("initTab", "nowTabIndex 是=>${nowTabIndex}")
         //判斷當前設定檔數量與在上面新增tab。
         for (index in settings.indices) {
-            mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(getTabViewByText(settings.getOrNull(index)?.name ?: "", (index == nowTabIndex))))
+            mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(getTabViewByText(settings.getOrNull(index) ?: break, (index == nowTabIndex))))
         }
 
         mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(ImageView(context).apply { //無論如何都要在最尾端加一個+號
@@ -97,7 +98,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         }))
 
         delayScrollToPosition(nowTabIndex)
-        setTabView(storeSetting)//填入頁面內容
+//        setTabView(storeSetting)//填入頁面內容
 
     }
 
@@ -116,37 +117,53 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
     }
 
-    private fun getDefaultSetting() =
-        SettingDataItem(name = (context.getString(R.string.setting_file_name_default) + (0..100).random().toString())).apply {
+    private fun getDefaultSetting(id: Int) =
+        SettingDataItem(id = id, name = (context.getString(R.string.setting_file_name_default) + (0..100).random().toString())).apply {
             fields.add(SettingDataItem.SettingField(fieldName = context.getString(R.string.password_title_default), columnKey = "entry.1199127502"))
         }
 
     /**取得TabLayout中的View*/
-    private fun getTabViewByText(s: String?, isFirstTab: Boolean = false): View {
+    private fun getTabViewByText(s: SettingDataItem, isFirstTab: Boolean = false): View {
         val tabIndicator: View = LayoutInflater.from(context).inflate(R.layout.tablayout_item, mBinding.tlSettingTitle, false)
-        val tvTabText = tabIndicator.findViewById(R.id.tv_tab_text) as TextView
-        tvTabText.text = s
-        tvTabText.setTextSize(12)
-        tvTabText.setMarginByDpUnit(0, 0, 0, 10)
-        val color = if (isFirstTab) //第一個Tab要設定不一樣的顏色
-            context.resources.getColor(R.color.theme_green, null)
-        else
-            context.resources.getColor(R.color.light_green, null)
-        tvTabText.setTextColor(color)
+        (tabIndicator.findViewById(R.id.tv_tab_text) as TextView).apply {
+            text = s.name
+            setTextSize(12)
+            setMarginByDpUnit(0, 0, 0, 10)
+
+            val color = if (isFirstTab) //第一個Tab要設定不一樣的顏色
+                context.resources.getColor(R.color.theme_green, null)
+            else
+                context.resources.getColor(R.color.light_green, null)
+            setTextColor(color)
+        }
+        (tabIndicator.findViewById(R.id.tv_id) as TextView).apply {
+            text = s.id.toString()
+        }
+
         tabIndicator.setViewSize((widthPixel * 0.22).toInt(), TableLayout.LayoutParams.MATCH_PARENT)
         logi("getViewByText", "設定完成，即將回傳tabIndicator是=>$tabIndicator")
         return tabIndicator
     }
 
-    /**設定本頁的設定檔內容*/
-    private fun setTabView(setting: SettingDataItem?) {
+    fun View.findText(id: Int) = this.findViewById<TextView>(id)
+
+    /**設定上方Tab的內容或背景顏色。*/
+    private fun setTabText(setting: SettingDataItem?) {
         if (setting == null)
             return
+        logi("setTabText", "childCount =>${mBinding.tlSettingTitle.childCount}")
+        logi("setTabText", "tabCount =>${mBinding.tlSettingTitle.tabCount}")
 
+        val tab = mBinding.tlSettingTitle.getTabAt(settings.indexOf(setting))?.view ?: return
+        logi("setTabText", "找到的tab是=>$tab")
+        tab.findText(R.id.tv_tab_text).apply {
+            this.text = setting.name
+        }
 
     }
 
     private fun initEvent() {
+        settings.map { it.id }.logAllData()
         //上方頁籤捲動事件設定
         mBinding.tlSettingTitle.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -156,8 +173,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
                 }
                 val index = tab?.position ?: 0
                 nowTabIndex = index
-                //設定下方頁面內容
-                setTabView(settings.getOrNull(index))
 
                 //設定捲動頁面
                 mBinding.vpContent.setCurrentItem(index, true)
@@ -200,7 +215,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
     private fun addSetting(index: Int) {
 
-        if (settings.any { !it.haveSaved }) { // 如果有false要return。
+        if (settings.any { !it.haveSaved }) { // 如果有false(未儲存者)要return。
 
             if (textDialog == null) {
                 textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_not_saved_current)) {
@@ -209,10 +224,14 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             }
             return
         }
+
+        context.getShare().addID() //ID + 1
+
         // 新增預設資料
-        settings.add(getDefaultSetting())
+        settings.add(getDefaultSetting(context.getShare().getID()))
+
         // 新增tab
-        mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(getTabViewByText(settings.getOrNull(index)?.name ?: "", (index == nowTabIndex))), index)
+        mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(getTabViewByText(settings.getOrNull(index) ?: return, (index == nowTabIndex))), index)
 
         // 新增頁面內容
         mBinding.vpContent.adapter = pagerAdapter
@@ -241,21 +260,30 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         delayScrollToPosition(index - 1)
     }
 
-    private val empty: (Throwable?) -> Unit = {}
+    private val empty: (Throwable?) -> Unit = {} // 用於不讓使用者經檢查後才可返回的
 
     //將 index的資料存到sharedPreference內。
-    private fun saveData(index: Int, action: (Throwable) -> Unit = empty) {
+    private fun saveData(index: Int, afterSaveAction: (Throwable) -> Unit = empty) {
 
         val saveData = settings.getOrNull(nowTabIndex) ?: return
+        logi("saveData", "saveData時，saveData 是=>$saveData")
+        if (saveData.name.isEmpty()) {
+            if (textDialog == null) {
+                textDialog = showMessageDialogOnlyOKButton(
+                    context, context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_name_title_hint)
+                ) {
+                    textDialog = null
+                }
+            }
+            return
+        }
+
         val sameName = settings.checkHaveRepeatName()
         if (sameName != null) {
             if (textDialog == null) {
                 textDialog = showMessageDialogOnlyOKButton(
-                    context,
-                    context.getString(R.string.dialog_notice_title),
-                    context.getString(R.string.setting_cant_save_by_same_name).format(
-                        (if (action == empty)
-                            context.getString(R.string.setting_save_action)
+                    context, context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_save_by_same_name).format(
+                        (if (afterSaveAction == empty) context.getString(R.string.setting_save_action)
                         else
                             context.getString((R.string.setting_leave_action))),
                         sameName
@@ -266,11 +294,27 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             }
             return
         }
-        logi("saveData", "saveData時，index是=>$index")
-        context.getShare().setNowUseSetting(saveData)
-        context.getShare().savaAllSettings(settings.apply { this[index].haveSaved = true })
 
-        action.invoke(Throwable())
+        //先設定為已編輯在判斷否有和之前的內容相同，否則會造成「明明已儲存過，卻無法新增的問題」
+
+        logi("saveData", "saveData時，儲存內容是=>${ context.getShare().getStoreSettings().getOrNull(nowTabIndex)}")
+        //內容與儲存內容相同，不儲存。
+        if (saveData == context.getShare().getStoreSettings().getOrNull(nowTabIndex))
+            return
+
+        logi("saveData", "saveData時，index是=>$index")
+        context.getShare().savaAllSettings(settings.apply { this[index].haveSaved = true })
+        context.getShare().setNowUseSetting(saveData)
+
+        setTabText(saveData)
+        sendBroadcastToUpdateFragment(index)
+        afterSaveAction.invoke(Throwable())
+    }
+
+    private fun sendBroadcastToUpdateFragment(index: Int) {
+        val intent = Intent()
+        intent.action = context.getString(R.string.setting_receiver).format(index) // 設置廣播的Action
+        sendBroadcast(intent) // 發送廣播
     }
 
     //檢查每個檔案名稱是否有跟其他名稱重複
@@ -298,7 +342,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         }
 
         override fun createFragment(position: Int): Fragment {
-            return SettingContentFragment(settingData = setting.getOrNull(position) ?: getDefaultSetting(), position)
+            return SettingContentFragment(settingData = setting.getOrNull(position)!!, position)
         }
     }
 }

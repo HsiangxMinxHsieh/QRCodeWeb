@@ -1,12 +1,29 @@
 package project.main.tab
 
+import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
+import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.FragmentSettingContentBinding
 import project.main.base.BaseFragment
 import project.main.model.SettingDataItem
+import uitool.openLayout
+import utils.logi
+import android.content.IntentFilter
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
+
 
 class SettingContentFragment(val settingData: SettingDataItem, val position: Int) : BaseFragment<FragmentSettingContentBinding>(FragmentSettingContentBinding::inflate) {
+
+    val upDateDataKey by lazy { mContext.getString(R.string.setting_receiver).format(position) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -15,28 +32,110 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
 
         initView()
 
-        initValue()
-
         initEvent()
 
+        initReceiver()
     }
+
+    private val mBroadcastReceiver by lazy { UpdateDataReceiver() }
+
+    private fun unRegisterReceiver() {
+        mActivity.unregisterReceiver(mBroadcastReceiver) // 註銷廣播接收器
+    }
+
 
     private fun initData() {
 
     }
 
     private fun initView() {
-        mBinding.tvSettingName.text = settingData.name + position
+        mBinding.tvSettingNameShow.text = settingData.name + position
 
     }
 
     private fun initValue() {
+//        logi("initValue", "設定前，settingData的name是=>${settingData.name}")
+        logi("initValue", "設定前，settingData是=>${settingData}")
+        mBinding.edtSettingNameContent.setText(settingData.name)
+//        mBinding.edtSettingNameContent.hint = mContext.getString(R.string.setting_name_title_hint)
 
+        mBinding.tvSettingNameContent.text = settingData.name
+        mBinding.tvSettingNameShow.text = settingData.name
+        mBinding.tvSettingNameContent.isVisible = false
     }
 
+    var openBoolean = true
+
+    @SuppressLint("ClickableViewAccessibility")
     private fun initEvent() {
 
+        mBinding.clSettingName.setOnClickListener {
+            mBinding.tvSettingNameContent.isVisible = openBoolean
+            setKeyboard(openBoolean, mBinding.edtSettingNameContent)
+            openBoolean = mBinding.clMain.openLayout(openBoolean, mBinding.clSettingNameContent, mBinding.clSettingName)
+        }
+
+        mBinding.edtSettingNameContent.setOnTouchListener { _, _ ->
+            mBinding.tvSettingNameContent.isVisible = false
+            false
+        }
+
+        mBinding.edtSettingNameContent.addTextChangedListener {
+            settingData.name = it.toString()
+        }
+
     }
+
+
+    private fun setKeyboard(open: Boolean, editFocus: EditText) {
+        if (open) { // 關閉中，要打開
+            if (editFocus.requestFocus()) {
+                val imm = (mActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager) ?: return
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+            }
+        } else { //打開中，要關閉
+            if (mActivity.currentFocus != null) {
+                ((mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)).hideSoftInputFromWindow(mActivity.currentFocus!!.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+            }
+        }
+    }
+
+    fun initReceiver() {
+        val intentFilter = IntentFilter() // 過濾器
+        intentFilter.addAction(upDateDataKey) // 指定Action
+        mActivity.registerReceiver(mBroadcastReceiver, intentFilter) // 註冊廣播接收器
+    }
+
+    // 初始化所有設定項，使其為關閉
+    private fun initAnimation() {
+        openBoolean = true
+        mBinding.clMain.openLayout(false, mBinding.clSettingNameContent, mBinding.clSettingName)
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        logi("name Setting trace", "onResume")
+        initValue() // 返回時更新值
+    }
+
+    override fun onPause() {
+        super.onPause()
+        setKeyboard(false, mBinding.edtSettingNameContent)
+        initAnimation()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        unRegisterReceiver()
+    }
+
+    inner class UpdateDataReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            initValue() // 收到SaveData發的BroadCast時要更新值
+        }
+    }
+
 
 //    companion object {
 //        /**
@@ -58,3 +157,5 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
 //            }
 //    }
 }
+
+

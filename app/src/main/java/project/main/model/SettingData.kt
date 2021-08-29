@@ -32,6 +32,9 @@ enum class ActionMode {
 
 data class SettingDataItem(
 
+    @SerializedName("id")
+    var id: Int = 0, // 此設定檔的ID，會儲存在sharedPreference，只會加不會減
+
     @SerializedName("themeColor")
     var themeColor: Int = 0, // 此設定檔的主題顏色
 

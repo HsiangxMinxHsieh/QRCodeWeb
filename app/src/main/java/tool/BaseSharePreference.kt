@@ -23,12 +23,18 @@ class BaseSharePreference(val context: Context) {
     /**SEND_HTML_PASSWORD */
     private val KEY_HTML_PASSWORD = "KEY_USER_PASSWORD"
 
-    /**STORE_SETTING_FILE 設定檔*/
+    /**STORE_SETTING_FILE 設定檔 */
     private val KEY_STORE_SETTING_FILE = "KEY_STORE_SETTING_FILE"
 
-
-    /**NOW_USE_SETTING 現在使用的設定檔*/
+    /**NOW_USE_SETTING 現在使用的設定檔 */
     private val KEY_NOW_USE_SETTING = "KEY_NOW_USE_SETTING"
+
+    /**KEY_ANIMATION_DURATION 現在的動畫切換秒數 */
+    private val KEY_ANIMATION_DURATION = "KEY_ANIMATION_DURATION"
+
+
+    /**KEY_ID 現在的設定檔ID */
+    private val KEY_ID = "KEY_ID"
 
     private fun getString(context: Context, key: String, defValues: String, tableName: String = TABLENAME): String {
         val sharedPreferences = context.getSharedPreferences(tableName, 0)
@@ -91,7 +97,17 @@ class BaseSharePreference(val context: Context) {
     }
 
     /**判斷是否是第一次進入此App的基準：是否有儲存過設定檔*/
-    fun isFirstTimeStartThisApp()=  getNowUseSetting() == null || getStoreSettings().isNullOrEmpty()
+    fun isFirstTimeStartThisApp() = getNowUseSetting() == null || getStoreSettings().isNullOrEmpty()
+
+    /**取得動畫切換秒數  */
+    fun getAnimationDuration(): Long {
+        return getLong(context, KEY_ANIMATION_DURATION, 800L)
+    }
+
+    /**設定動畫切換秒數 */
+    fun setAnimationDuration(duration: Long) {
+        putLong(context, KEY_ANIMATION_DURATION, duration)
+    }
 
     /**取得送出網頁的Password  */
     fun getStorePassword(): String {
@@ -130,5 +146,11 @@ class BaseSharePreference(val context: Context) {
     fun savaAllSettings(list: SettingData) {
         putString(context, KEY_STORE_SETTING_FILE, list.toJson())
     }
+
+    /**取得當前的設定檔ID*/
+    fun getID() = getInt(context, KEY_ID, 0)
+
+    fun addID() = putInt(context, KEY_ID, getID() + 1)
+
 
 }

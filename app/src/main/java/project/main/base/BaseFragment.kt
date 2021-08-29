@@ -1,5 +1,6 @@
 package project.main.base
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
@@ -19,13 +20,17 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) 
     open val heightPixel by lazy { mContext.resources.displayMetrics.heightPixels }
     open val widthPixel by lazy { mContext.resources.displayMetrics.widthPixels }
     open val screenRatio by lazy {
-        widthPixel.toDouble() / heightPixel.toDouble() }
+        widthPixel.toDouble() / heightPixel.toDouble()
+    }
 
     private var _binding: VB? = null
     val mBinding get() = _binding!!
 
     val mContext: Context
         get() = this@BaseFragment.requireContext()
+
+    val mActivity: Activity
+        get() = this@BaseFragment.requireActivity()
 
     val otherHandlerThread = HandlerThread(javaClass.simpleName + "_otherHandlerThread")
     val otherHandler by lazy {

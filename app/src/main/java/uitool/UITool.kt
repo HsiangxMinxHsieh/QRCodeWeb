@@ -13,7 +13,57 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
+import tool.getShare
 import utils.logi
+
+/**朝下方動畫打開隱藏Layout的方法，使用動態設定ConstraintSet。
+ * @author 謝蝦米
+ * @Date 2021/08/22
+ * outLayout 控制所有內部Constraint的最外層Layout
+ * @param openBoolean 開啟狀態，關閉時應傳入true，並以傳入之內容指定回該變數，例如open = openLayout(open,...)
+ * @param hideLayout 隱藏在後面，要往下滑出的Layout
+ * @param anchorLayout 顯示在上面，用於定位hideLayout的Layout
+ * */
+fun ConstraintLayout.openLayout(openBoolean: Boolean, hideLayout: ConstraintLayout, anchorLayout: ConstraintLayout): Boolean {
+
+    val outLayout = this
+    val duration = this.context.getShare().getAnimationDuration()
+    TransitionManager.beginDelayedTransition(outLayout, AutoTransition().apply { this.duration = duration })
+    this.getAConstraintSetApplyToOutLayout(openBoolean, hideLayout, anchorLayout)
+    return !openBoolean
+}
+
+/**實際動態設定ConstraintSet的方法，將new一個ConstraintSet並指定回outLayout
+ * @author 謝蝦米
+ * @Date 2021/08/22
+ * outLayout 控制所有內部Constraint的最外層Layout
+ * @param openBoolean 開啟狀態，關閉時應傳入true，使其開啟。
+ * @param hideLayout 隱藏在後面，要往下滑出的Layout
+ * @param anchorLayout 顯示在上面，用於定位hideLayout的Layout
+ * */
+fun ConstraintLayout.getAConstraintSetApplyToOutLayout(openBoolean: Boolean, hideLayout: ConstraintLayout, anchorLayout: ConstraintLayout) {
+    val outLayout = this
+    ConstraintSet().apply {
+        clone(outLayout)
+        clear(hideLayout.id)
+        constrainHeight(hideLayout.id, if (openBoolean) ConstraintSet.WRAP_CONTENT else 0) // 收合的時候高度要設為0
+
+        connect(hideLayout.id, ConstraintSet.LEFT, outLayout.id, ConstraintSet.LEFT, 0)
+        connect(hideLayout.id, ConstraintSet.RIGHT, outLayout.id, ConstraintSet.RIGHT, 0)
+
+        if (openBoolean) //靠上與靠下的不同對齊方式，主要解決設定Item和顯示Item高度不相同的問題(設定Item比顯示Item還大的時候會出現問題)
+            connect(hideLayout.id, ConstraintSet.TOP, anchorLayout.id, ConstraintSet.BOTTOM)
+        else
+            connect(hideLayout.id, ConstraintSet.BOTTOM, anchorLayout.id, ConstraintSet.BOTTOM)
+
+        applyTo(outLayout)
+    }
+}
+
 /**
  *
  * 取得螢幕寬度 單位為整數(pixel)

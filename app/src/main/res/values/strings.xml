@@ -14,6 +14,7 @@
     <string name="setting_cant_delete_by_size_is_1">當前只有一個設定檔，無法刪除。</string>
     <string name="setting_cant_add_by_not_saved_current">請先編輯當前設定檔，儲存後再新增。</string>
     <string name="setting_cant_save_by_same_name">%1$s失敗！因設定中已有兩個或兩個以上名稱是「%2$s」的檔案。</string>
+    <string name="setting_name_title_hint">設定檔名稱不可為空！</string>
     <string name="setting_save_action">儲存</string>
     <string name="setting_leave_action">返回</string>
 
@@ -35,7 +36,7 @@
 
     <!--進度框-->
     <string name="dialog_progress_default_title">傳輸中，請稍等…</string>
-
+    <string name="setting_receiver">updateDataKey_%1$s</string>
 
 
 </resources>
