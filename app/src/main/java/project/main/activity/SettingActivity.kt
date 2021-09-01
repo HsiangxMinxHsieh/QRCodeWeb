@@ -80,7 +80,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         val storeSetting = context.getShare().getNowUseSetting() // 取出之前儲存的，滑到那個位置。
 
-        logi("initTab", "storeSetting 是=>${storeSetting?.name}")
+//        logi("initTab", "storeSetting 是=>${storeSetting?.name}")
 
         nowTabIndex = if (storeSetting == null) { // 無資料傳入，初始在第一頁
             0
@@ -88,7 +88,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             //有設定檔，找到這筆設定檔的位置
             settings.indexOf(settings.find { it.id == storeSetting.id })
         }
-        logi("initTab", "nowTabIndex 是=>${nowTabIndex}")
+//        logi("initTab", "nowTabIndex 是=>${nowTabIndex}")
         //判斷當前設定檔數量與在上面新增tab。
         for (index in settings.indices) {
             mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(getTabViewByText(settings.getOrNull(index) ?: break, (index == nowTabIndex))))
@@ -100,14 +100,12 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         }))
 
         delayScrollToPosition(nowTabIndex)
-//        setTabView(storeSetting)//填入頁面內容
-
     }
 
     private fun delayScrollToPosition(index: Int) {
-        logi("initTab", "nowTabIndex 是=>${index}")
-        logi("initTab", "mBinding.clMain 是=>${mBinding.clMain}")
-        logi("initTab", "mBinding.clMain.handler 是=>${mBinding.clMain.handler}")
+//        logi("initTab", "nowTabIndex 是=>${index}")
+//        logi("initTab", "mBinding.clMain 是=>${mBinding.clMain}")
+//        logi("initTab", "mBinding.clMain.handler 是=>${mBinding.clMain.handler}")
         Handler(Looper.getMainLooper()).postDelayed({
             mBinding.tlSettingTitle.getTabAt(index)?.select()
             mBinding.vpContent.setCurrentItem(index, false)
@@ -115,7 +113,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
     }
 
     private fun initPagers() {
-        mBinding.vpContent.adapter = pagerAdapter
+        mBinding.vpContent.adapter = pagerAdapter // 初始指定Fragment內容
 
     }
 
@@ -143,7 +141,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         }
 
         tabIndicator.setViewSize((widthPixel * 0.22).toInt(), TableLayout.LayoutParams.MATCH_PARENT)
-        logi("getViewByText", "設定完成，即將回傳tabIndicator是=>$tabIndicator")
+//        logi("getViewByText", "設定完成，即將回傳tabIndicator是=>$tabIndicator")
         return tabIndicator
     }
 
@@ -153,11 +151,11 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
     private fun setTabText(setting: SettingDataItem?) {
         if (setting == null)
             return
-        logi("setTabText", "childCount =>${mBinding.tlSettingTitle.childCount}")
-        logi("setTabText", "tabCount =>${mBinding.tlSettingTitle.tabCount}")
+//        logi("setTabText", "childCount =>${mBinding.tlSettingTitle.childCount}")
+//        logi("setTabText", "tabCount =>${mBinding.tlSettingTitle.tabCount}")
 
         val tab = mBinding.tlSettingTitle.getTabAt(settings.indexOf(setting))?.view ?: return
-        logi("setTabText", "找到的tab是=>$tab")
+//        logi("setTabText", "找到的tab是=>$tab")
         tab.findText(R.id.tv_tab_text).apply {
             this.text = setting.name
         }
@@ -246,7 +244,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(getTabViewByText(settings.getOrNull(index) ?: return, (index == nowTabIndex))), index)
 
         // 新增頁面內容
-        mBinding.vpContent.adapter = pagerAdapter
+        mBinding.vpContent.adapter = pagerAdapter //新增後更新Fragment內容(重新指定)
 
         // 滑動到最後一個
         delayScrollToPosition(index)
@@ -267,7 +265,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         // 刪除tab
         mBinding.tlSettingTitle.removeTabAt(index)
         // 更新頁面內容
-        mBinding.vpContent.adapter = pagerAdapter//
+        mBinding.vpContent.adapter = pagerAdapter //刪除後更新Fragment內容 (重新指定)
         // 滑動到上一個
         delayScrollToPosition(index - 1)
     }
@@ -278,7 +276,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
     private fun saveData(index: Int, afterSaveAction: (Throwable) -> Unit = empty) {
 
         val saveData = settings.getOrNull(nowTabIndex) ?: return
-        logi("saveData", "saveData時，saveData 是=>$saveData")
+//        logi("saveData", "saveData時，saveData 是=>$saveData")
         if (saveData.name.isEmpty()) {
             if (textDialog == null) {
                 textDialog = showMessageDialogOnlyOKButton(
@@ -314,7 +312,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         if (saveData == context.getShare().getStoreSettings().getOrNull(nowTabIndex))
             return
 
-        logi("saveData", "saveData時，index是=>$index")
+//        logi("saveData", "saveData時，index是=>$index")
         context.getShare().savaAllSettings(settings.apply { this[index].haveSaved = true })
         context.getShare().setNowUseSetting(saveData)
 
@@ -339,7 +337,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
     override fun finish() {
 
-        logi("finish", "即將儲存的設定檔案是=>${settings.getOrNull(nowTabIndex)?.name}")
+//        logi("finish", "即將儲存的設定檔案是=>${settings.getOrNull(nowTabIndex)?.name}")
         saveData(nowTabIndex) { super.finish() }
 //        activity.setResult(Activity.RESULT_OK, Intent().apply { putExtra(KEY_SETTING_RESULT, settings.getOrNull(nowTabIndex)?.name) })
         activity.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
