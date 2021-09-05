@@ -104,6 +104,11 @@ class BaseSharePreference(val context: Context) {
         return getLong(context, KEY_ANIMATION_DURATION, 800L)
     }
 
+    /**藉由ID取得設定檔，用於SettingFragment的onResume。*/
+    fun getSettingById(id: Int): SettingDataItem {
+        return getStoreSettings().find { it.id == id } ?: SettingDataItem.getDefalutSetting(id, context)
+    }
+
     /**設定動畫切換秒數 */
     fun setAnimationDuration(duration: Long) {
         putLong(context, KEY_ANIMATION_DURATION, duration)

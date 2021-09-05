@@ -117,10 +117,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
     }
 
-    private fun getDefaultSetting(id: Int) =
-        SettingDataItem(id = id, name = (context.getString(R.string.setting_file_name_default))).apply {
-            fields.add(SettingDataItem.SettingField(fieldName = context.getString(R.string.password_title_default), columnKey = "entry.1199127502"))
-        }
+    private fun getDefaultSetting(id: Int) =   SettingDataItem.getDefalutSetting(id, context)
 
     /**取得TabLayout中的View*/
     private fun getTabViewByText(s: SettingDataItem, isFirstTab: Boolean = false): View {

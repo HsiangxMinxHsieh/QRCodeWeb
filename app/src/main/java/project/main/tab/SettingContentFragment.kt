@@ -19,11 +19,12 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
+import tool.getShare
 
 
 class SettingContentFragment(val settingData: SettingDataItem, val position: Int) : BaseFragment<FragmentSettingContentBinding>(FragmentSettingContentBinding::inflate) {
 
-    val upDateDataKey by lazy { mContext.getString(R.string.setting_receiver).format(position) }
+    private val upDateDataKey by lazy { mContext.getString(R.string.setting_receiver).format(position) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,13 +55,23 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
     }
 
     private fun initValue() {
-//        logi("initValue", "設定前，settingData的name是=>${settingData.name}")
-        logi("initValue", "設定前，settingData是=>${settingData}")
-        mBinding.edtSettingNameContent.setText(settingData.name)
+
+        val setValue = mContext.getShare().getSettingById(settingData.id) //取出設定檔來設定，以避免使用者未儲存就回來這個頁面。
+        logi("initValue", "設定前，本頁的settingData是=>${settingData}")
+        logi("initValue", "設定前，儲存的settingData是=>${setValue}")
+        if (setValue.haveSaved) {
+            mBinding.edtSettingNameContent.setText(setValue.name)
+            mBinding.tvSettingNameContent.text = setValue.name
+            mBinding.tvSettingNameShow.text = setValue.name
+        } else {//沒有儲存過的時候要顯示預設的值
+            mBinding.tvSettingNameContent.text = mContext.getString(R.string.setting_file_name_default)
+            mBinding.tvSettingNameShow.text = mContext.getString(R.string.setting_file_name_default)
+            mBinding.edtSettingNameContent.setText("")
+        }
+
 //        mBinding.edtSettingNameContent.hint = mContext.getString(R.string.setting_name_title_hint)
 
-        mBinding.tvSettingNameContent.text = settingData.name
-        mBinding.tvSettingNameShow.text = settingData.name
+
         mBinding.tvSettingNameContent.isVisible = false
     }
 

@@ -32,11 +32,11 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflate<VB>) 
     val mActivity: Activity
         get() = this@BaseFragment.requireActivity()
 
-    val otherHandlerThread = HandlerThread(javaClass.simpleName + "_otherHandlerThread")
-    val otherHandler by lazy {
-        otherHandlerThread.start()
-        Handler(otherHandlerThread.looper)
-    }
+//    val otherHandlerThread = HandlerThread(javaClass.simpleName + "_otherHandlerThread")
+//    val otherHandler by lazy {
+//        otherHandlerThread.start()
+//        Handler(otherHandlerThread.looper)
+//    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = inflate.invoke(inflater, container, false)
