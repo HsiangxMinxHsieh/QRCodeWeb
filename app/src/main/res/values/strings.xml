@@ -38,6 +38,12 @@
     <!--進度框-->
     <string name="dialog_progress_default_title">傳輸中，請稍等…</string>
     <string name="setting_receiver">updateDataKey_%1$s</string>
+    <string name="scan_to_direct_title">掃描導向方式</string>
+    <string name="setting_file_send_mode_by_scan">依照掃描內容</string>
+    <string name="after_scan_action_title">掃碼後動作</string>
+    <string name="setting_file_scan_after_action_1">停留於App</string>
+    <string name="setting_file_scan_after_action_2">至掃碼結果網頁</string>
+    <string name="setting_file_scan_after_action_3">至其他網頁</string>
 
 
 </resources>

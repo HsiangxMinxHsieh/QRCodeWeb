@@ -17,8 +17,6 @@ import utils.logi
 import android.content.IntentFilter
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import tool.getShare
 
 
@@ -81,6 +79,7 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
     private fun initEvent() {
 
         mBinding.clSettingName.setOnClickListener {
+            closeAllContentLayout()
             mBinding.tvSettingNameContent.isVisible = openBoolean
             setKeyboard(openBoolean, mBinding.edtSettingNameContent)
             openBoolean = mBinding.clMain.openLayout(openBoolean, mBinding.clSettingNameContent, mBinding.clSettingName)
@@ -94,6 +93,26 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
         mBinding.edtSettingNameContent.addTextChangedListener {
             settingData.name = it.toString()
         }
+
+        mBinding.clScanToDirect.setOnClickListener {
+            closeAllContentLayout()
+//            logi(TAG, "此時openLayout布林值是：$openBoolean")
+            openBoolean = mBinding.clMain.openLayout(openBoolean, mBinding.clScanToDirectContent, mBinding.clScanToDirect)
+        }
+
+        mBinding.clAfterScanAction.setOnClickListener {
+            closeAllContentLayout()
+            openBoolean = mBinding.clMain.openLayout(openBoolean, mBinding.clAfterScanActionContent, mBinding.clAfterScanAction)
+
+        }
+
+    }
+
+    /**先全部關閉再打開的實作方法*/
+    private fun closeAllContentLayout() {
+        mBinding.clMain.openLayout(false, mBinding.clSettingNameContent, mBinding.clSettingName)
+        mBinding.clMain.openLayout(false, mBinding.clScanToDirectContent, mBinding.clScanToDirect)
+        mBinding.clMain.openLayout(false, mBinding.clAfterScanActionContent, mBinding.clAfterScanAction)
 
     }
 
