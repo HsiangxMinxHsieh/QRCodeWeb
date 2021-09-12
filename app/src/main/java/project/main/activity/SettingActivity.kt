@@ -117,14 +117,14 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
     }
 
-    private fun getDefaultSetting(id: Int) =   SettingDataItem.getDefalutSetting(id, context)
+    private fun getDefaultSetting(id: Int) = SettingDataItem.getDefalutSetting(id, context)
 
     /**取得TabLayout中的View*/
     private fun getTabViewByText(s: SettingDataItem, isFirstTab: Boolean = false): View {
         val tabIndicator: View = LayoutInflater.from(context).inflate(R.layout.tablayout_item, mBinding.tlSettingTitle, false)
         (tabIndicator.findViewById(R.id.tv_tab_text) as TextView).apply {
             text = s.name
-            setTextSize(12)
+            setTextSize(11)
             setMarginByDpUnit(0, 0, 0, 10)
 
             val color = if (isFirstTab) //第一個Tab要設定不一樣的顏色
@@ -207,6 +207,10 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         mBinding.btnSave.setOnClickListener {
             saveData(nowTabIndex)
         }
+
+        mBinding.btnBack.setOnClickListener {
+            activity.onBackPressed()
+        }
     }
 
 
@@ -284,7 +288,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             }
             return
         }
-
         val sameName = settings.checkHaveRepeatName()
         if (sameName != null) {
             if (textDialog == null) {
@@ -304,11 +307,12 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         //先設定為已編輯在判斷否有和之前的內容相同，否則會造成「明明已儲存過，卻無法新增的問題」
 
-        logi("saveData", "saveData時，儲存內容是=>${context.getShare().getStoreSettings().getOrNull(nowTabIndex)}")
+        logi("saveData", "saveData時，saveData 是=>${saveData}")
         //內容與儲存內容相同，不儲存。
-        if (saveData == context.getShare().getStoreSettings().getOrNull(nowTabIndex))
+        if (saveData == context.getShare().getStoreSettings().getOrNull(nowTabIndex)){
+            afterSaveAction.invoke(Throwable())
             return
-
+        }
 //        logi("saveData", "saveData時，index是=>$index")
         context.getShare().savaAllSettings(settings.apply { this[index].haveSaved = true })
         context.getShare().setNowUseSetting(saveData)
@@ -333,7 +337,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
     }
 
     override fun finish() {
-
 //        logi("finish", "即將儲存的設定檔案是=>${settings.getOrNull(nowTabIndex)?.name}")
         saveData(nowTabIndex) { super.finish() }
 //        activity.setResult(Activity.RESULT_OK, Intent().apply { putExtra(KEY_SETTING_RESULT, settings.getOrNull(nowTabIndex)?.name) })

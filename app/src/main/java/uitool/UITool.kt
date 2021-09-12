@@ -20,6 +20,26 @@ import androidx.transition.TransitionManager
 import tool.getShare
 import utils.logi
 
+
+
+
+/**
+ * 開啟全屏模式
+ */
+fun hideSystemUI(view: View) {
+    // Set the IMMERSIVE flag.
+    // Set the content to appear under the system bars so that the content
+    // doesn't resize when the system bars hide and show.
+    //開啟全屏模式
+    view.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+
+            or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+
+            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+}
 /**朝下方動畫打開隱藏Layout的方法，使用動態設定ConstraintSet。
  * @author 謝蝦米
  * @Date 2021/08/22

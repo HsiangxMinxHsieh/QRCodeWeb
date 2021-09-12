@@ -55,6 +55,20 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/btn_back"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/drawable_ripple_back"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1"
+                app:layout_constraintEnd_toStartOf="@+id/btn_delete"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
                 android:id="@+id/btn_delete"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -64,7 +78,7 @@
                 android:gravity="center"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="1"
-                app:layout_constraintEnd_toStartOf="@+id/btn_save"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

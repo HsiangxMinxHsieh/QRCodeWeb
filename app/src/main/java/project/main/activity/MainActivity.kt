@@ -115,7 +115,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inf
                     pauseScrennAnimation() // 暫停播放動畫
                     progressDialog.show()
                 }
-                val response = getURLResponse("$it&entry.1199127502=${context.getShare().getStorePassword()}")
+
+                val response = getURLResponse("$it&entry.1199127502=${context.getShare().getNowUseSetting()?.fields?.get(0)?.columnValue}")
                 MainScope().launch { // 關閉進度框、顯示簽到完成視窗。
                     progressDialog.dismiss()
                     if (response == null) {

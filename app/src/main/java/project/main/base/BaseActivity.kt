@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
+import uitool.hideSystemUI
 
 
 abstract class BaseActivity<B : ViewBinding>(val bindingFactory: (LayoutInflater) -> B) : AppCompatActivity() {
@@ -22,6 +23,7 @@ abstract class BaseActivity<B : ViewBinding>(val bindingFactory: (LayoutInflater
         //隱藏標題列
         supportActionBar?.hide()
         mBinding = bindingFactory(layoutInflater)
+        hideSystemUI(mBinding.root)
         setContentView(mBinding.root)
     }
 
