@@ -7,6 +7,7 @@
 本專案使用的技術：(供想學習此專案的人參考)</br>
 
 ● MVC架構，dataBinding　實作UI </br>
+● Kotlin語言撰寫
 ● Material Ui Component　按鍵與輸入框效果</br>
 ● Easy Permissions　取得相機權限</br>
 ● Retrofit　API送出資料</br>
