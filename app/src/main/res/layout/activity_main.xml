@@ -58,6 +58,7 @@
             android:layout_margin="16dp"
             android:gravity="center"
             android:text=""
+            android:textAllCaps="false"
             android:textColor="@color/white"
             app:backgroundTint="@color/theme_blue"
             app:icon="@drawable/ic_baseline_settings"

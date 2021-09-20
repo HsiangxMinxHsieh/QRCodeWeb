@@ -37,6 +37,8 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        window.decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) // 讓狀態列文字是深色
+
         initData()
 
         initObserver()

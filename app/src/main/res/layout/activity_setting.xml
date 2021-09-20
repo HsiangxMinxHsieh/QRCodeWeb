@@ -7,7 +7,9 @@
         android:id="@+id/cl_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
         tools:context="project.main.activity.MainActivity">
+
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tl_setting_title"
             android:layout_width="wrap_content"
@@ -27,8 +29,7 @@
             app:tabIndicatorColor="@color/light_green"
             app:tabIndicatorHeight="5dp"
             app:tabMode="scrollable"
-            app:tabRippleColor="@color/transparent"
-            />
+            app:tabRippleColor="@color/transparent" />
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/vp_content"
