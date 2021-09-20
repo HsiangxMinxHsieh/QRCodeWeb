@@ -28,6 +28,7 @@ import uitool.setViewSize
 import utils.logAllData
 import utils.logi
 import android.content.Intent
+import tool.dialog.showConfirmDialg
 
 
 class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBinding.inflate(it) }) {
@@ -221,7 +222,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         if (settings.any { !it.haveSaved }) { // 如果有false(未儲存者)要return。
 
             if (textDialog == null) {
-                textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_not_saved_current)) {
+                textDialog = context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_not_saved_current)) {
                     textDialog = null
                 }
             }
@@ -230,7 +231,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         if (settings.size >= maxSettingSize) {
             if (textDialog == null) {
-                textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_over_max_size).format(maxSettingSize)) {
+                textDialog = context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_over_max_size).format(maxSettingSize)) {
                     textDialog = null
                 }
             }
@@ -256,21 +257,30 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
     private fun deleteSetting(index: Int) {
         if (settings.size == 1) {
             if (textDialog == null) {
-                textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_delete_by_size_is_1)) {
+                textDialog = context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_delete_by_size_is_1)) {
                     textDialog = null
                 }
             }
             return
         }
 
-        // 刪除第index筆資料
-        settings.removeAt(index)
-        // 刪除tab
-        mBinding.tlSettingTitle.removeTabAt(index)
-        // 更新頁面內容
-        mBinding.vpContent.adapter = pagerAdapter //刪除後更新Fragment內容 (重新指定)
-        // 滑動到上一個
-        delayScrollToPosition(index - 1)
+        if (textDialog == null) {
+            val deleteSettingName =  if(settings[index].name.isEmpty()) context.getString(R.string.setting_file_name_default) else settings[index].name
+            textDialog = context.showConfirmDialg(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_delete_confirm).format(deleteSettingName, "設定檔"), {
+                // 刪除第index筆資料
+                settings.removeAt(index)
+                // 刪除tab
+                mBinding.tlSettingTitle.removeTabAt(index)
+                // 更新頁面內容
+                mBinding.vpContent.adapter = pagerAdapter //刪除後更新Fragment內容 (重新指定)
+                // 滑動到上一個
+                delayScrollToPosition(index - 1)
+                textDialog = null
+            }, {
+                textDialog = null
+            })
+        }
+
     }
 
     private val empty: (Throwable?) -> Unit = {} // 用於不讓使用者經檢查後才可返回的
@@ -282,9 +292,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 //        logi("saveData", "saveData時，saveData 是=>$saveData")
         if (settings.any { it.name.isEmpty() }) {
             if (textDialog == null) {
-                textDialog = showMessageDialogOnlyOKButton(
-                    context, context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_name_title_hint)
-                ) {
+                textDialog = context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_name_title_hint)) {
                     textDialog = null
                 }
             }
@@ -293,8 +301,8 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         val sameName = settings.checkHaveRepeatName()
         if (sameName != null) {
             if (textDialog == null) {
-                textDialog = showMessageDialogOnlyOKButton(
-                    context, context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_save_by_same_name).format(
+                textDialog = context.showMessageDialogOnlyOKButton(
+                    context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_save_by_same_name).format(
                         (if (afterSaveAction == empty) context.getString(R.string.setting_save_action)
                         else
                             context.getString((R.string.setting_leave_action))),
@@ -338,7 +346,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         activity.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
-    private inner class PagerAdapter(activity: BaseActivity<ActivitySettingBinding>, val setting: SettingData) : FragmentStateAdapter(activity) {
+    private  class PagerAdapter(activity: BaseActivity<ActivitySettingBinding>, val setting: SettingData) : FragmentStateAdapter(activity) {
 
         private val NUM_PAGES = setting.size //至少顯示一個未命名的設定檔
 

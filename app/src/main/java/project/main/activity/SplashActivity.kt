@@ -117,7 +117,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         //權限被拒
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), context.getString(R.string.permission_request)) {
+            context.showMessageDialogOnlyOKButton( context.getString(R.string.dialog_notice_title), context.getString(R.string.permission_request)) {
                 //連續拒絕，導向設定頁設定權限。
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 val uri: Uri = Uri.fromParts("package", packageName, null)

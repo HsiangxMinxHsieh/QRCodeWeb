@@ -26,8 +26,11 @@
     <string name="setting_file_scan_after_action_1">停留於App</string>
     <string name="setting_file_scan_after_action_2">另開瀏覽器至掃碼結果網頁</string>
     <string name="setting_file_scan_after_action_3">另開瀏覽器至自訂網頁</string>
+    <string name="setting_adapter_key_can_not_be_empty">欄位索引不可為空！</string>
+    <string name="setting_delete_confirm">確定要刪除「%1$s」這個%2$s嗎？</string>
     <string name="setting_column_title">欄位設定</string>
     <string name="setting_adapter_column_title">欄位名稱</string>
+    <string name="setting_adapter_column_key">欄位索引</string>
     <string name="setting_adapter_column_value">欄位值</string>
 
     <!--Record Page-->

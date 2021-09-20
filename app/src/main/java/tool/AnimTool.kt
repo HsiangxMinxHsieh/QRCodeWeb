@@ -3,18 +3,9 @@ package tool
 import android.content.Context
 import android.view.animation.Animation
 import android.view.animation.Transformation
-import android.widget.ProgressBar
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieDrawable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import utils.logi
-import java.io.IOException
-import java.io.InputStream
-import java.net.URL
-import java.net.URLConnection
 
 object AnimationFileName {
 

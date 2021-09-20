@@ -82,7 +82,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inf
 
     private fun showSignInCompleteDialog(okButtonClickAction: () -> Unit = {}): Dialog? {
         if (signInResult.isNotEmpty() && textDialog == null) {
-            textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_sign_in_success_title), signInResult) {
+            textDialog = context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_sign_in_success_title), signInResult) {
                 okButtonClickAction.invoke()
                 textDialog = null
             }
@@ -144,7 +144,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inf
 
     private fun showSignInErrorDialog() {
         if (textDialog == null) {
-            textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), context.getString(R.string.dialog_error_message)) {
+            textDialog = context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.dialog_error_message)) {
                 resumeScreenAnimation()
                 textDialog = null
             }
@@ -293,7 +293,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inf
         //權限被拒
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             if (textDialog == null) {
-                textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), context.getString(R.string.permission_request)) {
+                textDialog = context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.permission_request)) {
                     textDialog = null
                     //連續拒絕，導向設定頁設定權限。
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)

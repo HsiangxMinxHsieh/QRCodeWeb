@@ -11,6 +11,7 @@ import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.DialogTextBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import uitool.getRectangleBg
 import uitool.getScreenHeightPixels
@@ -29,11 +30,11 @@ import uitool.setTextSize
 //    }
 //}
 
-fun showMessageDialogOnlyOKButton(context: Context, title: String, message: String, lambda: () -> Unit = {}): TextDialog {
-    return TextDialog(context).apply {
+fun Context.showMessageDialogOnlyOKButton( title: String, message: String, lambda: () -> Unit = {}): TextDialog {
+    return TextDialog(this).apply {
         this.title = title
         this.message = message
-        GlobalScope.launch(Dispatchers.Main) {
+        MainScope().launch {
             dialogBinding.btnLift.visibility = View.GONE
             dialogBinding.btnRight.text = context.getString(R.string.dialog_ok)
             dialogBinding.btnRight.setOnClickListener {
@@ -46,8 +47,25 @@ fun showMessageDialogOnlyOKButton(context: Context, title: String, message: Stri
     }
 }
 
+fun Context.showConfirmDialg(title: String, message: String, confirmAction: () -> Unit, cancelAction: () -> Unit): TextDialog {
+    return TextDialog(this).apply {
+        this.title = title
+        this.message = message
+        dialogBinding.btnLift.text = context.getString(R.string.dialog_cancel)
+        dialogBinding.btnLift.setOnClickListener {
+            cancelAction.invoke()
+            dialog.dismiss()
+        }
+        dialogBinding.btnRight.text = context.getString(R.string.dialog_ok)
+        dialogBinding.btnRight.setOnClickListener {
+            confirmAction()
+            dialog.dismiss()
+        }
+        show()
+    }
+}
 
-class TextDialog(val context: Context): Dialog {
+class TextDialog(val context: Context) : Dialog {
     var title = ""
     var message = ""
 
@@ -110,5 +128,5 @@ class TextDialog(val context: Context): Dialog {
         }
     }
 
-    fun dismiss()= dialog.dismiss()
+    fun dismiss() = dialog.dismiss()
 }

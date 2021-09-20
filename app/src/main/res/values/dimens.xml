@@ -5,7 +5,7 @@
     <dimen name="dialog_button_corner">10dp</dimen>
     <dimen name="setting_item_margin_top_bottom">20dp</dimen>
     <dimen name="setting_item_margin_start_end">10dp</dimen>
-    <dimen name="setting_item_center_divider_ratio">0.4</dimen>
+    <dimen name="setting_item_center_divider_ratio">0.45</dimen>
     <dimen name="record_item_divider_ratio_1">0.2</dimen>
     <dimen name="record_item_divider_ratio_2">0.425</dimen>
     <dimen name="record_item_divider_ratio_3">0.65</dimen>

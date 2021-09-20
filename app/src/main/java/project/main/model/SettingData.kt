@@ -62,7 +62,7 @@ data class SettingDataItem(
     /**依照ID取得預設的設定檔*/
     companion object {
         fun getDefalutSetting(id: Int, context: Context) = SettingDataItem(id = id, name = (context.getString(R.string.setting_file_name_default))).apply {
-            fields.add(SettingDataItem.SettingField(fieldName = context.getString(R.string.password_title_default), columnKey = "entry.1199127502",columnValue = "123669"))
+            fields.add(SettingDataItem.SettingField(fieldName = context.getString(R.string.password_title_default), columnKey = "entry.1199127502"))
         }
     }
 
