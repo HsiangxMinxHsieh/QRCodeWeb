@@ -16,11 +16,26 @@
     <string name="setting_cant_add_by_over_max_size">新增失敗！您無法擁有超過%1$s個設定檔。</string>
     <string name="setting_cant_save_by_same_name">%1$s失敗！因設定中已有兩個或兩個以上名稱是「%2$s」的檔案。</string>
     <string name="setting_name_title_hint">設定檔名稱不可為空！</string>
+    <string name="setting_column_content_can_not_blank_hint">此欄位不可為空！</string>
     <string name="setting_save_action">儲存</string>
     <string name="setting_leave_action">返回</string>
+    <string name="setting_receiver">updateDataKey_%1$s</string>
+    <string name="setting_scan_to_direct_title">掃描導向方式</string>
+    <string name="setting_file_send_mode_by_scan">依照掃描內容</string>
+    <string name="setting_after_scan_action_title">掃碼後動作</string>
+    <string name="setting_file_scan_after_action_1">停留於App</string>
+    <string name="setting_file_scan_after_action_2">另開瀏覽器至掃碼結果網頁</string>
+    <string name="setting_file_scan_after_action_3">另開瀏覽器至自訂網頁</string>
+    <string name="setting_column_title">欄位設定</string>
+    <string name="setting_adapter_column_title">欄位名稱</string>
+    <string name="setting_adapter_column_value">欄位值</string>
 
     <!--Record Page-->
-
+    <!--送出時間、掃到什麼存什麼、送出API的網址、送出時的設定檔都要存下來，可用掃到的QRcode重送(用當前設定檔去重送)。-->
+    <string name="record_time">送出時間</string>
+    <string name="record_scan_content">掃碼內容</string>
+    <string name="record_send_content">送出內容</string>
+    <string name="record_send_setting">送出設定檔</string>
 
     <!--對話框共用-->
     <string name="dialog_ok">確定</string>
@@ -37,13 +52,7 @@
 
     <!--進度框-->
     <string name="dialog_progress_default_title">傳輸中，請稍等…</string>
-    <string name="setting_receiver">updateDataKey_%1$s</string>
-    <string name="scan_to_direct_title">掃描導向方式</string>
-    <string name="setting_file_send_mode_by_scan">依照掃描內容</string>
-    <string name="after_scan_action_title">掃碼後動作</string>
-    <string name="setting_file_scan_after_action_1">停留於App</string>
-    <string name="setting_file_scan_after_action_2">至掃碼結果網頁</string>
-    <string name="setting_file_scan_after_action_3">至其他網頁</string>
+
 
 
 </resources>

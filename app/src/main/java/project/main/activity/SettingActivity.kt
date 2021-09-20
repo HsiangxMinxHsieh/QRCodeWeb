@@ -280,7 +280,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         val saveData = settings.getOrNull(nowTabIndex) ?: return
 //        logi("saveData", "saveData時，saveData 是=>$saveData")
-        if (saveData.name.isEmpty()) {
+        if (settings.any { it.name.isEmpty() }) {
             if (textDialog == null) {
                 textDialog = showMessageDialogOnlyOKButton(
                     context, context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_name_title_hint)
@@ -307,15 +307,8 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             return
         }
 
-        //先設定為已編輯在判斷否有和之前的內容相同，否則會造成「明明已儲存過，卻無法新增的問題」
-
+        saveData.haveSaved = true
         logi("saveData", "saveData時，saveData 是=>${saveData}")
-        //內容與儲存內容相同，不儲存。
-        if (saveData == context.getShare().getStoreSettings().getOrNull(nowTabIndex)){
-            afterSaveAction.invoke(Throwable())
-            return
-        }
-//        logi("saveData", "saveData時，index是=>$index")
         context.getShare().savaAllSettings(settings.apply { this[index].haveSaved = true })
         context.getShare().setNowUseSetting(saveData)
 

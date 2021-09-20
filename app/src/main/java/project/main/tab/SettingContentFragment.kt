@@ -17,6 +17,7 @@ import utils.logi
 import android.content.IntentFilter
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import project.main.model.SendMode
 import tool.getShare
 
 
@@ -70,7 +71,7 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
 //        mBinding.edtSettingNameContent.hint = mContext.getString(R.string.setting_name_title_hint)
 
 
-        mBinding.tvSettingNameContent.isVisible = false
+//        mBinding.tvSettingNameContent.isVisible = false
     }
 
     var openBoolean = true
@@ -80,8 +81,12 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
 
         mBinding.clSettingName.setOnClickListener {
             closeAllContentLayout()
+            logi(TAG, "此時openLayout布林值是：$openBoolean")
             mBinding.tvSettingNameContent.isVisible = openBoolean
-            setKeyboard(openBoolean, mBinding.edtSettingNameContent)
+            mBinding.tvSettingNameContent.requestLayout()
+            mBinding.tvSettingNameContent.invalidate()
+
+//            setKeyboard(true, mBinding.edtSettingNameContent)
             openBoolean = mBinding.clMain.openLayout(openBoolean, mBinding.clSettingNameContent, mBinding.clSettingName)
         }
 
@@ -98,12 +103,34 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
             closeAllContentLayout()
 //            logi(TAG, "此時openLayout布林值是：$openBoolean")
             openBoolean = mBinding.clMain.openLayout(openBoolean, mBinding.clScanToDirectContent, mBinding.clScanToDirect)
+            
         }
 
         mBinding.clAfterScanAction.setOnClickListener {
             closeAllContentLayout()
             openBoolean = mBinding.clMain.openLayout(openBoolean, mBinding.clAfterScanActionContent, mBinding.clAfterScanAction)
 
+        }
+
+        mBinding.clColumnTitle.setOnClickListener {
+            closeAllContentLayout()
+            mBinding.tvColumnEditKey.isVisible = openBoolean
+            mBinding.tvColumnEditContent.isVisible = openBoolean
+
+            openBoolean = mBinding.clMain.openLayout(openBoolean, mBinding.clColumnEditContent, mBinding.clColumnTitle)
+
+        }
+
+        mBinding.edtColumnEditKey.setOnTouchListener { _, _ ->
+            mBinding.tvColumnEditKey.isVisible = false
+            mBinding.tvColumnEditContent.isVisible = false
+            false
+        }
+
+        mBinding.edtColumnEditContent.setOnTouchListener { _, _ ->
+            mBinding.tvColumnEditKey.isVisible = false
+            mBinding.tvColumnEditContent.isVisible = false
+            false
         }
 
     }
@@ -113,22 +140,22 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
         mBinding.clMain.openLayout(false, mBinding.clSettingNameContent, mBinding.clSettingName)
         mBinding.clMain.openLayout(false, mBinding.clScanToDirectContent, mBinding.clScanToDirect)
         mBinding.clMain.openLayout(false, mBinding.clAfterScanActionContent, mBinding.clAfterScanAction)
-
+        mBinding.clMain.openLayout(false, mBinding.clColumnEditContent, mBinding.clColumnTitle)
     }
 
 
-    private fun setKeyboard(open: Boolean, editFocus: EditText) {
-        if (open) { // 關閉中，要打開
-            if (editFocus.requestFocus()) {
-                val imm = (mActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager) ?: return
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
-            }
-        } else { //打開中，要關閉
-            if (mActivity.currentFocus != null) {
-                ((mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)).hideSoftInputFromWindow(mActivity.currentFocus!!.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
-            }
-        }
-    }
+//    private fun setKeyboard(open: Boolean, editFocus: EditText) {
+//        if (open) { // 關閉中，要打開
+//            if (editFocus.requestFocus()) {
+//                val imm = (mActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager) ?: return
+//                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+//            }
+//        } else { //打開中，要關閉
+//            if (mActivity.currentFocus != null) {
+//                ((mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)).hideSoftInputFromWindow(mActivity.currentFocus!!.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+//            }
+//        }
+//    }
 
     fun initReceiver() {
         val intentFilter = IntentFilter() // 過濾器
@@ -151,7 +178,7 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
 
     override fun onPause() {
         super.onPause()
-        setKeyboard(false, mBinding.edtSettingNameContent)
+//        setKeyboard(false, mBinding.edtSettingNameContent)
         initAnimation()
     }
 

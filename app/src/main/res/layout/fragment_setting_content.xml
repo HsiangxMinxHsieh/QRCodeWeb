@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="project.main.tab.SettingContentFragment">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -57,24 +58,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <!--                    <com.google.android.material.textfield.TextInputLayout-->
-
-                    <!--                        android:id="@+id/edt_setting_name_content_layout"-->
-                    <!--                        android:layout_width="0dp"-->
-                    <!--                        android:layout_height="wrap_content"-->
-                    <!--                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"-->
-                    <!--                        android:textColor="@color/dialog_txt_message"-->
-                    <!--                        android:textColorHint="#ff6b68"-->
-                    <!--                        android:theme="@style/EditTextHint"-->
-                    <!--                        app:boxBackgroundColor="@color/transparent"-->
-                    <!--                        app:counterEnabled="true"-->
-                    <!--                        app:hintAnimationEnabled="true"-->
-                    <!--                        app:layout_constraintBottom_toBottomOf="parent"-->
-                    <!--                        app:layout_constraintEnd_toEndOf="parent"-->
-                    <!--                        app:layout_constraintHorizontal_bias="0.9"-->
-                    <!--                        app:layout_constraintStart_toEndOf="@+id/vv_setting_name_content_divider"-->
-                    <!--                        app:layout_constraintTop_toTopOf="parent">-->
-
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -91,7 +74,6 @@
                             android:gravity="end"
                             android:textColor="@color/theme_blue"
                             android:textStyle="bold"
-                            android:visibility="gone"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -101,9 +83,9 @@
                             android:id="@+id/edt_setting_name_content"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:autofillHints="namx"
                             android:gravity="end"
                             android:hint="@string/setting_name_title_hint"
+                            android:importantForAutofill="no"
                             android:inputType="text"
                             android:maxLength="@integer/edit_text_max_size"
                             android:textColor="@color/theme_blue"
@@ -111,10 +93,8 @@
                             app:layout_constraintBottom_toBottomOf="@+id/tv_setting_name_content"
                             app:layout_constraintEnd_toEndOf="@+id/tv_setting_name_content"
                             app:layout_constraintStart_toStartOf="@+id/tv_setting_name_content"
-                            app:layout_constraintTop_toTopOf="@+id/tv_setting_name_content"
-                            tools:ignore="Autofill" />
+                            app:layout_constraintTop_toTopOf="@+id/tv_setting_name_content" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
-                    <!--                    </com.google.android.material.textfield.TextInputLayout>-->
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -132,6 +112,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/setting_item_margin_start_end"
                     android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
+                    android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                     android:layout_marginBottom="@dimen/setting_item_margin_top_bottom"
                     android:text="@string/setting_name_title"
                     android:textColor="@color/theme_blue"
@@ -158,6 +139,7 @@
                     android:id="@+id/tv_setting_name_show"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/setting_item_margin_start_end"
                     android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                     android:gravity="end"
                     android:text="@string/setting_file_name_default"
@@ -183,6 +165,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!--ScanToDirect-->
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_scan_to_direct_content"
                 android:layout_width="0dp"
@@ -204,7 +187,7 @@
                         android:layout_marginStart="@dimen/setting_item_margin_start_end"
                         android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
                         android:layout_marginBottom="@dimen/setting_item_margin_top_bottom"
-                        android:text="@string/scan_to_direct_title"
+                        android:text="@string/setting_scan_to_direct_title"
                         android:textColor="@color/theme_blue"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -225,7 +208,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -235,15 +217,51 @@
                         app:layout_constraintStart_toEndOf="@+id/vv_scan_to_direct_content_divider"
                         app:layout_constraintTop_toTopOf="parent">
 
+                        <TextView
+                            android:id="@+id/tv_scan_to_direct_content_show"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                            android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                            android:gravity="end"
+                            android:text="@string/setting_file_send_mode_by_scan"
+                            android:textColor="@color/theme_blue"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="@+id/sw_direct"
+                            app:layout_constraintEnd_toStartOf="@+id/sw_direct"
+                            app:layout_constraintHorizontal_bias="0.1"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/sw_direct" />
+
                         <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/sw_direct"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:trackTint="@color/switch_thumb_selector" />
+
+                        <EditText
+                            android:id="@+id/edt_scan_to_direct_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                            android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                            android:gravity="end"
+                            android:hint="@string/setting_column_content_can_not_blank_hint"
+                            android:importantForAutofill="no"
+                            android:inputType="text|textMultiLine"
+                            android:textColor="@color/theme_blue"
+                            android:theme="@style/EditTextHint"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintHorizontal_bias="0.1"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/sw_direct" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
-                    <!--                    </com.google.android.material.textfield.TextInputLayout>-->
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -261,8 +279,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/setting_item_margin_start_end"
                     android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
+                    android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                     android:layout_marginBottom="@dimen/setting_item_margin_top_bottom"
-                    android:text="@string/scan_to_direct_title"
+                    android:text="@string/setting_scan_to_direct_title"
                     android:textColor="@color/theme_blue"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -287,12 +306,13 @@
                     android:id="@+id/tv_scan_to_direct_show"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                    android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
                     android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                     android:gravity="end"
                     android:text="@string/setting_file_send_mode_by_scan"
                     android:textColor="@color/theme_blue"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/iv_scan_to_direct_edit"
                     app:layout_constraintHorizontal_bias="0.9"
                     app:layout_constraintStart_toEndOf="@+id/vv_scan_to_direct_title_divider"
@@ -309,6 +329,25 @@
                     app:layout_constraintDimensionRatio="1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/tv_scan_to_direct_show" />
+
+                <TextView
+                    android:id="@+id/tv_scan_to_direct_html"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                    android:layout_marginTop="@dimen/setting_item_margin_start_end"
+                    android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                    android:layout_marginBottom="@dimen/setting_item_margin_start_end"
+                    android:gravity="end"
+                    android:text="https://docs.google.com/spreadsheets/d/1_qmaRk-KMPNBzVrO45WyvUI1-7-s56yUOhtrF56XDTw/edit#gid=0"
+                    android:textColor="@color/gray"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.9"
+                    app:layout_constraintStart_toEndOf="@+id/vv_scan_to_direct_title_divider"
+                    app:layout_constraintTop_toBottomOf="@+id/iv_scan_to_direct_edit" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!--AfterScanAction-->
@@ -334,7 +373,7 @@
                         android:layout_marginStart="@dimen/setting_item_margin_start_end"
                         android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
                         android:layout_marginBottom="@dimen/setting_item_margin_top_bottom"
-                        android:text="@string/after_scan_action_title"
+                        android:text="@string/setting_after_scan_action_title"
                         android:textColor="@color/theme_blue"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -357,10 +396,12 @@
 
 
                     <LinearLayout
-                        android:orientation="vertical"
+                        android:id="@+id/ll_after_scan_select"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                        android:orientation="vertical"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.9"
                         app:layout_constraintStart_toEndOf="@+id/vv_after_scan_action_content_divider"
@@ -412,7 +453,47 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                     </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/edt_after_scan_to_direct"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                        android:gravity="end"
+                        android:hint="@string/setting_column_content_can_not_blank_hint"
+                        android:importantForAutofill="no"
+                        android:inputType="text|textMultiLine"
+                        android:textColor="@color/theme_blue"
+                        android:theme="@style/EditTextHint"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.1"
+                        app:layout_constraintStart_toEndOf="@+id/vv_after_scan_action_content_divider"
+                        app:layout_constraintTop_toBottomOf="@+id/ll_after_scan_select" />
+
+                    <TextView
+                        android:id="@+id/tv_after_scan_action_html_shadow"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                        android:layout_marginTop="@dimen/setting_item_margin_start_end"
+                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                        android:layout_marginBottom="@dimen/setting_item_margin_start_end"
+                        android:gravity="end"
+                        android:text="https://docs.google.com/spreadsheets/d/1_qmaRk-KMPNBzVrO45WyvUI1-7-s56yUOhtrF56XDTw/edit#gid=0"
+                        android:textColor="@color/gray"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.9"
+                        app:layout_constraintStart_toEndOf="@+id/edt_after_scan_to_direct"
+                        app:layout_constraintTop_toBottomOf="@+id/edt_after_scan_to_direct" />
+
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -429,8 +510,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/setting_item_margin_start_end"
                     android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
+                    android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                     android:layout_marginBottom="@dimen/setting_item_margin_top_bottom"
-                    android:text="@string/after_scan_action_title"
+                    android:text="@string/setting_after_scan_action_title"
                     android:textColor="@color/theme_blue"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -455,12 +537,13 @@
                     android:id="@+id/tv_after_scan_action_show"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                    android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
                     android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                     android:gravity="end"
                     android:text="@string/setting_file_scan_after_action_1"
                     android:textColor="@color/theme_blue"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/iv_after_scan_action_edit"
                     app:layout_constraintHorizontal_bias="0.9"
                     app:layout_constraintStart_toEndOf="@+id/vv_after_scan_action_title_divider"
@@ -477,6 +560,203 @@
                     app:layout_constraintDimensionRatio="1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/tv_after_scan_action_show" />
+
+                <TextView
+                    android:id="@+id/tv_after_scan_action_html"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                    android:layout_marginTop="@dimen/setting_item_margin_start_end"
+                    android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                    android:layout_marginBottom="@dimen/setting_item_margin_start_end"
+                    android:gravity="end"
+                    android:text="https://docs.google.com/spreadsheets/d/1_qmaRk-KMPNBzVrO45WyvUI1-7-s56yUOhtrF56XDTw/edit#gid=0"
+                    android:textColor="@color/gray"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.9"
+                    app:layout_constraintStart_toEndOf="@+id/vv_after_scan_action_title_divider"
+                    app:layout_constraintTop_toBottomOf="@+id/iv_after_scan_action_edit" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_column_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cl_after_scan_action_content">
+
+                <TextView
+                    android:id="@+id/tv_column_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                    android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                    android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
+                    android:layout_marginBottom="@dimen/setting_item_margin_top_bottom"
+                    android:text="@string/setting_column_title"
+                    android:textColor="@color/theme_blue"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/vv_column_title_divider"
+                    app:layout_constraintHorizontal_bias="0.1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/vv_column_title_divider"
+                    android:layout_width="2dp"
+                    android:layout_height="0dp"
+                    android:layout_margin="10dp"
+                    android:background="@color/light_blue"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="@dimen/setting_item_center_divider_ratio"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <ImageView
+                    android:id="@+id/iv_column_title_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_baseline_list_add"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_column_edit_content"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="@+id/cl_column_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/vv_column_edit_content_divider"
+                        app:layout_constraintHorizontal_bias="0.9"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/tv_column_edit_key"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:text="@string/setting_adapter_column_title"
+                            android:textColor="@color/theme_blue"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <EditText
+                            android:id="@+id/edt_column_edit_key"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:hint="@string/setting_adapter_column_title"
+                            android:importantForAutofill="no"
+                            android:inputType="text|textMultiLine"
+                            android:textColor="@color/theme_blue"
+                            android:theme="@style/EditTextHint"
+                            app:layout_constraintBottom_toBottomOf="@+id/tv_column_edit_key"
+                            app:layout_constraintEnd_toEndOf="@+id/tv_column_edit_key"
+                            app:layout_constraintStart_toStartOf="@+id/tv_column_edit_key"
+                            app:layout_constraintTop_toTopOf="@+id/tv_column_edit_key" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <View
+                        android:id="@+id/vv_column_edit_content_divider"
+                        android:layout_width="2dp"
+                        android:layout_height="0dp"
+                        android:layout_margin="10dp"
+                        android:background="@color/light_blue"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="@dimen/setting_item_center_divider_ratio"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.9"
+                        app:layout_constraintStart_toEndOf="@+id/vv_column_edit_content_divider"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/tv_column_edit_content"
+                            android:layout_width="match_parent"
+                            android:text="@string/setting_adapter_column_value"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:textColor="@color/theme_blue"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <EditText
+                            android:id="@+id/edt_column_edit_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:hint="@string/setting_adapter_column_value"
+                            android:importantForAutofill="no"
+                            android:inputType="text|textMultiLine"
+                            android:textColor="@color/theme_blue"
+                            android:theme="@style/EditTextHint"
+                            app:layout_constraintBottom_toBottomOf="@+id/tv_column_edit_content"
+                            app:layout_constraintEnd_toEndOf="@+id/tv_column_edit_content"
+                            app:layout_constraintStart_toStartOf="@+id/tv_column_edit_content"
+                            app:layout_constraintTop_toTopOf="@+id/tv_column_edit_content" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_column_content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cl_column_title">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/tv_column_content_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/adapter_setting_column" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 

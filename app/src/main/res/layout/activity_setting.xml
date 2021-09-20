@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context="project.main.activity.MainActivity">
+        tools:context="project.main.activity.SettingActivity">
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tl_setting_title"
@@ -16,6 +16,7 @@
             android:layout_height="0dp"
             android:layout_gravity="center"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
             android:layout_marginEnd="8dp"
             android:background="@color/transparent"
             android:gravity="center"
