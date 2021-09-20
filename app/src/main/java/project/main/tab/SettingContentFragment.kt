@@ -15,8 +15,8 @@ import project.main.model.SettingDataItem
 import uitool.openLayout
 import utils.logi
 import android.content.IntentFilter
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
+import android.widget.TextView
+import project.main.model.ActionMode
 import project.main.model.SendMode
 import tool.getShare
 
@@ -74,51 +74,65 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
 //        mBinding.tvSettingNameContent.isVisible = false
     }
 
-    var openBoolean = true
+    private var openBooleanList = arrayListOf<Boolean>(true, true, true, true, true)
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initEvent() {
 
+        // Layout打開與關閉設定
         mBinding.clSettingName.setOnClickListener {
-            closeAllContentLayout()
-            logi(TAG, "此時openLayout布林值是：$openBoolean")
-            mBinding.tvSettingNameContent.isVisible = openBoolean
-            mBinding.tvSettingNameContent.requestLayout()
-            mBinding.tvSettingNameContent.invalidate()
-
+            closeAllContentLayout(0)
+            logi(TAG, "此時openLayout布林值是：$openBooleanList")
+            mBinding.tvSettingNameContent.isVisible = openBooleanList[0]
 //            setKeyboard(true, mBinding.edtSettingNameContent)
-            openBoolean = mBinding.clMain.openLayout(openBoolean, mBinding.clSettingNameContent, mBinding.clSettingName)
+            openBooleanList[0] = mBinding.clMain.openLayout(openBooleanList[0], mBinding.clSettingNameContent, mBinding.clSettingName)
         }
 
+
+        mBinding.clScanToDirect.setOnClickListener {
+            closeAllContentLayout(1)
+            logi(TAG, "此時openLayout布林值是：$openBooleanList")
+//            logi(TAG, "此時openLayout布林值是：$openBoolean")
+            mBinding.tvScanToDirectContentShadow.isVisible =  openBooleanList[1]
+            openBooleanList[1] = mBinding.clMain.openLayout(openBooleanList[1], mBinding.clScanToDirectContent, mBinding.clScanToDirect)
+            judgeNeedShowHtmlEdit(settingData.goWebSiteByScan.scanMode == SendMode.ByCustom, settingData.goWebSiteByScan.sendHtml, mBinding.tvScanToDirectContentShadow, mBinding.edtScanToDirectContent)
+//            judgeNeedShowHtmlEdit(true," settingData.goWebSiteByScan.sendHtml", mBinding.tvScanToDirectContentShadow, mBinding.edtScanToDirectContent)
+        }
+
+        mBinding.clAfterScanAction.setOnClickListener {
+            closeAllContentLayout(2)
+            logi(TAG, "此時openLayout布林值是：$openBooleanList")
+            mBinding.tvAfterScanActionHtmlShadow.isVisible =  openBooleanList[2]
+            openBooleanList[2] = mBinding.clMain.openLayout(openBooleanList[2], mBinding.clAfterScanActionContent, mBinding.clAfterScanAction)
+            judgeNeedShowHtmlEdit(settingData.afterScanAction.actionMode == ActionMode.AnotherWeb, settingData.afterScanAction.toHtml, mBinding.tvAfterScanActionHtmlShadow, mBinding.edtAfterScanToDirect)
+//            judgeNeedShowHtmlEdit(true, "settingData.afterScanAction.toHtml", mBinding.tvAfterScanActionHtmlShadow, mBinding.edtAfterScanToDirect)
+
+        }
+
+        mBinding.clColumnTitle.setOnClickListener {
+            closeAllContentLayout(3)
+            logi(TAG, "此時openLayout布林值是：$openBooleanList")
+            mBinding.tvColumnEditKey.isVisible = openBooleanList[3]
+            mBinding.tvColumnEditContent.isVisible = openBooleanList[3]
+
+            openBooleanList[3] = mBinding.clMain.openLayout(openBooleanList[3], mBinding.clColumnEditContent, mBinding.clColumnTitle)
+
+        }
+
+        // 點擊編輯文字框要將Shadow隱藏
         mBinding.edtSettingNameContent.setOnTouchListener { _, _ ->
             mBinding.tvSettingNameContent.isVisible = false
             false
         }
 
-        mBinding.edtSettingNameContent.addTextChangedListener {
-            settingData.name = it.toString()
+        mBinding.edtScanToDirectContent.setOnTouchListener { _, _ ->
+            mBinding.tvScanToDirectContentShadow.isVisible = false
+            false
         }
 
-        mBinding.clScanToDirect.setOnClickListener {
-            closeAllContentLayout()
-//            logi(TAG, "此時openLayout布林值是：$openBoolean")
-            openBoolean = mBinding.clMain.openLayout(openBoolean, mBinding.clScanToDirectContent, mBinding.clScanToDirect)
-            
-        }
-
-        mBinding.clAfterScanAction.setOnClickListener {
-            closeAllContentLayout()
-            openBoolean = mBinding.clMain.openLayout(openBoolean, mBinding.clAfterScanActionContent, mBinding.clAfterScanAction)
-
-        }
-
-        mBinding.clColumnTitle.setOnClickListener {
-            closeAllContentLayout()
-            mBinding.tvColumnEditKey.isVisible = openBoolean
-            mBinding.tvColumnEditContent.isVisible = openBoolean
-
-            openBoolean = mBinding.clMain.openLayout(openBoolean, mBinding.clColumnEditContent, mBinding.clColumnTitle)
-
+        mBinding.edtAfterScanToDirect.setOnTouchListener { _, _ ->
+            mBinding.tvAfterScanActionHtmlShadow.isVisible = false
+            false
         }
 
         mBinding.edtColumnEditKey.setOnTouchListener { _, _ ->
@@ -133,10 +147,26 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
             false
         }
 
+        // EditText動作偵測設定
+        mBinding.edtSettingNameContent.addTextChangedListener {
+            settingData.name = it.toString()
+        }
+
+    }
+
+    private fun judgeNeedShowHtmlEdit(needOpen: Boolean, html: String?, vararg needShowViews: View) {
+//        logi(TAG, "收到的html是=>$html")
+//        logi(TAG, "判斷結果是=>${ (needOpen && !html.isNullOrEmpty())}")
+        (needShowViews.first() as? TextView)?.text = html ?: ""
+        needShowViews.forEach { it.isVisible = (needOpen && !html.isNullOrEmpty()) }
     }
 
     /**先全部關閉再打開的實作方法*/
-    private fun closeAllContentLayout() {
+    private fun closeAllContentLayout(callIndex: Int) {
+        //要把除了callIndex以外的boolean都重設為true。
+        val nowCallIndexBoolean = openBooleanList.getOrNull(callIndex) ?: true
+        openBooleanList = arrayListOf<Boolean>(true, true, true, true, true)
+        openBooleanList[callIndex] = nowCallIndexBoolean
         mBinding.clMain.openLayout(false, mBinding.clSettingNameContent, mBinding.clSettingName)
         mBinding.clMain.openLayout(false, mBinding.clScanToDirectContent, mBinding.clScanToDirect)
         mBinding.clMain.openLayout(false, mBinding.clAfterScanActionContent, mBinding.clAfterScanAction)
@@ -165,9 +195,8 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
 
     // 初始化所有設定項，使其為關閉
     private fun initAnimation() {
-        openBoolean = true
-        mBinding.clMain.openLayout(false, mBinding.clSettingNameContent, mBinding.clSettingName)
-
+        openBooleanList = arrayListOf(true, true, true, true, true)
+        closeAllContentLayout(4)
     }
 
     override fun onResume() {

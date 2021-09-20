@@ -186,6 +186,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/setting_item_margin_start_end"
                         android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
+                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                         android:layout_marginBottom="@dimen/setting_item_margin_top_bottom"
                         android:text="@string/setting_scan_to_direct_title"
                         android:textColor="@color/theme_blue"
@@ -243,6 +244,23 @@
                             app:thumbTint="@color/switch_thumb_selector"
                             app:trackTint="@color/switch_thumb_selector" />
 
+                        <TextView
+                            android:id="@+id/tv_scan_to_direct_content_shadow"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                            android:layout_marginTop="@dimen/setting_item_margin_start_end"
+                            android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                            android:layout_marginBottom="@dimen/setting_item_margin_start_end"
+                            android:gravity="end"
+                            android:text="https://docs.google.com/spreadsheets/d/1_qmaRk-KMPNBzVrO45WyvUI1-7-s56yUOhtrF56XDTw/edit#gid=0"
+                            android:textColor="@color/gray"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="@+id/edt_scan_to_direct_content"
+                            app:layout_constraintStart_toStartOf="@+id/edt_scan_to_direct_content"
+                            app:layout_constraintTop_toBottomOf="@+id/sw_direct" />
+
                         <EditText
                             android:id="@+id/edt_scan_to_direct_content"
                             android:layout_width="match_parent"
@@ -255,7 +273,7 @@
                             android:inputType="text|textMultiLine"
                             android:textColor="@color/theme_blue"
                             android:theme="@style/EditTextHint"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintBottom_toBottomOf="@+id/tv_scan_to_direct_content_shadow"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.1"
                             app:layout_constraintStart_toStartOf="parent"
@@ -263,6 +281,7 @@
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -477,7 +496,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/setting_item_margin_start_end"
-                        android:layout_marginTop="@dimen/setting_item_margin_start_end"
+                        android:layout_marginTop="0dp"
                         android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                         android:layout_marginBottom="@dimen/setting_item_margin_start_end"
                         android:gravity="end"
@@ -485,14 +504,13 @@
                         android:textColor="@color/gray"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/edt_after_scan_to_direct"
                         app:layout_constraintHorizontal_bias="0.9"
-                        app:layout_constraintStart_toEndOf="@+id/edt_after_scan_to_direct"
-                        app:layout_constraintTop_toBottomOf="@+id/edt_after_scan_to_direct" />
+                        app:layout_constraintStart_toStartOf="@+id/edt_after_scan_to_direct"
+                        app:layout_constraintTop_toBottomOf="@+id/ll_after_scan_select" />
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -595,8 +613,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/setting_item_margin_start_end"
-                    android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                     android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
+                    android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                     android:layout_marginBottom="@dimen/setting_item_margin_top_bottom"
                     android:text="@string/setting_column_title"
                     android:textColor="@color/theme_blue"
@@ -651,9 +669,10 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/vv_column_edit_content_divider"
-                        app:layout_constraintHorizontal_bias="0.9"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
@@ -699,20 +718,22 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/cl_column_value"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.9"
+                        app:layout_constraintEnd_toStartOf="@+id/iv_column_check"
                         app:layout_constraintStart_toEndOf="@+id/vv_column_edit_content_divider"
                         app:layout_constraintTop_toTopOf="parent">
 
                         <TextView
                             android:id="@+id/tv_column_edit_content"
                             android:layout_width="match_parent"
-                            android:text="@string/setting_adapter_column_value"
                             android:layout_height="wrap_content"
                             android:gravity="end"
+                            android:text="@string/setting_adapter_column_value"
                             android:textColor="@color/theme_blue"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -735,6 +756,18 @@
                             app:layout_constraintStart_toStartOf="@+id/tv_column_edit_content"
                             app:layout_constraintTop_toTopOf="@+id/tv_column_edit_content" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <ImageView
+                        android:id="@+id/iv_column_check"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_baseline_check"
+                        app:layout_constraintBottom_toBottomOf="@+id/cl_column_value"
+                        app:layout_constraintDimensionRatio="1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/cl_column_value" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
