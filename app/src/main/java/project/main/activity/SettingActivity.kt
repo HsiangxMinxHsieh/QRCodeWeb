@@ -28,6 +28,9 @@ import uitool.setViewSize
 import utils.logAllData
 import utils.logi
 import android.content.Intent
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import tool.dialog.showConfirmDialg
 
 
@@ -265,7 +268,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         }
 
         if (textDialog == null) {
-            val deleteSettingName =  if(settings[index].name.isEmpty()) context.getString(R.string.setting_file_name_default) else settings[index].name
+            val deleteSettingName = if (settings[index].name.isEmpty()) context.getString(R.string.setting_file_name_default) else settings[index].name
             textDialog = context.showConfirmDialg(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_delete_confirm).format(deleteSettingName, "設定檔"), {
                 // 刪除第index筆資料
                 settings.removeAt(index)
@@ -346,7 +349,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         activity.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
-    private  class PagerAdapter(activity: BaseActivity<ActivitySettingBinding>, val setting: SettingData) : FragmentStateAdapter(activity) {
+    private class PagerAdapter(activity: BaseActivity<ActivitySettingBinding>, val setting: SettingData) : FragmentStateAdapter(activity) {
 
         private val NUM_PAGES = setting.size //至少顯示一個未命名的設定檔
 

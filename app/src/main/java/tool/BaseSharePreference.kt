@@ -152,6 +152,13 @@ class BaseSharePreference(val context: Context) {
         putString(context, KEY_STORE_SETTING_FILE, list.toJson())
     }
 
+    /**找到所有設定檔中傳入的設定檔的ID，替換後儲存。*/
+    fun savaSetting(data: SettingDataItem) {
+        val settings = getStoreSettings()
+        settings[settings.indexOfFirst { it.id == data.id }] = data // 一定找的到
+        savaAllSettings(settings)
+    }
+
     /**取得當前的設定檔ID*/
     fun getID() = getInt(context, KEY_ID, 0)
 

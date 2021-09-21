@@ -678,7 +678,7 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <TextView
-                            android:id="@+id/tv_column_edit_name"
+                            android:id="@+id/tv_column_edit_name_shadow"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -712,7 +712,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/fl_column_name">
 
                         <TextView
-                            android:id="@+id/tv_column_edit_key"
+                            android:id="@+id/tv_column_edit_key_shadow"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -744,7 +744,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="@dimen/setting_item_center_divider_ratio"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/fl_column_name"/>
+                        app:layout_constraintTop_toBottomOf="@+id/fl_column_name" />
 
                     <FrameLayout
                         android:id="@+id/fl_column_value"
@@ -758,7 +758,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/fl_column_name">
 
                         <TextView
-                            android:id="@+id/tv_column_edit_content"
+                            android:id="@+id/tv_column_edit_content_shadow"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -808,6 +808,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    android:overScrollMode="never"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
