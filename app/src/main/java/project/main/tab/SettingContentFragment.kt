@@ -99,22 +99,12 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
     private fun initValue() {
 
         val setValue = mContext.getShare().getSettingById(settingData.id) //取出設定檔來設定，以避免使用者未儲存就回來這個頁面。
-//        logi("initValue", "設定前，本頁的settingData是=>${settingData}")
-//        logi("initValue", "設定前，儲存的settingData是=>${setValue}")
-        if (setValue.haveSaved) {
-            mBinding.edtSettingNameContent.setText(setValue.name)
-            mBinding.tvSettingNameShadow.text = setValue.name
-            mBinding.tvSettingNameShow.text = setValue.name
-        } else {//沒有儲存過的時候要顯示預設的值
-            mBinding.tvSettingNameShadow.text = mContext.getString(R.string.setting_file_name_default)
-            mBinding.tvSettingNameShow.text = mContext.getString(R.string.setting_file_name_default)
-            mBinding.edtSettingNameContent.setText("")
-        }
-
-//        mBinding.edtSettingNameContent.hint = mContext.getString(R.string.setting_name_title_hint)
+        val showName = if (setValue.haveSaved) setValue.name else mContext.getString(R.string.setting_file_name_default)
+        mBinding.edtSettingNameContent.setText(if (setValue.haveSaved) showName else "")
+        mBinding.tvSettingNameShadow.text = showName
+        mBinding.tvSettingNameShow.text = showName
 
 
-//        mBinding.tvSettingNameShadow.isVisible = false
     }
 
     private val openBooleanList by lazy { resetBooleanList(arrayListOf()) }
@@ -353,12 +343,11 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
             initValue() // 收到SaveData發的BroadCast時要更新值
 
             // 按下儲存時要做綠色勾勾做的事
-//            if () {
-            saveFieldToData(CallMode.OutSave) //無論是否儲存成功都要收回編輯Layout與捲動頁面
+            saveFieldToData(CallMode.OutSave) // 無論是否儲存成功都要收回編輯Layout與捲動頁面
             openColumnEditLayout(callFrom = CallMode.Confirm)
             closeAllContentLayout(4)
             mContext.getShare().savaSetting(settingData)
-//            }
+            mContext.getShare().setNowUseSetting(settingData)
 
 
         }

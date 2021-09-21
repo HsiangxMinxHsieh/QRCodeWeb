@@ -46,7 +46,7 @@
 
     <!--訊息對話框-->
     <string name="dialog_notice_title">注意</string>
-    <string name="dialog_error_message">簽到錯誤，請確認掃描的碼是否正確。</string>
+    <string name="dialog_error_message">簽到錯誤，請確認掃描到的QRCode是否正確。</string>
     <string name="dialog_sign_in_success_title">簽到成功</string>
 
     <!--檢核密碼輸入框-->

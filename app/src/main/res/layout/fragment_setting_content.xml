@@ -601,6 +601,16 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <!--設定檔顏色-->
+            <!--未來大致功能完成以後再開始製作。-->
+
+
+
+
+
+
+            <!--欄位設定-->
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_column_title"
                 android:layout_width="0dp"

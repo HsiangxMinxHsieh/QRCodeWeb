@@ -1,6 +1,5 @@
 package project.main.activity
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -30,6 +29,7 @@ import project.main.activity.const.PERMISSIONS_REQUEST_CODE
 import project.main.activity.const.permissionPerms
 import project.main.base.BaseActivity
 import uitool.ViewTool
+import utils.logi
 
 
 class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inflate(it) }), EasyPermissions.PermissionCallbacks {
@@ -115,8 +115,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inf
                     pauseScrennAnimation() // 暫停播放動畫
                     progressDialog.show()
                 }
-
-                val response = getURLResponse("$it&entry.1199127502=${context.getShare().getNowUseSetting()?.fields?.get(0)?.columnValue}")
+                val columnValues = context.getShare().getNowUseSetting()?.fields?.map { field -> "${field.columnKey}=${field.columnValue}" }.toString().replace(", ", "&").replace("[", "").replace("]", "")
+                logi("Send", "組合後的發送內容是=>$it&${columnValues}")
+                val response = getURLResponse("$it&${columnValues}")
                 MainScope().launch { // 關閉進度框、顯示簽到完成視窗。
                     progressDialog.dismiss()
                     if (response == null) {
@@ -127,7 +128,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inf
                             }
                         }
                     } else {
-//
                         showSignInErrorDialog()
                     }
 
