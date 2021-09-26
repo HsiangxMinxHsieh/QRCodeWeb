@@ -28,6 +28,8 @@ import com.buddha.qrcodeweb.databinding.ActivityScanBinding
 import project.main.activity.const.PERMISSIONS_REQUEST_CODE
 import project.main.activity.const.permissionPerms
 import project.main.base.BaseActivity
+import project.main.database.getRecordDao
+import project.main.database.insertNewRecord
 import uitool.ViewTool
 import utils.logi
 
@@ -91,6 +93,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
     }
 
     private var signInResult = ""
+
     private fun initObserver() {
         liveResult.observe(activity, Observer {
             //掃描到的QRCode將在這裡處理。
@@ -118,13 +121,14 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
                 val columnValues = context.getShare().getNowUseSetting()?.fields?.map { field -> "${field.columnKey}=${field.columnValue}" }.toString().replace(", ", "&").replace("[", "").replace("]", "")
                 logi("Send", "組合後的發送內容是=>$it&${columnValues}")
                 val response = getURLResponse("$it&${columnValues}")
-                MainScope().launch { // 關閉進度框、顯示簽到完成視窗。
+                MainScope().launch { // 關閉進度框、顯示簽到結果視窗。
                     progressDialog.dismiss()
-                    if (response == null) {
+                    if (response == null) { // 送出成功
                         if (textDialog == null) {
                             showSignInCompleteDialog {
                                 signInResult = ""
                                 resumeScreenAnimation()
+                                context.getRecordDao().insertNewRecord(it,"$it&${columnValues}",context.getShare().getNowUseSetting()?:return@showSignInCompleteDialog)
                             }
                         }
                     } else {
