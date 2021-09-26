@@ -28,9 +28,6 @@ import uitool.setViewSize
 import utils.logAllData
 import utils.logi
 import android.content.Intent
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import tool.dialog.showConfirmDialg
 
 

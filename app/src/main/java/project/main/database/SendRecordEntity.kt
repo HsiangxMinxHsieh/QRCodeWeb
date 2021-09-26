@@ -9,18 +9,16 @@ import androidx.room.PrimaryKey
 data class SendRecordEntity(
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "raw_id")
-    var rawId: Long = 0L,
-    @ColumnInfo(name = "location_id")
-    var locationId: Long = 0L,
-    @ColumnInfo(name = "week")
-    var week: Int = -1,
-    @ColumnInfo(name = "open")
-    var open: String = "",          //09:30
-    @ColumnInfo(name = "close")
-    var close: String = ""          //17:30
-) {
-    //供非營利時間使用的建構子。
-    constructor(week: Int) : this(0L, 0L, week, "non-business days", "non-business days")
-
-}
+    @ColumnInfo(name = "send_id")
+    var sendId: Long = 0L,
+    @ColumnInfo(name = "send_time")
+    var sendTime: Long = 0L,
+    @ColumnInfo(name = "scan_content")
+    var scanContent: String = "",         // 掃描到的內容
+    @ColumnInfo(name = "send_content")
+    var sendContent: String = "",         // 送出的內容
+    @ColumnInfo(name = "send_setting")
+    var sendSettingName: String = "",      // 送出時使用的設定檔(不使用ID是因為不知道使用者是否會把該設定檔刪除或改名)
+    @ColumnInfo(name = "send_setting_id")
+    var sendSettingId: Int = 0             // 送出時使用的設定檔ID(邏輯是先找ID，如果找不到這個ID再使用儲存的名稱顯示)
+)

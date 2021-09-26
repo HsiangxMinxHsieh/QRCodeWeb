@@ -12,8 +12,8 @@ interface SendRecordDao {
     @get:Query("SELECT count(*) FROM SendRecordEntity")
     val allSize: Long
 
-    @Query("SELECT * FROM SendRecordEntity WHERE location_id = :locationId ")
-    fun searchByPkId(locationId: Long): List<SendRecordEntity>
+    @Query("SELECT * FROM SendRecordEntity WHERE send_id = :sendId ")
+    fun searchByPkId(sendId: Long): List<SendRecordEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(entity: SendRecordEntity): Long
@@ -36,8 +36,8 @@ interface SendRecordDao {
     @Query("DELETE FROM SendRecordEntity")
     fun deleteAll()
 
-    @Query("DELETE FROM SendRecordEntity WHERE location_id = :locationId")
-    fun deleteByPkId(locationId: Long)
+    @Query("DELETE FROM SendRecordEntity WHERE send_id = :sendId")
+    fun deleteByPkId(sendId: Long)
 }
 
 /**判斷現在是否在營業中，就兩個狀態，營業中與非營業中*/
