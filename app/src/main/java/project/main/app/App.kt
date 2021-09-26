@@ -6,15 +6,14 @@ import com.microsoft.appcenter.crashes.Crashes
 import com.microsoft.appcenter.analytics.Analytics
 
 import com.microsoft.appcenter.AppCenter
+import project.main.activity.const.msKey
 
 class App:Application() {
     override fun onCreate() {
         super.onCreate()
         AppCenter.start(
-            this, "53a7cb26-3cf9-4842-be9f-53d5fba9a9b3",
+            this, msKey,
             Analytics::class.java, Crashes::class.java
         )
     }
-
-
 }

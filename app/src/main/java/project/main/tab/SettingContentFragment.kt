@@ -23,6 +23,7 @@ import tool.dialog.TextDialog
 import tool.dialog.showConfirmDialg
 import tool.dialog.showMessageDialogOnlyOKButton
 import tool.getShare
+import uitool.setTextSize
 import utils.logi
 
 @SuppressLint("NotifyDataSetChanged") // 每次都要更新所有欄位中的所有值必須加上的Annotation(不然會出現黃色警告)
@@ -62,6 +63,11 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
         mBinding.clScanToDirect.isVisible = false
 
         mBinding.clAfterScanAction.isVisible = false
+
+        val edtTextSize =14
+        mBinding.edtColumnEditName.setTextSize(edtTextSize)
+        mBinding.edtColumnEditKey.setTextSize(edtTextSize)
+        mBinding.edtColumnEditContent.setTextSize(edtTextSize)
 
         mBinding.tvSettingNameShow.text = settingData.name
 

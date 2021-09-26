@@ -605,10 +605,6 @@
             <!--未來大致功能完成以後再開始製作。-->
 
 
-
-
-
-
             <!--欄位設定-->
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -798,6 +794,7 @@
                         android:contentDescription="@null"
                         android:padding="10dp"
                         android:src="@drawable/ic_baseline_check"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="@+id/fl_column_value"
                         app:layout_constraintDimensionRatio="1"
                         app:layout_constraintEnd_toEndOf="parent"
