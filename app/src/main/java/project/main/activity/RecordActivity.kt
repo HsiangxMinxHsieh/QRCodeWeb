@@ -58,10 +58,13 @@ class RecordActivity : BaseActivity<ActivityRecordBinding>({ ActivityRecordBindi
     }
 
     private fun initView() {
-        mBinding.tvTitle.text = activity.toString()
+//        mBinding.tvTitle.text = activity.toString()
     }
 
     private fun initEvent() {
+        mBinding.btnBack.setOnClickListener {
+            activity.onBackPressed()
+        }
 
     }
 

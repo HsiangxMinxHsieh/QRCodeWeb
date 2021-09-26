@@ -56,6 +56,13 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
     }
 
     private fun initView() {
+
+
+        // 開發中  暫時隱藏
+        mBinding.clScanToDirect.isVisible = false
+
+        mBinding.clAfterScanAction.isVisible = false
+
         mBinding.tvSettingNameShow.text = settingData.name
 
         mBinding.rvColumn.adapter = SettingColumnAdapter(mContext).apply {
