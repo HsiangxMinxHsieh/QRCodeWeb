@@ -58,7 +58,7 @@
 
     <!--進度框-->
     <string name="dialog_progress_default_title">傳輸中，請稍等…</string>
-
+    <string name="record_is_empty">尚無掃碼簽到紀錄。</string>
 
 
 </resources>

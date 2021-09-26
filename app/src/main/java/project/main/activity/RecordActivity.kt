@@ -34,8 +34,13 @@ class RecordActivity : BaseActivity<ActivityRecordBinding>({ ActivityRecordBindi
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR // 讓狀態列文字是深色
 
         initData()
+        if( context.getRecordDao().allData.isEmpty()){
+            mBinding.tvEmptyRecord.isVisible = true
+        }else{
+            mBinding.tvEmptyRecord.isVisible = false
+            initObserver()
 
-        initObserver()
+        }
 
         initView()
 
