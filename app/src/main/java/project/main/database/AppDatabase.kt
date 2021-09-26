@@ -7,6 +7,10 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
+fun Context.getBase() = AppDatabase.getDatabase(this)
+
+fun Context.getRecordDao() = this.getBase().sendRecordDao
+
 @Database(
     version = 1,
     exportSchema = false,
@@ -14,6 +18,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         ErrorRecordEntity::class, SendRecordEntity::class
     ]
 )
+
 abstract class AppDatabase : RoomDatabase() {
 
     abstract val errorRecordDao: ErrorRecordDao

@@ -1,7 +1,6 @@
 package project.main.activity
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -94,7 +93,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
     }
 
     private fun toNextActivity() {
-        val intent = Intent(activity, MainActivity::class.java)
+        val intent = Intent(activity, ScanActivity::class.java)
         activity.goToNextPageFinishThisPage(intent)
         activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }

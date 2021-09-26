@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.buddha.qrcodeweb.databinding.ActivityMainBinding
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
@@ -25,6 +24,7 @@ import utils.toString
 import java.util.*
 import androidx.constraintlayout.widget.ConstraintSet
 import com.buddha.qrcodeweb.R
+import com.buddha.qrcodeweb.databinding.ActivityScanBinding
 import project.main.activity.const.PERMISSIONS_REQUEST_CODE
 import project.main.activity.const.permissionPerms
 import project.main.base.BaseActivity
@@ -32,7 +32,7 @@ import uitool.ViewTool
 import utils.logi
 
 
-class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inflate(it) }), EasyPermissions.PermissionCallbacks {
+class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inflate(it) }), EasyPermissions.PermissionCallbacks {
 
 
     private val liveResult by lazy { MutableLiveData<String>() }
