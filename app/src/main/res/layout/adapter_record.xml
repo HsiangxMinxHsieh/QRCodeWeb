@@ -12,6 +12,7 @@
             android:id="@+id/tv_record_time"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="@string/record_time"
             android:textColor="@color/theme_blue"
             android:textStyle="bold"
@@ -37,8 +38,10 @@
             android:id="@+id/tv_record_scan_content"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
             android:gravity="center"
-            android:text="@string/record_scan_content"
+            android:maxLines="2"
+            android:text="@string/record_scan_name"
             android:textColor="@color/theme_blue"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -50,6 +53,7 @@
         <View
             android:id="@+id/vv_record_2"
             android:layout_width="2dp"
+
             android:layout_height="0dp"
             android:layout_margin="10dp"
             android:background="@color/light_blue"
@@ -64,7 +68,9 @@
             android:id="@+id/tv_record_send_content"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
             android:gravity="center"
+            android:maxLines="2"
             android:text="@string/record_send_content"
             android:textColor="@color/theme_blue"
             android:textStyle="bold"
@@ -120,9 +126,9 @@
             android:contentDescription="@null"
             android:src="@drawable/ic_baseline_double_arrow"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/vv_record_4"
             app:layout_constraintDimensionRatio="1"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/vv_record_4"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

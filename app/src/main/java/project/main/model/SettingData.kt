@@ -3,6 +3,7 @@ package project.main.model
 import android.content.Context
 import com.buddha.qrcodeweb.R
 import com.google.gson.annotations.SerializedName
+import tool.constantPassword
 import java.io.Serializable
 
 
@@ -62,7 +63,7 @@ data class SettingDataItem(
     /**依照ID取得預設的設定檔*/
     companion object {
         fun getDefalutSetting(id: Int, context: Context) = SettingDataItem(id = id, name = (context.getString(R.string.setting_file_name_default))).apply {
-            fields.add(SettingDataItem.SettingField(fieldName = context.getString(R.string.password_title_default), columnKey = "entry.1199127502"))
+            fields.add(SettingField(fieldName = context.getString(R.string.password_title_default), columnKey = constantPassword))
         }
     }
 

@@ -1,5 +1,6 @@
 package project.main.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,18 +10,10 @@ import androidx.lifecycle.Observer
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import project.main.api.getURLResponse
 import pub.devrel.easypermissions.EasyPermissions
-import tool.AnimationFileName
 import tool.dialog.*
-import tool.getShare
-import tool.getUrlKey
-import tool.initialLottieByFileName
-import utils.toString
 import java.util.*
 import androidx.constraintlayout.widget.ConstraintSet
 import com.buddha.qrcodeweb.R
@@ -30,15 +23,16 @@ import project.main.activity.const.permissionPerms
 import project.main.base.BaseActivity
 import project.main.database.getRecordDao
 import project.main.database.insertNewRecord
+import tool.*
 import uitool.ViewTool
-import utils.logi
+import utils.*
 
 
 class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inflate(it) }), EasyPermissions.PermissionCallbacks {
 
 
     private val liveResult by lazy { MutableLiveData<String>() }
-    private val livePassword by lazy { MutableLiveData<String>() }
+//    private val livePassword by lazy { MutableLiveData<String>() }
 
     private var textDialog: Dialog? = null
 //    var inputDialog: Dialog? = null
@@ -82,78 +76,64 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
         }
     }
 
-    private fun showSignInCompleteDialog(okButtonClickAction: () -> Unit = {}): Dialog? {
-        if (signInResult.isNotEmpty() && textDialog == null) {
-            textDialog = context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_sign_in_success_title), signInResult) {
-                okButtonClickAction.invoke()
-                textDialog = null
-            }
-        }
-        return textDialog
-    }
 
     private var signInResult = ""
 
     private fun initObserver() {
         liveResult.observe(activity, Observer {
-            //掃描到的QRCode將在這裡處理。
+            // 掃描到的QRCode將在這裡處理。
 
-            if (it.getUrlKey("entry.44110693") == "null") {
-                showSignInErrorDialog()
+            if (it.getUrlKey(constantName) == "null") {
+                if (textDialog == null) {
+                    textDialog = activity.showSignInErrorDialog {
+                        resumeScreenAnimation()
+                        textDialog = null
+                    }
+                }
                 return@Observer
             }
-            signInResult = "${Date().toString("yyyy/MM/dd HH:mm:ss")}\n${it.getUrlKey("entry.44110693")}簽到完成。"
+            val signInTime = Date().time
+            signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${it.getUrlKey(constantName)}簽到完成。"
 
-//            //導向至網頁
+//          // 導向至網頁
+            val sendRequest = it.concatSettingColumn(context.getShare().getNowUseSetting())
 //            Intent().apply {
 //                action = Intent.ACTION_VIEW
-//                data = Uri.parse("$it&entry.1199127502=${context.getShare().getStorePassword()}")
+//                data = Uri.parse(sendRequest)
 //                startActivity(this)
 //            }
 
-            //打API(暫定需要嘗試，嘉伸講師還沒提，蝦米擅自先做。)
-            val progressDialog = ProgressDialog(context)
-            CoroutineScope(Dispatchers.IO).launch {
-                MainScope().launch { // 顯示進度框
-                    pauseScrennAnimation() // 暫停播放動畫
-                    progressDialog.show()
-                }
-                val columnValues = context.getShare().getNowUseSetting()?.fields?.map { field -> "${field.columnKey}=${field.columnValue}" }.toString().replace(", ", "&").replace("[", "").replace("]", "")
-                logi("Send", "組合後的發送內容是=>$it&${columnValues}")
-                val response = getURLResponse("$it&${columnValues}")
-                MainScope().launch { // 關閉進度框、顯示簽到結果視窗。
-                    progressDialog.dismiss()
-                    if (response == null) { // 送出成功
-                        if (textDialog == null) {
-                            showSignInCompleteDialog {
-                                signInResult = ""
-                                resumeScreenAnimation()
-                                context.getRecordDao().insertNewRecord(it,"$it&${columnValues}",context.getShare().getNowUseSetting()?:return@showSignInCompleteDialog)
-                            }
+            // 應用程式內打API
+            MainScope().launch {
+                if (activity.sendApi(sendRequest) { }) {
+                    // 關閉進度框、顯示簽到結果視窗。
+                    if (textDialog == null && signInResult.isNotEmpty()) {
+                        textDialog = activity.showSignInCompleteDialog(signInResult) {
+                            signInResult = ""
+                            resumeScreenAnimation()
+                            textDialog = null
+                            activity.getRecordDao().insertNewRecord(signInTime, it, sendRequest, activity.getShare().getNowUseSetting() ?: return@showSignInCompleteDialog)
                         }
-                    } else {
-                        showSignInErrorDialog()
                     }
-
+                } else {
+                    if (textDialog == null) {
+                        textDialog = activity.showSignInErrorDialog {
+                            resumeScreenAnimation()
+                            textDialog = null
+                        }
+                    }
                 }
+
             }
         })
 
-        livePassword.observe(activity, {
-            //設定的密碼將在這裡收到。
-            context.getShare().setPassword(it)
-        })
+//        livePassword.observe(activity, {
+//            //設定的密碼將在這裡收到。
+//            context.getShare().setPassword(it)
+//        })
 
     }
 
-    private fun showSignInErrorDialog() {
-        if (textDialog == null) {
-            textDialog = context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.dialog_error_message)) {
-                resumeScreenAnimation()
-                textDialog = null
-            }
-        }
-    }
 
     private fun initData() {
 
@@ -251,9 +231,11 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
         requestPermissions() //若沒有請求權限會是一片黑屏 // 無論之前是否有權限都要再次請求權限，因為要開相機(實測過後發現)
 
 //        // 顯示簽到完成對話框。
-//        showSignInCompleteDialog() {
-//            signInResult = ""
-//        }
+//        if (textDialog == null)
+//            showSignInCompleteDialog {
+//                signInResult = ""
+//                textDialog = null
+//            }
 
         resumeScreenAnimation()
 

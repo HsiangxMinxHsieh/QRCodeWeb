@@ -11,6 +11,7 @@ import androidx.viewbinding.ViewBinding
 
 
 abstract class BaseActivity<B : ViewBinding>(val bindingFactory: (LayoutInflater) -> B) : AppCompatActivity() {
+    open val TAG = javaClass.simpleName
     lateinit var mBinding: B
 
     open val heightPixel by lazy { this.resources.displayMetrics.heightPixels }

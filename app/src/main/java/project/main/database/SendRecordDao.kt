@@ -1,5 +1,6 @@
 package project.main.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import project.main.model.SettingDataItem
 import java.util.*
@@ -14,6 +15,12 @@ interface SendRecordDao {
 
     @get:Query("SELECT count(*) FROM SendRecordEntity")
     val allSize: Long
+
+    @Query("SELECT * FROM SendRecordEntity")
+    fun liveData(): LiveData<List<SendRecordEntity>>
+
+    @get:Query("SELECT * FROM SendRecordEntity ORDER BY send_time DESC")
+    val liveData: LiveData<List<SendRecordEntity>>
 
     @Query("SELECT * FROM SendRecordEntity WHERE send_id = :sendId ")
     fun searchByPkId(sendId: Long): List<SendRecordEntity>
@@ -44,7 +51,7 @@ interface SendRecordDao {
 }
 
 //
-fun SendRecordDao.insertNewRecord(scanContent: String, sendContent: String, settingDataItem: SettingDataItem) {
-    this.insert(SendRecordEntity(sendTime = Date().time, scanContent = scanContent, sendContent = sendContent, sendSettingName = settingDataItem.name, sendSettingId = settingDataItem.id))
+fun SendRecordDao.insertNewRecord(signInTime:Long,scanContent: String, sendContent: String, settingDataItem: SettingDataItem) {
+    this.insert(SendRecordEntity(sendTime = signInTime, scanContent = scanContent, sendContent = sendContent, sendSettingName = settingDataItem.name, sendSettingId = settingDataItem.id))
 }
 

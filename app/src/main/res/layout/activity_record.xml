@@ -9,14 +9,153 @@
         android:layout_height="match_parent"
         tools:context="project.main.activity.RecordActivity">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/status_bar_margin_top"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_record_time"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/record_time"
+                android:textColor="@color/theme_blue"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/vv_record_1"
+                app:layout_constraintHorizontal_bias="0.1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/vv_record_1"
+                android:layout_width="2dp"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:background="@color/light_blue"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="@dimen/record_item_divider_ratio_1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_record_scan_content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="2"
+                android:text="@string/record_scan_name"
+                android:textColor="@color/theme_blue"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/vv_record_2"
+                app:layout_constraintHorizontal_bias="0.9"
+                app:layout_constraintStart_toEndOf="@+id/vv_record_1"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/vv_record_2"
+                android:layout_width="2dp"
+
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:background="@color/light_blue"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="@dimen/record_item_divider_ratio_2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:id="@+id/tv_record_send_content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="2"
+                android:text="@string/record_send_content"
+                android:textColor="@color/theme_blue"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/vv_record_3"
+                app:layout_constraintHorizontal_bias="0.9"
+                app:layout_constraintStart_toEndOf="@+id/vv_record_2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <View
+                android:id="@+id/vv_record_3"
+                android:layout_width="2dp"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:background="@color/light_blue"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="@dimen/record_item_divider_ratio_3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_record_send_setting"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/record_send_setting"
+                android:textColor="@color/theme_blue"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/vv_record_4"
+                app:layout_constraintHorizontal_bias="0.9"
+                app:layout_constraintStart_toEndOf="@+id/vv_record_3"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/vv_record_4"
+                android:layout_width="2dp"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:background="@color/light_blue"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="@dimen/record_item_divider_ratio_4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/iv_record_resend"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:contentDescription="@null"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/vv_record_4"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/tv_title"
+
+            android:id="@+id/rv_record"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            tools:listitem="@layout/adapter_record"
-            tools:itemCount="20"
+            android:orientation="vertical"
+            app:layoutManager="LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/cl_control"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/cl_title"
+            tools:itemCount="20"
+            tools:listitem="@layout/adapter_record" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_control"

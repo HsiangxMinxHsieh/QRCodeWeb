@@ -105,9 +105,9 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
 
     private fun initValue() {
 
-        val setValue = mContext.getShare().getSettingById(settingData.id) //取出設定檔來設定，以避免使用者未儲存就回來這個頁面。
-        val showName = if (setValue.haveSaved) setValue.name else mContext.getString(R.string.setting_file_name_default)
-        mBinding.edtSettingNameContent.setText(if (setValue.haveSaved) showName else "")
+        val setValue = mContext.getShare().getSettingById(settingData.id) // 取出設定檔來設定
+        val showName = if (setValue?.haveSaved == true) setValue.name else mContext.getString(R.string.setting_file_name_default)
+        mBinding.edtSettingNameContent.setText(if (setValue?.haveSaved == true) showName else "")
         mBinding.tvSettingNameShadow.text = showName
         mBinding.tvSettingNameShow.text = showName
 

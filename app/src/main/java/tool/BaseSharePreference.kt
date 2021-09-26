@@ -2,6 +2,7 @@ package tool
 
 import android.content.Context
 import com.buddha.qrcodeweb.BuildConfig
+import project.main.database.SendRecordEntity
 import project.main.model.SettingData
 import project.main.model.SettingDataItem
 import utils.toDataBean
@@ -105,9 +106,13 @@ class BaseSharePreference(val context: Context) {
     }
 
     /**藉由ID取得設定檔，用於SettingFragment的onResume。*/
-    fun getSettingById(id: Int): SettingDataItem {
-        return getStoreSettings().find { it.id == id } ?: SettingDataItem.getDefalutSetting(id, context)
+    fun getSettingById(id: Int): SettingDataItem? {
+        return getStoreSettings().find { it.id == id }
     }
+
+    /**藉由ID找到設定檔案名稱，如果找不到則回傳記錄檔內的設定檔名稱*/
+    fun getSettingNameById(id: Int, data: SendRecordEntity) = getSettingById(id)?.name ?: data.sendSettingName
+
 
     /**設定動畫切換秒數 */
     fun setAnimationDuration(duration: Long) {

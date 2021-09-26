@@ -13,6 +13,9 @@ import java.util.LinkedHashMap
  * 日期：2017/5/22.
  */
 
+const val constantName = "entry.44110693"
+
+const val constantPassword = "entry.1199127502"
 /**
  * 取得解析后的URL参数
  * @author 蝦米

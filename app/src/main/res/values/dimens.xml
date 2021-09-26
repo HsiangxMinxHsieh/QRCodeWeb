@@ -4,6 +4,7 @@
     <dimen name="dialog_background_corner">10px</dimen>
     <dimen name="dialog_button_corner">10dp</dimen>
     <dimen name="setting_item_margin_top_bottom">20dp</dimen>
+    <dimen name="status_bar_margin_top">10dp</dimen>
     <dimen name="setting_item_margin_start_end">10dp</dimen>
     <dimen name="setting_item_center_divider_ratio">0.45</dimen>
     <dimen name="record_item_divider_ratio_1">0.2</dimen>
