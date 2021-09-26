@@ -3,46 +3,45 @@ package project.main.database
 import androidx.room.*
 //import tools.getDayOfWeek
 //import tools.onTheHoureToTodayMillSecond
-import java.util.*
 
 @Dao
-interface BusinessTimeDao {
-    @get:Query("SELECT * FROM BusinessTimeEntity")
-    val allData: List<BusinessTimeEntity>
+interface SendRecordDao {
+    @get:Query("SELECT * FROM SendRecordEntity")
+    val allData: List<SendRecordEntity>
 
-    @get:Query("SELECT count(*) FROM BusinessTimeEntity")
+    @get:Query("SELECT count(*) FROM SendRecordEntity")
     val allSize: Long
 
-    @Query("SELECT * FROM BusinessTimeEntity WHERE location_id = :locationId ")
-    fun searchByPkId(locationId: Long): List<BusinessTimeEntity>
+    @Query("SELECT * FROM SendRecordEntity WHERE location_id = :locationId ")
+    fun searchByPkId(locationId: Long): List<SendRecordEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(entity: BusinessTimeEntity): Long
+    fun insert(entity: SendRecordEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(list: List<BusinessTimeEntity>)
+    fun insert(list: List<SendRecordEntity>)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun update(entity: BusinessTimeEntity)
+    fun update(entity: SendRecordEntity)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun update(list: List<BusinessTimeEntity>)
+    fun update(list: List<SendRecordEntity>)
 
     @Delete
-    fun delete(entity: BusinessTimeEntity)
+    fun delete(entity: SendRecordEntity)
 
     @Delete
-    fun delete(list: List<BusinessTimeEntity>)
+    fun delete(list: List<SendRecordEntity>)
 
-    @Query("DELETE FROM BusinessTimeEntity")
+    @Query("DELETE FROM SendRecordEntity")
     fun deleteAll()
 
-    @Query("DELETE FROM BusinessTimeEntity WHERE location_id = :locationId")
+    @Query("DELETE FROM SendRecordEntity WHERE location_id = :locationId")
     fun deleteByPkId(locationId: Long)
 }
 
 /**判斷現在是否在營業中，就兩個狀態，營業中與非營業中*/
-//fun List<BusinessTimeEntity>.isNowOpen(): Boolean {
+//fun List<SendRecordEntity>.isNowOpen(): Boolean {
 //
 //    val today = Date().getDayOfWeek()
 //    // 先判斷今天的日期是否在List中

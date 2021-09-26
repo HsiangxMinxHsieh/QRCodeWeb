@@ -11,13 +11,13 @@ import androidx.sqlite.db.SupportSQLiteDatabase
     version = 1,
     exportSchema = false,
     entities = [
-        ErrorRecordEntity::class, BusinessTimeEntity::class
+        ErrorRecordEntity::class, SendRecordEntity::class
     ]
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract val errorRecordDao: ErrorRecordDao
-    abstract val businessTimeDao: BusinessTimeDao
+    abstract val sendRecordDao: SendRecordDao
 
     companion object {
 

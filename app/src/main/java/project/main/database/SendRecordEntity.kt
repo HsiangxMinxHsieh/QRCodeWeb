@@ -5,8 +5,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 
-@Entity(tableName = "BusinessTimeEntity")
-data class BusinessTimeEntity(
+@Entity(tableName = "SendRecordEntity")
+data class SendRecordEntity(
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "raw_id")
