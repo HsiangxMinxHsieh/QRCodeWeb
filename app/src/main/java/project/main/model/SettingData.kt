@@ -3,7 +3,7 @@ package project.main.model
 import android.content.Context
 import com.buddha.qrcodeweb.R
 import com.google.gson.annotations.SerializedName
-import tool.constantPassword
+import project.main.activity.const.constantPassword
 import java.io.Serializable
 
 

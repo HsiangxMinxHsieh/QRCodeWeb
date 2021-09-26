@@ -3,7 +3,7 @@ package project.main.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import tool.constantName
+import project.main.activity.const.constantName
 import tool.getUrlKey
 import utils.toDate
 import utils.toString

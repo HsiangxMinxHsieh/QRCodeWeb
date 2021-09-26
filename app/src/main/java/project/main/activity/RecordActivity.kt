@@ -10,13 +10,13 @@ import com.buddha.qrcodeweb.databinding.ActivityRecordBinding
 import com.buddha.qrcodeweb.databinding.AdapterRecordBinding
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import project.main.activity.const.constantName
 import project.main.base.BaseActivity
 import project.main.base.BaseRecyclerViewDataBindingAdapter
 import project.main.database.SendRecordEntity
 import project.main.database.getRecordDao
 import project.main.database.insertNewRecord
 import project.main.model.SettingDataItem
-import tool.constantName
 import tool.dialog.TextDialog
 import tool.dialog.showConfirmDialg
 import tool.dialog.showMessageDialogOnlyOKButton

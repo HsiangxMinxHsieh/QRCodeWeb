@@ -1,6 +1,5 @@
 package project.main.activity
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -19,6 +18,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.ActivityScanBinding
 import project.main.activity.const.PERMISSIONS_REQUEST_CODE
+import project.main.activity.const.constantName
 import project.main.activity.const.permissionPerms
 import project.main.base.BaseActivity
 import project.main.database.getRecordDao
