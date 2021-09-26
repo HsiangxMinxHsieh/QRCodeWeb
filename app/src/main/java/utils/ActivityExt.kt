@@ -27,8 +27,10 @@ suspend fun Activity.sendApi(sendRequest: String, beforeSendAction: () -> Unit =
             //                val columnValues = context.getShare().getNowUseSetting()?.fields?.map { field -> "${field.columnKey}=${field.columnValue}" }.toString().replace(", ", "&").replace("[", "").replace("]", "")
             logi("Send", "組合後的發送內容是=>$sendRequest")
             val response = getURLResponse(sendRequest)
+//            logi("Send", "取得的錯誤內容是=>${response?.errorBody()?.string()}")
             return@async response == null // 等於null代表有成功
         } catch (e: Exception) {
+//            e.printStackTrace()
             return@async false
         } finally {
             MainScope().launch {
@@ -40,7 +42,7 @@ suspend fun Activity.sendApi(sendRequest: String, beforeSendAction: () -> Unit =
     return result.await()
 }
 
-fun Activity.showSignInCompleteDialog(signInResult:String,okButtonClickAction: () -> Unit = {}) = this.showMessageDialogOnlyOKButton(this.getString(R.string.dialog_sign_in_success_title), signInResult) {
+fun Activity.showSignInCompleteDialog(signInResult: String, okButtonClickAction: () -> Unit = {}) = this.showMessageDialogOnlyOKButton(this.getString(R.string.dialog_sign_in_success_title), signInResult) {
     okButtonClickAction.invoke()
 }
 
