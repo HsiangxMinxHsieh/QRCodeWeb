@@ -3,9 +3,7 @@ package project.main.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import project.main.activity.const.constantName
 import tool.getUrlKey
-import utils.toDate
 import utils.toString
 
 
@@ -33,5 +31,5 @@ data class SendRecordEntity(
             "${sendSettingKey}:$sendSettingName"
 
     /**取得這筆資料的簽到人員名稱*/
-    fun getSignInPerson() = this.scanContent.getUrlKey(constantName)
+    fun getSignInPerson(key: String) = this.scanContent.getUrlKey(key)
 }

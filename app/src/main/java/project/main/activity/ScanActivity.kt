@@ -18,7 +18,6 @@ import androidx.constraintlayout.widget.ConstraintSet
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.ActivityScanBinding
 import project.main.activity.const.PERMISSIONS_REQUEST_CODE
-import project.main.activity.const.constantName
 import project.main.activity.const.permissionPerms
 import project.main.base.BaseActivity
 import project.main.database.getRecordDao
@@ -83,7 +82,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
         liveResult.observe(activity, Observer {
             // 掃描到的QRCode將在這裡處理。
 
-            if (it.getUrlKey(constantName) == "null") {
+            if (it.getUrlKey(context.getShare().getKeyName()) == "null") {
                 if (textDialog == null) {
                     textDialog = activity.showSignInErrorDialog {
                         resumeScreenAnimation()
@@ -93,7 +92,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
                 return@Observer
             }
             val signInTime = Date().time
-            signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${it.getUrlKey(constantName)}簽到完成。"
+            signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${it.getUrlKey(context.getShare().getKeyName())}簽到完成。"
 
 //          // 導向至網頁
             val sendRequest = it.concatSettingColumn(context.getShare().getNowUseSetting())

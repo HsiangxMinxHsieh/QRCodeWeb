@@ -10,7 +10,6 @@ import com.buddha.qrcodeweb.databinding.ActivityRecordBinding
 import com.buddha.qrcodeweb.databinding.AdapterRecordBinding
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import project.main.activity.const.constantName
 import project.main.base.BaseActivity
 import project.main.base.BaseRecyclerViewDataBindingAdapter
 import project.main.database.SendRecordEntity
@@ -34,9 +33,9 @@ class RecordActivity : BaseActivity<ActivityRecordBinding>({ ActivityRecordBindi
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR // 讓狀態列文字是深色
 
         initData()
-        if( context.getRecordDao().allData.isEmpty()){
+        if (context.getRecordDao().allData.isEmpty()) {
             mBinding.tvEmptyRecord.isVisible = true
-        }else{
+        } else {
             mBinding.tvEmptyRecord.isVisible = false
             initObserver()
 
@@ -72,7 +71,7 @@ class RecordActivity : BaseActivity<ActivityRecordBinding>({ ActivityRecordBindi
                     logi(TAG, "點擊到重新送出！掃描到的內容是=>$scanString")
                     if (textDialog == null) {
                         textDialog = showConfirmDialg(context.getString(R.string.dialog_notice_title),
-                            context.getString(R.string.record_resend_confirm).format(context.getShare().getNowUseSetting()?.name, scanString.getUrlKey(constantName)), {
+                            context.getString(R.string.record_resend_confirm).format(context.getShare().getNowUseSetting()?.name, scanString.getUrlKey(context.getShare().getKeyName())), {
                                 resendCallApi(scanString, context.getShare().getNowUseSetting())
                                 textDialog = null
                             }, {
@@ -85,7 +84,7 @@ class RecordActivity : BaseActivity<ActivityRecordBinding>({ ActivityRecordBindi
                     logi(TAG, "點擊到顯示內容！要顯示的內容是=>${data.toJson()}")
                     if (textDialog == null) {
                         textDialog = showMessageDialogOnlyOKButton(
-                            context.getString(R.string.record_info_dialog_title).format(data.getSignInPerson(), data.sendTime.toString("HH:mm:ss")), data.toFullInfo(
+                            context.getString(R.string.record_info_dialog_title).format(data.getSignInPerson(context.getShare().getKeyName()), data.sendTime.toString("HH:mm:ss")), data.toFullInfo(
                                 context.getString(R.string.record_time),
                                 context.getString(R.string.record_scan_content),
                                 context.getString(R.string.record_send_content),
@@ -115,7 +114,7 @@ class RecordActivity : BaseActivity<ActivityRecordBinding>({ ActivityRecordBindi
         //打API
         val sendRequest = scanString.concatSettingColumn(nowUseSetting)
         val signInTime = Date().time
-        signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${scanString.getUrlKey(constantName)}簽到完成。"
+        signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${scanString.getUrlKey(context.getShare().getKeyName())}簽到完成。"
         MainScope().launch {
             if (activity.sendApi(sendRequest)) {
                 // 關閉進度框、顯示簽到結果視窗。
@@ -166,7 +165,7 @@ class RecordActivity : BaseActivity<ActivityRecordBinding>({ ActivityRecordBindi
             val adapterBinding = viewHolder.binding as AdapterRecordBinding
             adapterBinding.apply {
                 tvRecordTime.text = data.sendTime.toString("yyyy/MM/dd HH:mm:ss")
-                tvRecordScanContent.text = data.getSignInPerson()
+                tvRecordScanContent.text = data.getSignInPerson(context.getShare().getKeyName())
                 tvRecordSendContent.text = data.sendContent
                 tvRecordSendSetting.text = context.getShare().getSettingNameById(data.sendSettingId, data)
                 ivRecordResend.setOnClickListener {
