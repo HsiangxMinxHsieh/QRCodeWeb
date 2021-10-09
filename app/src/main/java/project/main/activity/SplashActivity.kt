@@ -17,8 +17,7 @@ import project.main.const.permissionPerms
 import project.main.base.BaseActivity
 import pub.devrel.easypermissions.EasyPermissions
 import tool.*
-import tool.dialog.KeyCheckDialog
-import tool.dialog.TextDialog
+import tool.dialog.showKeyDefaultCheckDialog
 import tool.dialog.showMessageDialogOnlyOKButton
 import uitool.setTextSize
 import utils.DateTool
@@ -88,27 +87,30 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
     private fun loadingByStep(loadingTextArray: List<String>, loadingPercent: List<Double>, totalLoadingSec: Long, nowExeCuteIndex: Int = 0) {
         if (activity.isFinishing)
             return
-
-        if (loadingTextArray.isEmpty()) {
+        val nowShowText = loadingTextArray.getOrNull(nowExeCuteIndex)
+        logi(TAG, "要顯示的文字是=>$nowShowText,文字列表是=>$loadingTextArray")
+        if (nowShowText == null) {
             toNextActivity()
             return
         }
 
-        mBinding.tvLoadingStatus.text = loadingTextArray[0]
+        mBinding.tvLoadingStatus.text = nowShowText
 
-        if (mBinding.tvLoadingStatus.text.contains(context.getString(R.string.splash_permission_key_word)) && !checkPermission()) {
-            requestPermissions()
+        if (nowShowText.contains(context.getString(R.string.splash_permission_key_word)) && !checkPermission()) {
+            requestPermissions() //
+        } else if (nowShowText.contains(context.getString(R.string.splash_key_key_word)) && checkKeyDefaultValue()) {
+            setCheckValue()
         } else {
-            val totalPercent = loadingPercent.take(nowExeCuteIndex + 1).sum().toFloat()
+            val totalPercent = loadingPercent.take(nowExeCuteIndex + 1).sum().toFloat() // 前 nowExeCuteIndex + 1 的總和
             val nowPercent = loadingPercent[nowExeCuteIndex]
             val delayTime = if (nowPercent < 1.0) (totalLoadingSec * nowPercent).toLong() else nowPercent.toLong() * DateTool.oneSec // 若大於等於1的話直接等該秒數
-            logi(TAG, "延遲時間是=>$delayTime")
+            logi(TAG, "延遲時間是=>$delayTime,index是=>$nowExeCuteIndex")
+            logi(TAG, "顯示百分比是=>$nowPercent,總百分比要設定的是=>${totalPercent},loadingPercent是=>${loadingPercent}")
             mBinding.lvLoadingProgress.setProgressValue(mBinding.lvLoadingProgress.progress, totalPercent, delayTime)
             job = MainScope().launch {
                 delay(delayTime)
-                subList = loadingTextArray.subList(1, loadingTextArray.size)
-                nextIndex++
-                loadingByStep(subList, loadingPercent, totalLoadingSec, nextIndex)
+                nextIndex = nowExeCuteIndex + 1
+                loadingByStep(loadingTextArray, loadingPercent, totalLoadingSec, nextIndex)
             }
         }
     }
@@ -119,25 +121,20 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
         activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
-    private fun checkKeyDefaultValue(){
-        KeyCheckDialog(this).apply {
-            this.title = context.getString(R.string.splash_key_check)
-            MainScope().launch {
-                dialogBinding.btnLift.visibility = View.GONE
-                dialogBinding.btnRight.text = context.getString(R.string.dialog_ok)
-                dialogBinding.btnRight.setOnClickListener {
+    private fun checkKeyDefaultValue(): Boolean =
+        context.getShare().getNowKeyDefault()?.settingStatus ?: 0 == 0
 
-                    dialog.dismiss()
-                }
-                show()
-            }
+
+    private fun setCheckValue() {
+        activity.showKeyDefaultCheckDialog {
+            loadingByStep(loadingTextArray, loadingPercent, totalLoadingSec, nextIndex)
         }
     }
 
-    private fun checkPermission(): Boolean {
+    private fun checkPermission() =
 //        val perms = arrayOf(Manifest.permission.CAMERA)
-        return EasyPermissions.hasPermissions(this, *permissionPerms)
-    }
+        EasyPermissions.hasPermissions(this, *permissionPerms)
+
 
     private fun requestPermissions() {
         EasyPermissions.requestPermissions(this, activity.getString(R.string.permission_request), PERMISSIONS_REQUEST_CODE, *permissionPerms)
@@ -166,7 +163,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
         //權限允許
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            loadingByStep(subList, loadingPercent, totalLoadingSec, nextIndex)
+            loadingByStep(loadingTextArray, loadingPercent, totalLoadingSec, nextIndex)
         }
     }
 

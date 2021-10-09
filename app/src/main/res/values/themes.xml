@@ -17,12 +17,12 @@
     </style>
 
     <style name="EditTextHint" parent="Theme.MaterialComponents.NoActionBar">
-        <item name="colorPrimary">@color/transparent</item>
-        <item name="colorAccent">@color/light_green</item>
-        <item name="android:textColorHint">@color/gray</item>
-        <item name="colorControlNormal">@color/gray</item>
+        <item name="colorPrimary">@color/theme_green</item>
+        <item name="colorAccent">@color/theme_blue</item>
+        <item name="android:textColorHint">@color/theme_green</item>
+        <item name="colorControlNormal">@color/theme_blue</item>
         <item name="colorControlActivated">@color/theme_blue</item>
-        <item name="colorControlHighlight">@color/theme_green</item>
+        <item name="colorControlHighlight">@color/theme_blue</item>
     </style>
 
     <style name="main_button_style" parent="@style/Widget.MaterialComponents.Button.UnelevatedButton">

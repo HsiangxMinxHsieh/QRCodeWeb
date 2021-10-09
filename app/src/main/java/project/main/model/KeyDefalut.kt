@@ -7,12 +7,12 @@ import project.main.const.constantPassword
 
 data class KeyDefault(
     @SerializedName("key_name")
-    var keyName:String = constantName,
+    var keyName: String = constantName,
 
     @SerializedName("key_password")
-    var keyPassword:String = constantPassword,
+    var keyPassword: String = constantPassword,
 
     @SerializedName("setting_Status")
-    var settingStatus :Int= 0 // 0=>未設定
+    var settingStatus: Int = 0 // 0=>未設定,有值以後是1，每次設定都+1
 
 )

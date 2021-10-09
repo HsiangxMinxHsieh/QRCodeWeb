@@ -5,8 +5,12 @@
     <!--Splash-->
     <string name="splash_title">QRCode簽到器</string>
     <string name="splash_loading_status_start">開始載入</string>
-    <string name="splash_key_check">預設欄位值確認</string>
+    <string name="splash_key_check_title">預設欄位值確認</string>
     <string name="splash_permission_key_word">權限</string> <!--如果Splash載入中出現這個字串，會請求權限。-->
+    <string name="splash_key_key_word">欄位</string> <!--如果Splash載入中出現這個字串，會要求設定預設值。。-->
+    <string name="splash_column_title_name">姓名欄位</string>
+    <string name="splash_column_title_password">密碼欄位</string>
+    <string name="splash_column_could_not_be_empty">欄位不可為空!</string>
 
     <!--Setting Page-->
     <string name="setting_file_name_default">未命名的設定檔</string>

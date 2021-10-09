@@ -5,6 +5,7 @@ import com.buddha.qrcodeweb.BuildConfig
 import project.main.const.constantName
 import project.main.const.constantPassword
 import project.main.database.SendRecordEntity
+import project.main.model.KeyDefault
 import project.main.model.SettingData
 import project.main.model.SettingDataItem
 import utils.toDataBean
@@ -32,11 +33,8 @@ class BaseSharePreference(val context: Context) {
     /**NOW_USE_SETTING 現在使用的設定檔 */
     private val KEY_NOW_USE_SETTING = "KEY_NOW_USE_SETTING"
 
-    /**CONSTANT_NAME 姓名欄位的欄位名稱(供使用者設定)*/
-    private val KEY_CONSTANT_NAME_TITLE = "KEY_NOW_USE_SETTING"
-
-    /**CONSTANT_PASSWORD 密碼欄位的欄位名稱(供使用者設定) */
-    private val KEY_CONSTANT_PASSWORD_TITLE = "KEY_NOW_USE_SETTING"
+    /**KEY_KEY_DEFAULT 現在使用的欄位預設檔 */
+    private val KEY_KEY_DEFAULT = "KEY_KEY_DEFAULT"
 
     /**KEY_ANIMATION_DURATION 現在的動畫切換秒數 */
     private val KEY_ANIMATION_DURATION = "KEY_ANIMATION_DURATION"
@@ -139,22 +137,26 @@ class BaseSharePreference(val context: Context) {
 
     /**取得密碼欄位的欄位標題(供新增設定檔時使用) */
     fun getKeyPassword(): String {
-        return getString(context, KEY_CONSTANT_PASSWORD_TITLE,  constantPassword)
-    }
-
-    /**設定密碼欄位的欄位標題(供新增設定檔時使用) */
-    fun setKeyPassword(password: String) {
-        putString(context, KEY_CONSTANT_PASSWORD_TITLE, password)
+        return getNowKeyDefault()?.keyPassword?: constantPassword
     }
 
     /**取得姓名欄位的欄位標題(供掃碼時判斷、紀錄檔提取時使用)  */
     fun getKeyName(): String {
-        return getString(context, KEY_CONSTANT_NAME_TITLE, constantName)
+        return getNowKeyDefault()?.keyName?: constantName
     }
 
-    /**設定姓名欄位的欄位標題(供掃碼時判斷、紀錄檔提取時使用)   */
-    fun setKeyName(password: String) {
-        putString(context, KEY_CONSTANT_NAME_TITLE, password)
+    /**取得現在使用的欄位預設值設定檔*/
+    fun getNowKeyDefault(): KeyDefault? {
+        return try {
+            getString(context, KEY_KEY_DEFAULT, "").toDataBean(KeyDefault())
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**設定現在使用的欄位預設值設定檔*/
+    fun setNowKeyDefault(settingData: KeyDefault) {
+        putString(context, KEY_KEY_DEFAULT, settingData.toJson())
     }
 
     /**取得現在使用的設定檔*/
@@ -166,7 +168,7 @@ class BaseSharePreference(val context: Context) {
         }
     }
 
-    /**取得現在使用的設定檔*/
+    /**設定現在使用的設定檔*/
     fun setNowUseSetting(settingData: SettingDataItem) {
         putString(context, KEY_NOW_USE_SETTING, settingData.toJson())
     }

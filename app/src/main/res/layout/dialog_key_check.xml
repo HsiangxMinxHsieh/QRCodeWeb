@@ -17,45 +17,67 @@
             android:layout_marginEnd="16dp"
             android:gravity="center"
             android:text="title"
-            android:textColor="@color/theme_blue"
+            android:textColor="@color/theme_green"
             android:textSize="22sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edt_text_Layout"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/ll_check"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:textColor="@color/dialog_txt_message"
-            android:textColorHint="#ff6b68"
-            app:boxBackgroundColor="@color/transparent"
-            android:theme="@style/EditTextHint"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title"
-            app:passwordToggleTint="@color/theme_blue"
-            app:passwordToggleEnabled="true">
+            app:layout_constraintTop_toBottomOf="@+id/tv_title">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edt_text"
-                android:textColor="@color/theme_blue"
-                android:text="1234"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edt_name_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="numberPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:hint="@string/splash_column_title_name"
+                android:textColorHint="@color/theme_green"
+                android:theme="@style/EditTextHint"
+                app:errorEnabled="true"
+                app:hintEnabled="true"
+               >
 
-        <TextView
-            android:id="@+id/tv_text_size_limit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edt_text_Layout" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edt_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:paddingTop="20dp"
+                    android:text="entry.123456"
+                    android:textColor="@color/theme_blue" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edt_password_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:hint="@string/splash_column_title_password"
+                android:textColorHint="@color/theme_green"
+                android:theme="@style/EditTextHint"
+                app:errorEnabled="true"
+                app:hintEnabled="true"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edt_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:paddingTop="20dp"
+                    android:text="entry.123456"
+                    android:textColor="@color/theme_blue" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
 
 
         <com.google.android.material.button.MaterialButton
@@ -73,22 +95,12 @@
             app:cornerRadius="@dimen/dialog_button_corner"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="2.7"
-            app:layout_constraintEnd_toStartOf="@+id/vv_divider_anchor"
+            app:layout_constraintEnd_toStartOf="@+id/btn_right"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_text_size_limit"
+            app:layout_constraintTop_toBottomOf="@+id/ll_check"
             app:layout_constraintVertical_bias="0.63157"
             app:layout_constraintWidth_percent="0.43733" />
-
-        <View
-            android:id="@+id/vv_divider_anchor"
-            android:layout_width="1dp"
-            android:layout_height="1dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_text_size_limit" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_right"
@@ -104,8 +116,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="2.7"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/vv_divider_anchor"
-            app:layout_constraintTop_toBottomOf="@+id/tv_text_size_limit"
+            app:layout_constraintStart_toEndOf="@+id/btn_lift"
+            app:layout_constraintTop_toBottomOf="@+id/ll_check"
             app:layout_constraintWidth_percent="0.43733" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
