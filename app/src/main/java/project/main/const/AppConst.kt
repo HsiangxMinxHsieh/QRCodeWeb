@@ -1,4 +1,4 @@
-package project.main.activity.const
+package project.main.const
 
 import android.Manifest
 

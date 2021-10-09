@@ -17,8 +17,8 @@ import java.util.*
 import androidx.constraintlayout.widget.ConstraintSet
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.ActivityScanBinding
-import project.main.activity.const.PERMISSIONS_REQUEST_CODE
-import project.main.activity.const.permissionPerms
+import project.main.const.PERMISSIONS_REQUEST_CODE
+import project.main.const.permissionPerms
 import project.main.base.BaseActivity
 import project.main.database.getRecordDao
 import project.main.database.insertNewRecord
@@ -29,6 +29,7 @@ import utils.*
 
 class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inflate(it) }), EasyPermissions.PermissionCallbacks {
 
+    override var statusTextIsDark: Boolean = false
 
     private val liveResult by lazy { MutableLiveData<String>() }
 //    private val livePassword by lazy { MutableLiveData<String>() }

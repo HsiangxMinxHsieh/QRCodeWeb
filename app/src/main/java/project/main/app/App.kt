@@ -6,7 +6,7 @@ import com.microsoft.appcenter.crashes.Crashes
 import com.microsoft.appcenter.analytics.Analytics
 
 import com.microsoft.appcenter.AppCenter
-import project.main.activity.const.msKey
+import project.main.const.msKey
 
 class App:Application() {
     override fun onCreate() {

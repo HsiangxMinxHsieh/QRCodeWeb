@@ -20,9 +20,23 @@ abstract class BaseActivity<B : ViewBinding>(val bindingFactory: (LayoutInflater
     open val activity by lazy { this }
     open val context: Context by lazy { this }
 
+    abstract var statusTextIsDark: Boolean
+
+    fun setStatusBarText() {
+        if (statusTextIsDark) {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR // 讓狀態列文字是深色
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //隱藏標題列
+        supportActionBar?.hide()
+        mBinding = bindingFactory(layoutInflater)
+//        hideSystemUI(mBinding.root)
+        setContentView(mBinding.root)
 
         // 沉浸式布局設定
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
@@ -30,11 +44,7 @@ abstract class BaseActivity<B : ViewBinding>(val bindingFactory: (LayoutInflater
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.statusBarColor = Color.TRANSPARENT // 全透明狀態列背景
 
-        //隱藏標題列
-        supportActionBar?.hide()
-        mBinding = bindingFactory(layoutInflater)
-//        hideSystemUI(mBinding.root)
-        setContentView(mBinding.root)
+        setStatusBarText()
     }
 
 

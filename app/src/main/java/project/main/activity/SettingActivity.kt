@@ -28,17 +28,21 @@ import uitool.setViewSize
 import utils.logAllData
 import utils.logi
 import android.content.Intent
+import android.view.WindowInsetsController
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import tool.dialog.showConfirmDialg
 
 
 class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBinding.inflate(it) }) {
 
+    override var statusTextIsDark: Boolean = true
+
     private val maxSettingSize by lazy { context.resources.getInteger(R.integer.setting_size_max_size) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR // 讓狀態列文字是深色
 
         initData()
 

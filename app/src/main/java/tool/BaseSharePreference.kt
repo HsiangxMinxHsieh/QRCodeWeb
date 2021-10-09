@@ -2,9 +2,8 @@ package tool
 
 import android.content.Context
 import com.buddha.qrcodeweb.BuildConfig
-import com.buddha.qrcodeweb.R
-import project.main.activity.const.constantName
-import project.main.activity.const.constantPassword
+import project.main.const.constantName
+import project.main.const.constantPassword
 import project.main.database.SendRecordEntity
 import project.main.model.SettingData
 import project.main.model.SettingDataItem

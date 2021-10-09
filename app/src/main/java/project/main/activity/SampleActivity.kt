@@ -7,6 +7,7 @@ import project.main.base.BaseActivity
 
 class SampleActivity : BaseActivity<ActivitySampleBinding>({ ActivitySampleBinding.inflate(it) }) {
 
+    override var statusTextIsDark: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

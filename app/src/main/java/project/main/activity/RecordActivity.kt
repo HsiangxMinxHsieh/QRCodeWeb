@@ -24,13 +24,12 @@ import tool.getUrlKey
 import utils.*
 import java.util.*
 
-class RecordActivity : BaseActivity<ActivityRecordBinding>({ ActivityRecordBinding.inflate(it) }) {
+class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBinding.inflate(it) }) {
 
+    override var statusTextIsDark: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR // 讓狀態列文字是深色
 
         initData()
         if (context.getRecordDao().allData.isEmpty()) {

@@ -10,8 +10,8 @@ import com.buddha.qrcodeweb.databinding.ActivitySplashBinding
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import project.main.activity.const.PERMISSIONS_REQUEST_CODE
-import project.main.activity.const.permissionPerms
+import project.main.const.PERMISSIONS_REQUEST_CODE
+import project.main.const.permissionPerms
 import project.main.base.BaseActivity
 import pub.devrel.easypermissions.EasyPermissions
 import tool.*
@@ -23,6 +23,7 @@ import utils.goToNextPageFinishThisPage
 
 class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBinding.inflate(it) }), EasyPermissions.PermissionCallbacks {
 
+    override var statusTextIsDark: Boolean = false
 
     private val loadingPercent by lazy { context.resources.getStringArray(R.array.loading_percent).asList().map { it.toDouble() } }
 
