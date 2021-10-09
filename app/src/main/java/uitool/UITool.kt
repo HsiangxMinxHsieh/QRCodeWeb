@@ -1,6 +1,7 @@
 package uitool
 
 import android.R
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.res.ColorStateList
@@ -40,6 +41,50 @@ fun hideSystemUI(view: View) {
 
             or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
 }
+/**朝上方動畫打開隱藏Layout的方法，使用動態設定ConstraintSet。
+ * @author 謝蝦米
+ * @Date 2021/08/22
+ * outLayout 控制所有內部Constraint的最外層Layout
+ * @param openBoolean 開啟狀態，關閉時應傳入true，並以傳入之內容指定回該變數，例如open = openLayout(open,...)
+ * @param hideLayout 隱藏在後面，要往下滑出的Layout
+ * @param anchorLayout 顯示在上面，用於定位hideLayout的Layout
+ * */
+fun ConstraintLayout.popUpLayout(openBoolean: Boolean, hideLayout: ConstraintLayout, anchorLayout: ConstraintLayout): Boolean {
+
+    val outLayout = this
+    val duration = this.context.getShare().getAnimationDuration()
+    TransitionManager.beginDelayedTransition(outLayout, AutoTransition().apply { this.duration = duration })
+    this.getAConstraintSetApplyToPopUpLayout(openBoolean, hideLayout, anchorLayout)
+    return !openBoolean
+}
+
+/**實際動態設定ConstraintSet的方法，將new一個ConstraintSet並指定回outLayout
+ * @author 謝蝦米
+ * @Date 2021/08/22
+ * outLayout 控制所有內部Constraint的最外層Layout
+ * @param openBoolean 開啟狀態，關閉時應傳入true，使其開啟。
+ * @param hideLayout 隱藏在後面，要往下滑出的Layout
+ * @param anchorLayout 顯示在上面，用於定位hideLayout的Layout
+ * */
+private fun ConstraintLayout.getAConstraintSetApplyToPopUpLayout(openBoolean: Boolean, hideLayout: ConstraintLayout, anchorLayout: ConstraintLayout) {
+    val outLayout = this
+    ConstraintSet().apply {
+        clone(outLayout)
+        clear(hideLayout.id)
+        constrainHeight(hideLayout.id, if (openBoolean) ConstraintSet.WRAP_CONTENT else 0) // 收合的時候高度要設為0
+
+        connect(hideLayout.id, ConstraintSet.LEFT, outLayout.id, ConstraintSet.LEFT, 0)
+        connect(hideLayout.id, ConstraintSet.RIGHT, outLayout.id, ConstraintSet.RIGHT, 0)
+
+        if (openBoolean) //靠上與靠下的不同對齊方式，主要解決設定Item和顯示Item高度不相同的問題(設定Item比顯示Item還大的時候會出現問題)
+            connect(hideLayout.id, ConstraintSet.BOTTOM, anchorLayout.id, ConstraintSet.TOP)
+        else
+            connect(hideLayout.id, ConstraintSet.BOTTOM, anchorLayout.id, ConstraintSet.TOP)
+
+        applyTo(outLayout)
+    }
+}
+
 /**朝下方動畫打開隱藏Layout的方法，使用動態設定ConstraintSet。
  * @author 謝蝦米
  * @Date 2021/08/22
@@ -65,7 +110,7 @@ fun ConstraintLayout.openLayout(openBoolean: Boolean, hideLayout: ConstraintLayo
  * @param hideLayout 隱藏在後面，要往下滑出的Layout
  * @param anchorLayout 顯示在上面，用於定位hideLayout的Layout
  * */
-fun ConstraintLayout.getAConstraintSetApplyToOutLayout(openBoolean: Boolean, hideLayout: ConstraintLayout, anchorLayout: ConstraintLayout) {
+private fun ConstraintLayout.getAConstraintSetApplyToOutLayout(openBoolean: Boolean, hideLayout: ConstraintLayout, anchorLayout: ConstraintLayout) {
     val outLayout = this
     ConstraintSet().apply {
         clone(outLayout)
@@ -345,7 +390,7 @@ fun View.setPaddingByDpUnit(
  * @param unPressedDrawable 未按下的圖片 R.drawable.image
  * @param pressedDrawable 未按下的圖片 R.drawable.pressedimage
  */
-fun View.setPressedImage(unPressedDrawable: Drawable, pressedDrawable: Drawable?) {
+fun View.setPressedImage(unPressedDrawable: Drawable?, pressedDrawable: Drawable?) {
     if (pressedDrawable == null) {
         this.background = unPressedDrawable
         return
@@ -367,10 +412,11 @@ fun View.setPressedImage(unPressedDrawable: Drawable, pressedDrawable: Drawable?
  * @param unPressedDrawableID 未按下的圖片 R.drawable.image
  * @param pressedDrawableID 未按下的圖片 R.drawable.pressedimage
  */
+@SuppressLint("UseCompatLoadingForDrawables")
 fun View.setPressedImage(unPressedDrawableID: Int, pressedDrawableID: Int) {
     setPressedImage(
-        this.context.resources.getDrawable(unPressedDrawableID),
-        this.context.resources.getDrawable(pressedDrawableID)
+        this.context.getDrawable(unPressedDrawableID),
+        this.context.getDrawable(pressedDrawableID)
     )
 }
 

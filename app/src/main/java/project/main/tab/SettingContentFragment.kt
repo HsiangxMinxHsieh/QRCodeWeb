@@ -253,7 +253,6 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
 
         if (callFrom == CallMode.Confirm) openBooleanList[3] = false
 
-
         val nowIsOpenEditLayoutAndClickEdit = !openBooleanList[3] && callFrom == CallMode.Edit
         logi(TAG, "openColumnEditLayout時，open是=>${openBooleanList[3]},callFrom =>$callFrom")
         logi(TAG, "openColumnEditLayout時，nowIsOpenEditLayoutAndClickEdit是=>${nowIsOpenEditLayoutAndClickEdit}")

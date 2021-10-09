@@ -25,7 +25,7 @@
         <item name="colorControlHighlight">@color/theme_green</item>
     </style>
 
-    <style name="EditColumnDefault" parent="Theme.MaterialComponents.NoActionBar">
+    <style name="EditColumnDefault" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="colorPrimary">@color/theme_green</item>
         <item name="colorAccent">@color/theme_blue</item>
         <item name="android:textColorHint">@color/theme_green</item>

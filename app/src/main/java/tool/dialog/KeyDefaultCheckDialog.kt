@@ -31,6 +31,11 @@ fun Activity.showKeyDefaultCheckDialog(data: KeyDefault = KeyDefault(), finishAc
                     return@setOnClickListener
                 }
 
+                if (dialogBinding.edtPassword.text.toString().isEmpty()) {
+                    dialogBinding.edtPasswordLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
+                    return@setOnClickListener
+                }
+
                 context.getShare().setNowKeyDefault(data.apply {
                     keyName = dialogBinding.edtName.text.toString()
                     keyPassword = dialogBinding.edtPassword.text.toString()

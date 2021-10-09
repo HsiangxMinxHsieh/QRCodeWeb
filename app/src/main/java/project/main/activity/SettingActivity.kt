@@ -22,17 +22,15 @@ import project.main.model.SettingDataItem
 import project.main.tab.SettingContentFragment
 import tool.dialog.TextDialog
 import tool.dialog.showMessageDialogOnlyOKButton
-import uitool.setMarginByDpUnit
-import uitool.setTextSize
-import uitool.setViewSize
 import utils.logAllData
 import utils.logi
 import android.content.Intent
-import android.view.WindowInsetsController
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.content.ContextCompat
+import com.google.android.material.textfield.TextInputLayout
+import project.main.const.constantName
+import project.main.const.constantPassword
 import tool.dialog.showConfirmDialg
+import uitool.*
 
 
 class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBinding.inflate(it) }) {
@@ -46,13 +44,15 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         initData()
 
-        initObserver()
 
         initView()
 
         initEvent()
 
+        initValue()
+
     }
+
 
     private fun initData() {
 
@@ -60,11 +60,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             logi("initData", "偵測到是第一次進入！無設定檔，即將新增一筆預設的")
             settings.add(getDefaultSetting(0))
         }
-
-
-    }
-
-    private fun initObserver() {
 
     }
 
@@ -74,14 +69,31 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         initPagers()
 
+        initKeyDefalut()
+
+    }
+
+    private fun initKeyDefalut() {
+        mBinding.edtNameLayout.apply {
+            endIconMode = TextInputLayout.END_ICON_CUSTOM
+            isEndIconVisible = true
+            endIconDrawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_default_setting)
+        }
+
+        mBinding.edtPasswordLayout.apply {
+            endIconMode = TextInputLayout.END_ICON_CUSTOM
+            isEndIconVisible = true
+            endIconDrawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_default_setting)
+        }
     }
 
     private val pagerAdapter: PagerAdapter get() = PagerAdapter(activity, settings)
 
-
     private val settings: SettingData by lazy { context.getShare().getStoreSettings() }
     private var nowTabIndex = 0
     private var textDialog: TextDialog? = null
+    private var openBoolean = true
+
     private fun initTab() {
         //初始化TabLayout
 
@@ -218,6 +230,36 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         mBinding.btnBack.setOnClickListener {
             activity.onBackPressed()
         }
+
+        //開發中，待完成後再改為長按觸發
+        mBinding.btnKeyDefaultEdit.setOnLongClickListener {
+            openBoolean = mBinding.clMain.popUpLayout(openBoolean, mBinding.clKeyEdit, mBinding.clControl)
+            true
+        }
+        mBinding.btnKeyDefaultEdit.setOnClickListener {
+            if (!openBoolean) { //若以打開，輕按即可關閉，不提示訊息。
+                openBoolean = mBinding.clMain.popUpLayout(openBoolean, mBinding.clKeyEdit, mBinding.clControl)
+            } else {
+                toast(context.getString(R.string.setting_key_default_not_arbitrary_modify))
+            }
+        }
+
+        // 設定回預設值
+        mBinding.edtNameLayout.setEndIconOnLongClickListener {
+            mBinding.edtName.setText(constantName)
+            true
+        }
+
+        // 設定回預設值
+        mBinding.edtPasswordLayout.setEndIconOnLongClickListener {
+            mBinding.edtPassword.setText(constantPassword)
+            true
+        }
+    }
+
+    private fun initValue() {
+        mBinding.edtName.setText(context.getShare().getKeyName())
+        mBinding.edtPassword.setText(context.getShare().getKeyPassword())
     }
 
 
@@ -287,7 +329,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
     }
 
-    private val empty: (Throwable?) -> Unit = {} // 用於不讓使用者經檢查後才可返回的
+    private val empty: (Throwable?) -> Unit = {} // 用於不讓使用者經檢查後才可返回的方法判斷變數(用於判斷是在何處呼叫saveData方法)
 
     //將 index的資料存到sharedPreference內。
     private fun saveData(index: Int, afterSaveAction: (Throwable) -> Unit = empty) {
@@ -307,7 +349,8 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             if (textDialog == null) {
                 textDialog = context.showMessageDialogOnlyOKButton(
                     context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_save_by_same_name).format(
-                        (if (afterSaveAction == empty) context.getString(R.string.setting_save_action)
+                        (if (afterSaveAction == empty)
+                            context.getString(R.string.setting_save_action)
                         else
                             context.getString((R.string.setting_leave_action))),
                         sameName
@@ -318,6 +361,27 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             }
             return
         }
+
+        if (mBinding.edtName.text.toString().isEmpty()) {
+            mBinding.edtNameLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
+            return
+        }
+
+        if (mBinding.edtPassword.text.toString().isEmpty()) {
+            mBinding.edtPasswordLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
+            return
+        }
+        mBinding.edtNameLayout.error = null
+        mBinding.edtPasswordLayout.error = null
+
+        mBinding.clMain.popUpLayout(false, mBinding.clKeyEdit, mBinding.clControl)
+
+        // 取出KeyDefault並存回SharedPreference
+        context.getShare().setNowKeyDefault(context.getShare().getNowKeyDefault()?.apply {
+            keyName = mBinding.edtName.text.toString()
+            keyPassword = mBinding.edtPassword.text.toString()
+            settingStatus += 1
+        } ?: return)
 
         saveData.haveSaved = true
         logi("saveData", "saveData時，saveData 是=>${saveData}")

@@ -4,136 +4,79 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_key_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:background="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/cl_control"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-        <FrameLayout
-            android:id="@+id/fl_column_name"
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/setting_item_margin_start_end"
-            android:layout_marginEnd="@dimen/setting_item_margin_start_end"
-            app:layout_constraintEnd_toStartOf="@+id/vv_column_edit_content_divider"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/tv_column_edit_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="start"
-                android:text="@string/setting_adapter_column_key"
-                android:textColor="@color/theme_blue"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/edt_column_edit_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="start"
-                android:hint="@string/setting_adapter_column_key"
-                android:importantForAutofill="no"
-                android:inputType="text|textMultiLine"
-                android:textColor="@color/theme_blue"
-                android:theme="@style/EditTextHint" />
-        </FrameLayout>
-
-
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/setting_item_margin_start_end"
-            android:layout_marginEnd="@dimen/setting_item_margin_start_end"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/vv_column_edit_content_divider"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fl_column_name">
-
-            <TextView
-                android:id="@+id/tv_column_edit_key"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="start"
-                android:text="@string/setting_adapter_column_key"
-                android:textColor="@color/theme_blue"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/edt_column_edit_key"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="start"
-                android:hint="@string/setting_adapter_column_key"
-                android:importantForAutofill="no"
-                android:inputType="text|textMultiLine"
-                android:textColor="@color/theme_blue"
-                android:theme="@style/EditTextHint" />
-        </FrameLayout>
-
-        <View
-            android:id="@+id/vv_column_edit_content_divider"
-            android:layout_width="2dp"
-            android:layout_height="0dp"
-            android:layout_margin="10dp"
-            android:background="@color/light_blue"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:gravity="center"
+            android:text="@string/splash_key_check_title"
+            android:textColor="@color/theme_green"
+            android:textSize="22sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="@dimen/setting_item_center_divider_ratio"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fl_column_name"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <FrameLayout
-            android:id="@+id/fl_column_value"
-            android:layout_width="0dp"
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edt_name_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/setting_item_margin_start_end"
-            android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/splash_column_title_name"
+            android:textColorHint="@color/theme_green"
+            android:theme="@style/EditColumnDefault"
+            app:endIconTint="@color/theme_green"
+            app:errorEnabled="true"
+            app:hintEnabled="true"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:paddingTop="20dp"
+                android:text="entry.123456"
+                android:textColor="@color/theme_blue" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edt_password_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/splash_column_title_password"
+            android:textColorHint="@color/theme_green"
+            android:theme="@style/EditColumnDefault"
+            app:endIconTint="@color/theme_green"
+            app:errorEnabled="true"
+            app:hintEnabled="true"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/iv_column_check"
-            app:layout_constraintStart_toEndOf="@+id/vv_column_edit_content_divider"
-            app:layout_constraintTop_toBottomOf="@+id/fl_column_name">
+            app:layout_constraintTop_toBottomOf="@+id/edt_name_layout">
 
-            <TextView
-                android:id="@+id/tv_column_edit_content"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="end"
-                android:text="@string/setting_adapter_column_value"
-                android:textColor="@color/theme_blue"
-                android:textStyle="bold" />
+                android:inputType="text"
+                android:paddingTop="20dp"
+                android:text="entry.123456"
+                android:textColor="@color/theme_blue" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            <EditText
-                android:id="@+id/edt_column_edit_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="end"
-                android:hint="@string/setting_adapter_column_value"
-                android:importantForAutofill="no"
-                android:inputType="text|textMultiLine"
-                android:textColor="@color/theme_blue"
-                android:theme="@style/EditTextHint" />
-        </FrameLayout>
 
-        <ImageView
-            android:id="@+id/iv_column_check"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="@dimen/setting_item_margin_start_end"
-            android:contentDescription="@null"
-            android:padding="10dp"
-            android:src="@drawable/ic_baseline_check"
-            app:layout_constraintBottom_toBottomOf="@+id/fl_column_value"
-            app:layout_constraintDimensionRatio="1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/fl_column_value" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
