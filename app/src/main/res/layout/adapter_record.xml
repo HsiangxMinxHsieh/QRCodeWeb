@@ -119,17 +119,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
+        <TextView
             android:id="@+id/iv_record_resend"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:contentDescription="@null"
+            android:background="@drawable/drawable_ripple_resend"
+            android:clickable="true"
+            android:focusable="true"
             android:src="@drawable/ic_baseline_double_arrow"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/vv_record_4"
             app:layout_constraintTop_toTopOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -39,7 +39,7 @@
                 android:layout_marginEnd="16dp"
                 android:hint="@string/splash_column_title_name"
                 android:textColorHint="@color/theme_green"
-                android:theme="@style/EditTextHint"
+                android:theme="@style/EditColumnDefault"
                 app:errorEnabled="true"
                 app:hintEnabled="true"
                >
@@ -63,7 +63,7 @@
                 android:layout_marginEnd="16dp"
                 android:hint="@string/splash_column_title_password"
                 android:textColorHint="@color/theme_green"
-                android:theme="@style/EditTextHint"
+                android:theme="@style/EditColumnDefault"
                 app:errorEnabled="true"
                 app:hintEnabled="true"
                 >
