@@ -5,8 +5,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.ActivitySplashBinding
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -15,17 +17,26 @@ import project.main.const.permissionPerms
 import project.main.base.BaseActivity
 import pub.devrel.easypermissions.EasyPermissions
 import tool.*
+import tool.dialog.KeyCheckDialog
+import tool.dialog.TextDialog
 import tool.dialog.showMessageDialogOnlyOKButton
 import uitool.setTextSize
 import utils.DateTool
 import utils.goToNextPageFinishThisPage
+import utils.logi
 
 
 class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBinding.inflate(it) }), EasyPermissions.PermissionCallbacks {
 
     override var statusTextIsDark: Boolean = false
 
-    private val loadingPercent by lazy { context.resources.getStringArray(R.array.loading_percent).asList().map { it.toDouble() } }
+    private val loadingPercent by lazy {
+        if (context.getShare().isFirstTimeStartThisApp())
+            context.resources.getStringArray(R.array.init_loading_percent).asList().map { it.toDouble() }
+        else
+            context.resources.getStringArray(R.array.loading_percent).asList().map { it.toDouble() }
+
+    }
 
     //總計載入秒數
     private val totalLoadingSec by lazy { (5..7).random().toLong().times(DateTool.oneSec) }
@@ -51,6 +62,11 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
 
         initLoading()
 
+        initEvent()
+
+    }
+
+    private fun initEvent() {
     }
 
     private fun initView() {
@@ -59,10 +75,13 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
     }
 
 
-
     private fun initLoading() {
+        logi(TAG, "totalLoadingSec是=>${totalLoadingSec}")
         loadingByStep(loadingTextArray, loadingPercent, totalLoadingSec)
     }
+    //測試中 待刪除
+
+    var job: Job? = null
 
     /**遞迴方法，每次只載入第一個，完成後傳下一個 loadingTextArray
      * 依照設定的總秒數，分階段載入不同文字與設定的載入比例*/
@@ -83,8 +102,9 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
             val totalPercent = loadingPercent.take(nowExeCuteIndex + 1).sum().toFloat()
             val nowPercent = loadingPercent[nowExeCuteIndex]
             val delayTime = if (nowPercent < 1.0) (totalLoadingSec * nowPercent).toLong() else nowPercent.toLong() * DateTool.oneSec // 若大於等於1的話直接等該秒數
+            logi(TAG, "延遲時間是=>$delayTime")
             mBinding.lvLoadingProgress.setProgressValue(mBinding.lvLoadingProgress.progress, totalPercent, delayTime)
-            MainScope().launch {
+            job = MainScope().launch {
                 delay(delayTime)
                 subList = loadingTextArray.subList(1, loadingTextArray.size)
                 nextIndex++
@@ -97,6 +117,21 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
         val intent = Intent(activity, ScanActivity::class.java)
         activity.goToNextPageFinishThisPage(intent)
         activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+    }
+
+    private fun checkKeyDefaultValue(){
+        KeyCheckDialog(this).apply {
+            this.title = context.getString(R.string.splash_key_check)
+            MainScope().launch {
+                dialogBinding.btnLift.visibility = View.GONE
+                dialogBinding.btnRight.text = context.getString(R.string.dialog_ok)
+                dialogBinding.btnRight.setOnClickListener {
+
+                    dialog.dismiss()
+                }
+                show()
+            }
+        }
     }
 
     private fun checkPermission(): Boolean {
@@ -117,7 +152,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         //權限被拒
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            context.showMessageDialogOnlyOKButton( context.getString(R.string.dialog_notice_title), context.getString(R.string.permission_request)) {
+            context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.permission_request)) {
                 //連續拒絕，導向設定頁設定權限。
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 val uri: Uri = Uri.fromParts("package", packageName, null)

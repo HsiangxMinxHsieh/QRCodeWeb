@@ -5,6 +5,7 @@
     <!--Splash-->
     <string name="splash_title">QRCode簽到器</string>
     <string name="splash_loading_status_start">開始載入</string>
+    <string name="splash_key_check">預設欄位值確認</string>
     <string name="splash_permission_key_word">權限</string> <!--如果Splash載入中出現這個字串，會請求權限。-->
 
     <!--Setting Page-->

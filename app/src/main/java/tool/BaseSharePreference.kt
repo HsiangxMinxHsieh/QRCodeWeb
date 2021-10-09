@@ -33,10 +33,10 @@ class BaseSharePreference(val context: Context) {
     private val KEY_NOW_USE_SETTING = "KEY_NOW_USE_SETTING"
 
     /**CONSTANT_NAME 姓名欄位的欄位名稱(供使用者設定)*/
-    private val KEY_CONSTANT_NAME = "KEY_NOW_USE_SETTING"
+    private val KEY_CONSTANT_NAME_TITLE = "KEY_NOW_USE_SETTING"
 
     /**CONSTANT_PASSWORD 密碼欄位的欄位名稱(供使用者設定) */
-    private val KEY_CONSTANT_PASSWORD = "KEY_NOW_USE_SETTING"
+    private val KEY_CONSTANT_PASSWORD_TITLE = "KEY_NOW_USE_SETTING"
 
     /**KEY_ANIMATION_DURATION 現在的動畫切換秒數 */
     private val KEY_ANIMATION_DURATION = "KEY_ANIMATION_DURATION"
@@ -137,24 +137,24 @@ class BaseSharePreference(val context: Context) {
         putString(context, KEY_HTML_PASSWORD, password)
     }
 
-    /**取得密碼欄位(供新增設定檔時使用) */
+    /**取得密碼欄位的欄位標題(供新增設定檔時使用) */
     fun getKeyPassword(): String {
-        return getString(context, KEY_CONSTANT_PASSWORD,  constantPassword)
+        return getString(context, KEY_CONSTANT_PASSWORD_TITLE,  constantPassword)
     }
 
-    /**設定密碼欄位(供新增設定檔時使用) */
+    /**設定密碼欄位的欄位標題(供新增設定檔時使用) */
     fun setKeyPassword(password: String) {
-        putString(context, KEY_CONSTANT_PASSWORD, password)
+        putString(context, KEY_CONSTANT_PASSWORD_TITLE, password)
     }
 
-    /**取得姓名欄位(供掃碼時判斷、紀錄檔提取時使用)  */
+    /**取得姓名欄位的欄位標題(供掃碼時判斷、紀錄檔提取時使用)  */
     fun getKeyName(): String {
-        return getString(context, KEY_CONSTANT_NAME, constantName)
+        return getString(context, KEY_CONSTANT_NAME_TITLE, constantName)
     }
 
-    /**設定姓名欄位(供掃碼時判斷、紀錄檔提取時使用)   */
+    /**設定姓名欄位的欄位標題(供掃碼時判斷、紀錄檔提取時使用)   */
     fun setKeyName(password: String) {
-        putString(context, KEY_CONSTANT_NAME, password)
+        putString(context, KEY_CONSTANT_NAME_TITLE, password)
     }
 
     /**取得現在使用的設定檔*/

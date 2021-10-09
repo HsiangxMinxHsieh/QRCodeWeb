@@ -3,6 +3,8 @@ package project.main.model
 import android.content.Context
 import com.buddha.qrcodeweb.R
 import com.google.gson.annotations.SerializedName
+import project.main.const.constantName
+import project.main.const.constantPassword
 import tool.getShare
 import java.io.Serializable
 
@@ -32,6 +34,7 @@ enum class ActionMode {
     OpenBrowser,    //2.打開瀏覽器做後續動作
     AnotherWeb      //3.打出去以後想看結果頁(多一個輸入框)
 }
+
 
 data class SettingDataItem(
 
