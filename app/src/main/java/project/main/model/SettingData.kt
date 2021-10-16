@@ -49,6 +49,10 @@ data class SettingDataItem(
 
     @SerializedName("SettingName")
     var name: String = "", // 設定檔案名稱
+
+    @SerializedName("SettingNameKey")
+    var NameKey: String = constantName, // 掃描到的姓名欄位KEY
+
     @SerializedName("GoWebSiteByScan")
     val goWebSiteByScan: GoWebSiteByScan = GoWebSiteByScan(),  // 是否依照QRcode掃到的網址去導向(否的時候能提供文字框輸入)
     // 依照掃碼掃到什麼送什麼              // sendByScan

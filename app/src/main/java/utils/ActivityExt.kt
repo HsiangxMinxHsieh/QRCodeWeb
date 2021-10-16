@@ -34,6 +34,7 @@ suspend fun Activity.sendApi(sendRequest: String, beforeSendAction: () -> Unit =
             return@async false
         } finally {
             MainScope().launch {
+                afterSendAction.invoke()
                 progressDialog.dismiss()
             }
         }

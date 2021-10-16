@@ -30,7 +30,7 @@ import uitool.setTextSize
 //    }
 //}
 
-fun Context.showMessageDialogOnlyOKButton( title: String, message: String, lambda: () -> Unit = {}): TextDialog {
+fun Context.showMessageDialogOnlyOKButton(title: String, message: String, lambda: () -> Unit = {}): TextDialog {
     return TextDialog(this).apply {
         this.title = title
         this.message = message
@@ -47,16 +47,20 @@ fun Context.showMessageDialogOnlyOKButton( title: String, message: String, lambd
     }
 }
 
-fun Context.showConfirmDialg(title: String, message: String, confirmAction: () -> Unit, cancelAction: () -> Unit): TextDialog {
+fun Context.showConfirmDialog(
+    title: String, message: String, confirmAction: () -> Unit, cancelAction: () -> Unit,
+    confirmBtnStr: String = this.getString(R.string.dialog_ok),
+    cancelBtnStr: String = this.getString(R.string.dialog_cancel)
+): TextDialog {
     return TextDialog(this).apply {
         this.title = title
         this.message = message
-        dialogBinding.btnLift.text = context.getString(R.string.dialog_cancel)
+        dialogBinding.btnLift.text = cancelBtnStr
         dialogBinding.btnLift.setOnClickListener {
             cancelAction.invoke()
             dialog.dismiss()
         }
-        dialogBinding.btnRight.text = context.getString(R.string.dialog_ok)
+        dialogBinding.btnRight.text = confirmBtnStr
         dialogBinding.btnRight.setOnClickListener {
             confirmAction()
             dialog.dismiss()

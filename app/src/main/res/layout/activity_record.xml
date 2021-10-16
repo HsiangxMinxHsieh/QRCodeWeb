@@ -127,11 +127,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/iv_record_resend"
+            <TextView
+                android:id="@+id/btn_multiple_select_mode"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:contentDescription="@null"
+                android:background="@drawable/drawable_ripple_multiple_select_mode"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/ic_baseline_multiple_select_mode"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="1"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -143,6 +146,7 @@
                 android:layout_height="1dp"
                 android:background="@color/gray"
                 app:layout_constraintBottom_toBottomOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView

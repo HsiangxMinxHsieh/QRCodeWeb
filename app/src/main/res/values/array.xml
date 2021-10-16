@@ -35,5 +35,9 @@
         <item>1.0</item>
     </string-array>
 
-
+    <string-array name="multiple_resend_mode">
+        <item>紀錄到紀錄</item>
+        <item>多重選擇</item>
+        <item>全部選取</item>
+    </string-array>
 </resources>

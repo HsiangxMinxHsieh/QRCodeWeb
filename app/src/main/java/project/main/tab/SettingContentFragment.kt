@@ -20,7 +20,7 @@ import project.main.base.BaseRecyclerViewDataBindingAdapter
 import project.main.model.ActionMode
 import project.main.model.SendMode
 import tool.dialog.TextDialog
-import tool.dialog.showConfirmDialg
+import tool.dialog.showConfirmDialog
 import tool.dialog.showMessageDialogOnlyOKButton
 import tool.getShare
 import uitool.setTextSize
@@ -81,7 +81,7 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
                 override fun delete(index: Int) {
                     if (textDialog == null) {
                         val field = settingData.fields[index]
-                        textDialog = mContext.showConfirmDialg(mContext.getString(R.string.dialog_notice_title), mContext.getString(R.string.setting_delete_confirm).format(field.columnKey, "欄位"), {
+                        textDialog = mContext.showConfirmDialog(mContext.getString(R.string.dialog_notice_title), mContext.getString(R.string.setting_delete_confirm).format(field.columnKey, "欄位"), {
                             settingData.fields.removeAt(index)
                             mBinding.rvColumn.adapter?.notifyDataSetChanged()
                             textDialog = null

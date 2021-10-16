@@ -38,6 +38,7 @@
     <string name="setting_adapter_column_key">欄位索引</string>
     <string name="setting_adapter_column_value">欄位值</string>
     <string name="setting_key_default_not_arbitrary_modify">請確認是否要更改欄位預設值，若確認要修改請長按按鈕！</string>
+
     <!--Record Page-->
     <!--送出時間、掃到什麼存什麼、送出API的網址、送出時的設定檔都要存下來，可用掃到的QRcode重送(用當前設定檔去重送)。-->
     <string name="record_time">送出時間</string>
@@ -46,7 +47,11 @@
     <string name="record_send_content">送出內容</string>
     <string name="record_send_setting">送出設定檔</string>
     <string name="record_resend_confirm">請確定是否要依照當前「%1$s」的設定檔，將「%2$s」重新簽到？</string>
+    <string name="record_multiple_resend_dialog_title">多選重送模式選擇</string>
     <string name="record_info_dialog_title">%1$s於%2$s的簽到資訊：</string>
+    <string name="record_multiple_resend_no_select">請先選擇要重送的紀錄再執行！</string>
+    <string name="record_multiple_resend_no_select_confirm">確定重選</string>
+    <string name="record_multiple_resend_no_select_cancel">取消不送</string>
 
     <!--對話框共用-->
     <string name="dialog_ok">確定</string>

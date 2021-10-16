@@ -29,7 +29,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
 import project.main.const.constantName
 import project.main.const.constantPassword
-import tool.dialog.showConfirmDialg
+import tool.dialog.showConfirmDialog
 import uitool.*
 
 
@@ -312,7 +312,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         if (textDialog == null) {
             val deleteSettingName = if (settings[index].name.isEmpty()) context.getString(R.string.setting_file_name_default) else settings[index].name
-            textDialog = context.showConfirmDialg(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_delete_confirm).format(deleteSettingName, "設定檔"), {
+            textDialog = context.showConfirmDialog(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_delete_confirm).format(deleteSettingName, "設定檔"), {
                 // 刪除第index筆資料
                 settings.removeAt(index)
                 // 刪除tab
