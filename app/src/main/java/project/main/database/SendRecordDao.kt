@@ -23,7 +23,7 @@ interface SendRecordDao {
     val liveData: LiveData<List<SendRecordEntity>>
 
     @Query("SELECT * FROM SendRecordEntity WHERE send_id = :sendId ")
-    fun searchByPkId(sendId: Long): List<SendRecordEntity>
+    fun searchByPkId(sendId: Long): SendRecordEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(entity: SendRecordEntity): Long

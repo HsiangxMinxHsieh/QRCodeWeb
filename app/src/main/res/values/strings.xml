@@ -47,11 +47,15 @@
     <string name="record_send_content">送出內容</string>
     <string name="record_send_setting">送出設定檔</string>
     <string name="record_resend_confirm">請確定是否要依照當前「%1$s」的設定檔，將「%2$s」重新簽到？</string>
-    <string name="record_multiple_resend_dialog_title">多選重送模式選擇</string>
     <string name="record_info_dialog_title">%1$s於%2$s的簽到資訊：</string>
+    <string name="record_multiple_resend_dialog_title">多選模式選擇</string>
     <string name="record_multiple_resend_no_select">請先選擇要重送的紀錄再執行！</string>
     <string name="record_multiple_resend_no_select_confirm">確定重選</string>
     <string name="record_multiple_resend_no_select_cancel">取消不送</string>
+    <string name="record_multiple_resend_dialog_success_title">重新發送完成。</string>
+    <string name="record_multiple_resend_dialog_success_message">已將 %1$s 筆紀錄依照當前設定檔「%2$s」重新發送完成。</string>
+    <string name="record_multiple_resend_dialog_check_message">請確定是否要依照當前「%1$s」的設定檔，將所選擇的 %2$s 人重新簽到？</string>
+    <string name="record_multiple_resend_progress_text">正在將 %1$s 重新傳輸中，請稍等…</string>
 
     <!--對話框共用-->
     <string name="dialog_ok">確定</string>

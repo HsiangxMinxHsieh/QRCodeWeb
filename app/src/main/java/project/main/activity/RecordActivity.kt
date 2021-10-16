@@ -58,7 +58,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
         if (context.getRecordDao().allData.isEmpty()) {
             mBinding.apply {
                 tvEmptyRecord.isVisible = true
-                btnMultipleSelectMode.isVisible = true //開發中，暫時皆為true。
+                btnMultipleSelectMode.visibility = View.INVISIBLE
             }
         } else {
             mBinding.apply {
@@ -67,7 +67,6 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
             }
             initObserver()
         }
-        initObserver() // 開發中
 
         initView()
 
@@ -97,7 +96,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
             logi(TAG, "觀察到的內容是=>${it}")
             when (it.first) {
                 MultipleStatus.None -> {
-
+                    adapter.clearSelectMap()
                     mBinding.clControl.isVisible = true
                     mBinding.btnResend.isVisible = false
                     mBinding.btnMultipleSelectMode.background = ContextCompat.getDrawable(context, R.drawable.ic_baseline_multiple_select_mode)
@@ -114,9 +113,13 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                             SelectMode.None -> 0 // 原則上不可能到這裡
                         }
                     )
+                    if (it.second == SelectMode.All)
+                        adapter.fullSelectMap()
+
                     mBinding.btnResend.isVisible = true
                 }
                 MultipleStatus.Send -> {
+                    adapter.clearSelectMap()
                     mBinding.btnMultipleSelectMode.background = null
                     mBinding.clControl.visibility = View.INVISIBLE
                 }
@@ -134,7 +137,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 
     inner class SelectClass : RecordAdapter.SelectListener {
 
-        val selectMap: HashMap<Int, String> by lazy { HashMap() }
+        val selectMap: HashMap<Long, String> by lazy { HashMap() }
         var nowSelectIndex = -1
 
         fun init() = this.apply {
@@ -142,11 +145,11 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
             nowSelectIndex = -1
         }
 
-        override fun choose(isSelect: Boolean, index: Int, scanString: String) {
+        override fun choose(isSelect: Boolean, id: Long, scanString: String) {
             if (isSelect) {
-                selectMap[index] = scanString
+                selectMap[id] = scanString
             } else {
-                selectMap.remove(index)
+                selectMap.remove(id)
             }
             logi(TAG, "此時的 selectMap 是=>${selectMap.toJson()}")
         }
@@ -161,7 +164,10 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
             logi(TAG, "點擊到重新送出！掃描到的內容是=>$scanString")
             if (dialog == null) {
                 dialog = showConfirmDialog(context.getString(R.string.dialog_notice_title),
-                    context.getString(R.string.record_resend_confirm).format(context.getShare().getNowUseSetting()?.name, scanString.getUrlKey(context.getShare().getKeyName())), {
+                    context.getString(R.string.record_resend_confirm).format(
+                        context.getShare().getNowUseSetting()?.name,
+                        scanString.getUrlKey(context.getShare().getKeyName())
+                    ), {
                         resendCallApi(scanString, context.getShare().getNowUseSetting())
                         dialog = null
                     }, {
@@ -190,17 +196,19 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 
 
     private fun initView() {
-        // 開發中功能暫時隱藏
-        mBinding.btnDelete.isVisible = false
 
-        mBinding.btnResend.isVisible = false
+        mBinding.apply {
+            btnDelete.isVisible = false // 需要多重選擇的功能初始化時先隱藏。
 
-        mBinding.rvRecord.adapter = adapter
+            btnResend.isVisible = false // 需要多重選擇的功能初始化時先隱藏。
+
+            rvRecord.adapter = adapter
+        }
     }
 
     private var signInResult = ""
 
-    private val empty: (Throwable?) -> Unit = {} // 用於不讓使用者經檢查後才可返回的方法判斷變數(用於判斷是在何處呼叫saveData方法)
+    private val empty: (Throwable?) -> Unit = {} // 是否是空方法判斷
 
     private fun resendCallApi(scanString: String, nowUseSetting: SettingDataItem?, afterCallAction: (Throwable) -> Unit = empty) {
         // Call API
@@ -208,8 +216,11 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
         val signInTime = Date().time
         signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${scanString.getUrlKey(context.getShare().getKeyName())}簽到完成。"
         MainScope().launch {
-            if (activity.sendApi(sendRequest)) {
-
+            if (activity.sendApi(
+                    sendRequest, waitingText =
+                    context.getString(R.string.record_multiple_resend_progress_text).format(scanString.getUrlKey(context.getShare().getKeyName()))
+                )
+            ) {
                 // 顯示簽到結果視窗。
                 if (afterCallAction == empty) {
                     if (dialog == null) {
@@ -250,34 +261,43 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
     }
 
     private fun chooseMultipleSelectMode() {
-        if (dialog == null && nowMultipleStatus.value?.first == MultipleStatus.None) {
-            nowMultipleStatus.postValue(Pair(MultipleStatus.SelectMode, SelectMode.None))
-            val list = mutableListOf<String>().apply {
-                addAll(context.resources.getStringArray(R.array.multiple_resend_mode))
-            }
-            dialog = activity.showListDialog(context.getString(R.string.record_multiple_resend_dialog_title), list,
-                selectAction = { selectIndex, selectData ->
-                    logi(TAG, "選到的position是=>$selectIndex,,,選到的文字是=>$selectData")
-                    nowMultipleStatus.postValue(
-                        Pair(
-                            MultipleStatus.Selecting,
-                            when (selectIndex) {
-                                0 -> SelectMode.P2P
-                                1 -> SelectMode.Select
-                                2 -> SelectMode.All
-                                else -> SelectMode.None
-                            }
-                        )
-                    )
+        if (nowMultipleStatus.value?.first == MultipleStatus.None) {
+            if (dialog == null) {
+                nowMultipleStatus.postValue(Pair(MultipleStatus.SelectMode, SelectMode.None))
+                val list = mutableListOf<String>().apply {
+                    addAll(context.resources.getStringArray(R.array.multiple_resend_mode))
+                }
 
-                    setNowStatusToNoneOrSelecting(MultipleStatus.Selecting)
-                    dialog = null
-                },
-                cancelAction = {
-                    nowMultipleStatus.postValue(Pair(MultipleStatus.SelectMode, SelectMode.None))
-                    dialog = null
-                })
+                dialog = activity.showListDialog(context.getString(R.string.record_multiple_resend_dialog_title), list,
+                    selectAction = { selectIndex, _ ->
+//                        logi(TAG, "選到的position是=>$selectIndex,,,選到的文字是=>$selectData")
+                        setNowStatusToNoneOrSelecting(MultipleStatus.Selecting)
+                        nowMultipleStatus.postValue(
+                            Pair(
+                                MultipleStatus.Selecting,
+                                when (selectIndex) {
+                                    0 -> SelectMode.Select
+                                    1 -> SelectMode.All
+                                    else -> SelectMode.None
+                                } // 開發中，暫時使用殘缺版本
+//                                when (selectIndex) {
+//                                    0 -> SelectMode.P2P
+//                                    1 -> SelectMode.Select
+//                                    2 -> SelectMode.All
+//                                    else -> SelectMode.None
+//                                }
+                            )
+                        )
+
+                        dialog = null
+                    },
+                    cancelAction = {
+                        nowMultipleStatus.postValue(Pair(MultipleStatus.SelectMode, SelectMode.None))
+                        dialog = null
+                    })
+            }
         }
+        nowMultipleStatus.postValue(Pair(MultipleStatus.None, SelectMode.None)) // 避免因使用者按太快導致的問題。
     }
 
     private fun multipleResend() {
@@ -296,41 +316,54 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
             }
             return
         }
-        logi(TAG, "多重重送紀錄點 001")
-        //這裡應該要彈出一個對話框供使用者確認
 
-        nowMultipleStatus.postValue(Pair(MultipleStatus.Send, SelectMode.None))
-        logi(TAG, "多重重送紀錄點 002")
-        recursiveResend(selectClass.selectMap)
+        if (dialog == null) {
+            activity.showConfirmDialog(context.getString(R.string.dialog_notice_title),
+                context.getString(R.string.record_multiple_resend_dialog_check_message)
+                    .format(context.getShare().getNowUseSetting()?.name, selectClass.selectMap.size),
+                {
+                    nowMultipleStatus.postValue(Pair(MultipleStatus.Send, SelectMode.None))
+                    recursiveResend(selectClass.selectMap, selectClass.selectMap.size)
+                    dialog = null
+                },
+                {
+                    setNowStatusToNoneOrSelecting(MultipleStatus.None)
+                    dialog = null
+                })
+        }
+
 
     }
 
-    private fun recursiveResend(map: HashMap<Int, String>) {
-        logi(TAG, "收到的map是=>${map.toJson()}")
+    private fun recursiveResend(map: HashMap<Long, String>, oriSize: Int) {
         if (map.isEmpty()) { // 全部送完
-            setNowStatusToNoneOrSelecting(MultipleStatus.None)
-            logi(TAG, "收到的map是=>${map.toJson()}")
+            dialog = activity.showMessageDialogOnlyOKButton(
+                context.getString(R.string.record_multiple_resend_dialog_success_title),
+                context.getString(R.string.record_multiple_resend_dialog_success_message).format(oriSize, context.getShare().getNowUseSetting()?.name)
+            ) {
+                setNowStatusToNoneOrSelecting(MultipleStatus.None)
+                dialog = null
+            }
             return
         }
-        val nowKey = map.keys.last()
+        val nowKey = map.keys.first()
         val nowSend = map[nowKey] ?: return
         //每次取第一個來重送
         resendCallApi(nowSend, context.getShare().getNowUseSetting()) {
-            recursiveResend(map.apply { remove(nowKey) })
-        }
 
+            recursiveResend(map.apply { remove(nowKey) }, oriSize)
+        }
 
     }
 
     private fun setNowStatusToNoneOrSelecting(status: MultipleStatus) {
         (status == MultipleStatus.None).let { isNone ->
-            if(isNone)
+            if (isNone)
                 nowMultipleStatus.postValue(Pair(MultipleStatus.None, SelectMode.None))
 
             adapter.apply {
                 listener = if (isNone) infoClass else selectClass.init()
                 clearSelectMap()
-                notifyDataSetChanged()
             }
         }
     }
@@ -351,7 +384,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
         }
 
         interface SelectListener : Listener {
-            fun choose(isSelect: Boolean, index: Int, scanString: String)
+            fun choose(isSelect: Boolean, id: Long, scanString: String)
         }
 
         var listener: Listener? = null
@@ -373,15 +406,24 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                         (listener as RecordActivity.InfoListener).resend(data.scanContent)
                     }
                 }
-                root.setBackgroundColor(if (isSelectMap[position] != true) Color.TRANSPARENT else selectBackGroundColor)
+                root.setBackgroundColor(if (isSelectMap[data.sendId] != true) Color.TRANSPARENT else selectBackGroundColor)
             }
         }
 
         fun clearSelectMap() {
             isSelectMap.clear()
+            notifyDataSetChanged()
         }
 
-        private val isSelectMap by lazy { HashMap<Int, Boolean>() }
+        fun fullSelectMap() {
+            context.getRecordDao().allData.forEach {
+                isSelectMap[it.sendId] = true
+                (listener as? SelectListener)?.choose(true, it.sendId, it.scanContent)
+            }
+            notifyDataSetChanged()
+        }
+
+        private val isSelectMap by lazy { HashMap<Long, Boolean>() }
 
         override fun onItemClick(view: View, position: Int, data: SendRecordEntity): Boolean {
             (listener as? InfoListener)?.apply {
@@ -389,14 +431,14 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                 return true
             }
 
-            logi(TAG, "點擊前，isSelectMap判斷是=>${isSelectMap[position] != true}")
-            (isSelectMap[position] != true).apply {
-                (listener as? SelectListener)?.choose(this, position, data.scanContent)
-                isSelectMap[position] = this
+            logi(TAG, "點擊前，isSelectMap判斷是=>${isSelectMap[data.sendId] != true}")
+            (isSelectMap[data.sendId] != true).apply {
+                (listener as? SelectListener)?.choose(this, data.sendId, data.scanContent)
+                isSelectMap[data.sendId] = this
                 view.setBackgroundColor(if (this) selectBackGroundColor else Color.TRANSPARENT)
             }
 
-            logi(TAG, "點擊完成後，isSelectMap是=>${isSelectMap[position]}")
+            logi(TAG, "點擊完成後，isSelectMap是=>${isSelectMap[data.sendId]}")
 
             return false
         }

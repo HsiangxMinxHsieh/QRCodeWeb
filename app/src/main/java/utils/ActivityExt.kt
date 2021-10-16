@@ -11,9 +11,9 @@ import tool.getShare
 import kotlin.coroutines.CoroutineContext
 
 /**顯示送出中等待Dialog、並回傳送出結果。*/
-suspend fun Activity.sendApi(sendRequest: String, beforeSendAction: () -> Unit = {}, afterSendAction: () -> Unit = {}): Boolean {
+suspend fun Activity.sendApi(sendRequest: String, waitingText: String = this.getString(R.string.dialog_progress_default_title), beforeSendAction: () -> Unit = {}, afterSendAction: () -> Unit = {}): Boolean {
     val activity = this
-    val progressDialog = ProgressDialog(activity)
+    val progressDialog = ProgressDialog(activity).apply { title = waitingText }
 
     val result: Deferred<Boolean> = object : CoroutineScope {
         override val coroutineContext: CoroutineContext

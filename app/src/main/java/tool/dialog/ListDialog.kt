@@ -22,6 +22,7 @@ import uitool.getRectangleBg
 import uitool.*
 
 fun Context.showListDialog(title: String, list: MutableList<String>, selectAction:(selectIndex:Int,selectData:String)->Unit, cancelAction: () -> Unit = {}): ListDialog {
+
     return ListDialog(this).apply {
         this.title = title
         this.list = list
