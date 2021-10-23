@@ -506,14 +506,14 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 
                 if (rangeList.any { data.sendId in it }) { // 第二次選到之前選到過的內容，要在之前選過的選項中，要把那個選項找到，並取消選取。
                     //找到之前選過的，取消
-                    val thisRange = rangeList.first { data.sendId in it }
+                    val thisRange = rangeList.findMaxRange(data.sendId)
 //                    logi("紀錄到紀錄選擇除錯", "即將第一次移除：$thisRange")
 //                    logi("紀錄到紀錄選擇除錯", "第一次移除大小=>${context.getRecordDao().searchByIdRange(thisRange).size}")
                     context.getRecordDao().searchByIdRange(thisRange).forEach {
                         it.toSetSelectData(false)
                     }
 //                    logi("紀錄到紀錄選擇除錯", "第一次移除後，isSelectMap 是=>${isSelectMap.toJson()}")
-                    rangeList.remove(thisRange)
+                    rangeList.findHaveSmallerRangeToRemove(thisRange)
                     updateContent()
                 } else if (selectId == -1L) { // 第一次選取
 //                    logi("紀錄到紀錄選擇除錯", "即將第一次選擇，此時的data.sendId是=>${data.sendId}")
@@ -549,14 +549,32 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
         }
 
         override fun onItemLongClick(view: View, position: Int, data: SendRecordEntity): Boolean {
-
             return false
+        }
+
+        /** 移除這個Range，與找到範圍比thisRange更小的Range去移除。*/
+        private fun MutableList<LongRange>.findHaveSmallerRangeToRemove(thisRange: LongRange) {
+            this.remove(thisRange)
+            this.map {
+                if (it.first in thisRange && it.last in thisRange){
+//                    logi("紀錄到紀錄選擇除錯","找到較小Range了！是=>$it")
+                    return@map it
+                }
+                return@map null
+            }.filterNotNull().forEach { this.remove(it) }
+        }
+
+        /**找到給定的數字中，範圍最大的Range*/
+        private fun  List<LongRange>.findMaxRange(sendId: Long): LongRange{
+           return this.sortedBy { it.last-it.first }.last{sendId in it}
         }
 
 
     }
 
 }
+
+
 
 
 
