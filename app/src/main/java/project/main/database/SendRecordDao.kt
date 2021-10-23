@@ -25,6 +25,9 @@ interface SendRecordDao {
     @Query("SELECT * FROM SendRecordEntity WHERE send_id = :sendId ")
     fun searchByPkId(sendId: Long): SendRecordEntity
 
+    @Query("SELECT * FROM SendRecordEntity WHERE send_id >= :idMin AND send_id <= :idMax ")
+    fun searchByIdRange(idMin: Long, idMax: Long): List<SendRecordEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(entity: SendRecordEntity): Long
 
@@ -51,7 +54,8 @@ interface SendRecordDao {
 }
 
 //
-fun SendRecordDao.insertNewRecord(signInTime:Long,scanContent: String, sendContent: String, settingDataItem: SettingDataItem) {
+fun SendRecordDao.insertNewRecord(signInTime: Long, scanContent: String, sendContent: String, settingDataItem: SettingDataItem) {
     this.insert(SendRecordEntity(sendTime = signInTime, scanContent = scanContent, sendContent = sendContent, sendSettingName = settingDataItem.name, sendSettingId = settingDataItem.id))
 }
 
+fun SendRecordDao.searchByIdRange(idRange: LongRange) = this.searchByIdRange(idRange.first.coerceAtMost(idRange.last), idRange.first.coerceAtLeast(idRange.last))

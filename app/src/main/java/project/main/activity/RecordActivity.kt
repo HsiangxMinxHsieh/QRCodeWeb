@@ -17,10 +17,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import project.main.base.BaseActivity
 import project.main.base.BaseRecyclerViewDataBindingAdapter
-import project.main.database.SendRecordEntity
-import project.main.database.getRecordDao
-import project.main.database.getSignInPersonByScan
-import project.main.database.insertNewRecord
+import project.main.database.*
 import project.main.model.SettingDataItem
 import tool.dialog.*
 import tool.getShare
@@ -137,6 +134,9 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                             SelectMode.None -> 0 // 原則上不可能到這裡
                         }
                     )
+                    if (it.second == SelectMode.P2P)
+                        adapter.selectMode = SelectMode.P2P
+
                     if (it.second == SelectMode.All)
                         adapter.fullSelectMap()
 
@@ -162,17 +162,18 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
     private val selectClass: SelectClass by lazy { SelectClass() }
 
 
-    inner class SelectClass : RecordAdapter.SelectListener {
+    class SelectClass : RecordAdapter.SelectListener {
 
         val selectMap: HashMap<Long, String> by lazy { HashMap() }
-        var nowSelectIndex = -1
+//        var nowSelectIndex = -1
 
         fun init() = this.apply {
             selectMap.clear()
-            nowSelectIndex = -1
+//            nowSelectIndex = -1
         }
 
         override fun choose(isSelect: Boolean, id: Long, scanString: String) {
+//            logi("紀錄到紀錄選擇除錯", "id是=>$id，select是=>$isSelect")
             if (isSelect) {
                 selectMap[id] = scanString
             } else {
@@ -348,23 +349,18 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                             Pair(
                                 MultipleStatus.Selecting,
                                 when (selectIndex) {
-                                    0 -> SelectMode.Select
-                                    1 -> SelectMode.All
+                                    0 -> SelectMode.P2P
+                                    1 -> SelectMode.Select
+                                    2 -> SelectMode.All
                                     else -> SelectMode.None
-                                } // 開發中，暫時使用殘缺版本
-//                                when (selectIndex) {
-//                                    0 -> SelectMode.P2P
-//                                    1 -> SelectMode.Select
-//                                    2 -> SelectMode.All
-//                                    else -> SelectMode.None
-//                                }
+                                }
                             )
                         )
 
                         dialog = null
                     },
                     cancelAction = {
-                        nowMultipleStatus.postValue(Pair(MultipleStatus.SelectMode, SelectMode.None))
+                        setNowStatusToNoneOrSelecting(MultipleStatus.None)
                         dialog = null
                     })
             }
@@ -430,7 +426,11 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
     }
 
     class RecordAdapter(val context: Context) : BaseRecyclerViewDataBindingAdapter<SendRecordEntity>(context, R.layout.adapter_record) {
-        val selectBackGroundColor: Int by lazy { context.getColor(R.color.gray) }
+        private val selectBackGroundColor: Int by lazy { context.getColor(R.color.gray) }
+
+        var selectMode: SelectMode = SelectMode.None // 這兩個變數都是P2P要使用的
+        var selectId: Long = -1L
+//        var beforeSelect: Int = -2
 
         interface Listener
 
@@ -442,6 +442,9 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
         interface SelectListener : Listener {
             fun choose(isSelect: Boolean, id: Long, scanString: String)
         }
+
+        private val isSelectMap: HashMap<Long, Boolean> by lazy { HashMap() }
+        private val rangeList: MutableList<LongRange> by lazy { mutableListOf() }
 
         var listener: Listener? = null
 
@@ -469,28 +472,27 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 
         fun clearSelectMap() {
             isSelectMap.clear()
+            rangeList.clear()
+            selectMode = SelectMode.None
+            selectId = -1
             updateContent()
         }
 
         fun fullSelectMap() {
             CoroutineScope(Dispatchers.Default).launch {
                 context.getRecordDao().allData.forEach {
-                    isSelectMap[it.sendId] = true
-                    (listener as? SelectListener)?.choose(true, it.sendId, it.scanContent)
+                    it.toSetSelectData(true)
                 }
                 MainScope().launch {
                     updateContent()
                 }
             }
-
-
         }
 
         private fun updateContent() {
             notifyDataSetChanged()
         }
 
-        private val isSelectMap by lazy { HashMap<Long, Boolean>() }
 
         override fun onItemClick(view: View, position: Int, data: SendRecordEntity): Boolean {
             (listener as? InfoListener)?.apply {
@@ -498,16 +500,52 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                 return true
             }
 
-//            logi(TAG, "點擊前，isSelectMap判斷是=>${isSelectMap[data.sendId] != true}")
-            (isSelectMap[data.sendId] != true).apply {
-                (listener as? SelectListener)?.choose(this, data.sendId, data.scanContent)
-                isSelectMap[data.sendId] = this
-                view.setBackgroundColor(if (this) selectBackGroundColor else Color.TRANSPARENT)
+            if (selectMode == SelectMode.P2P) { // 是P2P的話才要以下操作：
+                logi("紀錄到紀錄選擇除錯", "selectId 是=>$selectId")
+                logi("紀錄到紀錄選擇除錯", "選到的ID是=>${data.sendId},移除判斷是=>${rangeList.any { data.sendId in it }},rangeList 是=>${rangeList.toJson()}")
+
+                if (rangeList.any { data.sendId in it }) { // 第二次選到之前選到過的內容，要在之前選過的選項中，要把那個選項找到，並取消選取。
+                    //找到之前選過的，取消
+                    val thisRange = rangeList.first { data.sendId in it }
+                    logi("紀錄到紀錄選擇除錯", "即將第一次移除：$thisRange")
+                    logi("紀錄到紀錄選擇除錯", "第一次移除大小=>${context.getRecordDao().searchByIdRange(thisRange).size}")
+                    context.getRecordDao().searchByIdRange(thisRange).forEach {
+                        it.toSetSelectData(false)
+                    }
+                    logi("紀錄到紀錄選擇除錯", "第一次移除後，isSelectMap 是=>${isSelectMap.toJson()}")
+                    rangeList.remove(thisRange)
+                    updateContent()
+                } else if (selectId == -1L) { // 第一次選取
+                    logi("紀錄到紀錄選擇除錯", "即將第一次選擇，此時的data.sendId是=>${data.sendId}")
+                    selectId = data.sendId
+                    data.toSetSelectData(true)
+                    view.setBackgroundColor(selectBackGroundColor)
+                } else if (selectId != -1L && rangeList.none { data.sendId in it }) { // 第二次選到selectIndex以外的內容
+                    //要把data.sendId到selectIndex全部選取，放到rangeMap、isSelectMap裡面。
+
+                    rangeList.add(data.sendId.coerceAtMost(selectId)..data.sendId.coerceAtLeast(selectId))
+                    logi("紀錄到紀錄選擇除錯", "即將第二次選擇，DaoSearch結果大小是=>${context.getRecordDao().searchByIdRange(data.sendId..selectId).size}")
+                    context.getRecordDao().searchByIdRange(data.sendId..selectId).forEach {
+                        isSelectMap[it.sendId] = true
+                        it.toSetSelectData(true)
+                    }
+                    updateContent()
+                    selectId = -1L // 選完以後要歸0選擇
+//                    beforeSelect = -1
+                }
+                return false
             }
 
-//            logi(TAG, "點擊完成後，isSelectMap是=>${isSelectMap[data.sendId]}")
-
+            (isSelectMap[data.sendId] != true).apply {
+                data.toSetSelectData(this)
+                view.setBackgroundColor(if (this) selectBackGroundColor else Color.TRANSPARENT)
+            }
             return false
+        }
+
+        private fun SendRecordEntity.toSetSelectData(isSelect: Boolean) {
+            isSelectMap[this.sendId] = isSelect
+            (listener as? SelectListener)?.choose(isSelect, this.sendId, this.scanContent)
         }
 
         override fun onItemLongClick(view: View, position: Int, data: SendRecordEntity): Boolean {
