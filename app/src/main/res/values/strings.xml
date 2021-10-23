@@ -45,6 +45,7 @@
     <string name="record_time">送出時間</string>
     <string name="record_scan_content">掃碼內容</string>
     <string name="record_scan_name">簽到人員</string>
+    <string name="record_is_empty">尚無掃碼簽到紀錄</string>
     <string name="record_send_content">送出內容</string>
     <string name="record_send_setting">送出設定檔</string>
     <string name="record_resend_confirm">請確定是否要依照當前「%1$s」的設定檔，將「%2$s」重新簽到？</string>
@@ -56,7 +57,7 @@
     <string name="record_multiple_resend_dialog_success_title">重新發送完成。</string>
     <string name="record_multiple_resend_dialog_success_message">已將 %1$s 筆紀錄依照當前設定檔「%2$s」重新發送完成。</string>
     <string name="record_multiple_resend_dialog_check_message">請確定是否要依照當前「%1$s」的設定檔，將所選擇的 %2$s 人重新簽到？</string>
-    <string name="record_multiple_resend_progress_text">正在將 %1$s 重新傳輸中，請稍等…</string>
+    <string name="record_multiple_resend_progress_text">正在將 %1$s 重新傳輸中，此為重新傳送中的第%2$s筆，請稍等…</string>
 
     <!--對話框共用-->
     <string name="dialog_ok">確定</string>
@@ -73,7 +74,8 @@
 
     <!--進度框-->
     <string name="dialog_progress_default_title">傳輸中，請稍等…</string>
-    <string name="record_is_empty">尚無掃碼簽到紀錄</string>
+    <string name="record_resend_progress_text">正在將 %1$s 重新傳輸中，請稍等…</string>
+
 
     <!--SharePreference Default Key Value -->
     <string name="share_default_name_column">Null_Name_Column</string>

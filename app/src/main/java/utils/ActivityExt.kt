@@ -24,7 +24,6 @@ suspend fun Activity.sendApi(sendRequest: String, waitingText: String = this.get
             progressDialog.show()
         }
         try {
-            //                val columnValues = context.getShare().getNowUseSetting()?.fields?.map { field -> "${field.columnKey}=${field.columnValue}" }.toString().replace(", ", "&").replace("[", "").replace("]", "")
             logi("Send", "組合後的發送內容是=>$sendRequest")
             val response = getURLResponse(sendRequest)
 //            logi("Send", "取得的錯誤內容是=>${response?.errorBody()?.string()}")

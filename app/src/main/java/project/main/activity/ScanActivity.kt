@@ -21,6 +21,7 @@ import project.main.const.PERMISSIONS_REQUEST_CODE
 import project.main.const.permissionPerms
 import project.main.base.BaseActivity
 import project.main.database.getRecordDao
+import project.main.database.getSignInPersonByScan
 import project.main.database.insertNewRecord
 import tool.*
 import uitool.ViewTool
@@ -83,7 +84,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
         liveResult.observe(activity, Observer {
             // 掃描到的QRCode將在這裡處理。
 
-            if (it.getUrlKey(context.getShare().getKeyName()) == "null") {
+            if (it.getSignInPersonByScan(context) == "null") {
                 if (textDialog == null) {
                     textDialog = activity.showSignInErrorDialog {
                         resumeScreenAnimation()
@@ -93,7 +94,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
                 return@Observer
             }
             val signInTime = Date().time
-            signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${it.getUrlKey(context.getShare().getKeyName())}簽到完成。"
+            signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${it.getSignInPersonByScan(context)}簽到完成。"
 
 //          // 導向至網頁
             val sendRequest = it.concatSettingColumn(context.getShare().getNowUseSetting())

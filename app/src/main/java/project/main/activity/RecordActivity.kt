@@ -17,6 +17,7 @@ import project.main.base.BaseActivity
 import project.main.base.BaseRecyclerViewDataBindingAdapter
 import project.main.database.SendRecordEntity
 import project.main.database.getRecordDao
+import project.main.database.getSignInPersonByScan
 import project.main.database.insertNewRecord
 import project.main.model.SettingDataItem
 import tool.dialog.*
@@ -166,7 +167,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                 dialog = showConfirmDialog(context.getString(R.string.dialog_notice_title),
                     context.getString(R.string.record_resend_confirm).format(
                         context.getShare().getNowUseSetting()?.name,
-                        scanString.getUrlKey(context.getShare().getKeyName())
+                        scanString.getSignInPersonByScan(context)
                     ), {
                         resendCallApi(scanString, context.getShare().getNowUseSetting())
                         dialog = null
@@ -210,15 +211,19 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 
     private val empty: (Throwable?) -> Unit = {} // 是否是空方法判斷
 
-    private fun resendCallApi(scanString: String, nowUseSetting: SettingDataItem?, afterCallAction: (Throwable) -> Unit = empty) {
+    private fun resendCallApi(scanString: String, nowUseSetting: SettingDataItem?, nowThNum: Int = 0, afterCallAction: (Throwable) -> Unit = empty) {
         // Call API
         val sendRequest = scanString.concatSettingColumn(nowUseSetting)
         val signInTime = Date().time
-        signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${scanString.getUrlKey(context.getShare().getKeyName())}簽到完成。"
+        signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${scanString.getSignInPersonByScan(context)}簽到完成。"
         MainScope().launch {
             if (activity.sendApi(
                     sendRequest, waitingText =
-                    context.getString(R.string.record_multiple_resend_progress_text).format(scanString.getUrlKey(context.getShare().getKeyName()))
+                    if (afterCallAction == empty) {
+                        context.getString(R.string.record_resend_progress_text).format(scanString.getSignInPersonByScan(context))
+                    } else {
+                        context.getString(R.string.record_multiple_resend_progress_text).format(scanString.getSignInPersonByScan(context), nowThNum)
+                    }
                 )
             ) {
                 // 顯示簽到結果視窗。
@@ -332,7 +337,6 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                 })
         }
 
-
     }
 
     private fun recursiveResend(map: HashMap<Long, String>, oriSize: Int) {
@@ -349,8 +353,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
         val nowKey = map.keys.first()
         val nowSend = map[nowKey] ?: return
         //每次取第一個來重送
-        resendCallApi(nowSend, context.getShare().getNowUseSetting()) {
-
+        resendCallApi(nowSend, context.getShare().getNowUseSetting(), (oriSize - map.size) + 1) {
             recursiveResend(map.apply { remove(nowKey) }, oriSize)
         }
 
