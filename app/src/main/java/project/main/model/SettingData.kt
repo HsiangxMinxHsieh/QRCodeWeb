@@ -4,7 +4,6 @@ import android.content.Context
 import com.buddha.qrcodeweb.R
 import com.google.gson.annotations.SerializedName
 import project.main.const.constantName
-import project.main.const.constantPassword
 import tool.getShare
 import java.io.Serializable
 
@@ -70,7 +69,8 @@ data class SettingDataItem(
     /**依照ID取得預設的設定檔*/
     companion object {
         fun getDefalutSetting(id: Int, context: Context) = SettingDataItem(id = id, name = (context.getString(R.string.setting_file_name_default))).apply {
-            fields.add(SettingField(fieldName = context.getString(R.string.password_title_default), columnKey = context.getShare().getKeyPassword()))
+            fields.add(SettingField(fieldName = context.getString(R.string.setting_name_title_default), columnKey = context.getShare().getKeyName()))
+            fields.add(SettingField(fieldName = context.getString(R.string.setting_password_title_default), columnKey = context.getShare().getKeyPassword()))
         }
     }
 

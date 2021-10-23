@@ -64,7 +64,7 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
 
         mBinding.clAfterScanAction.isVisible = false
 
-        val edtTextSize =14
+        val edtTextSize = 14
         mBinding.edtColumnEditName.setTextSize(edtTextSize)
         mBinding.edtColumnEditKey.setTextSize(edtTextSize)
         mBinding.edtColumnEditContent.setTextSize(edtTextSize)
@@ -75,7 +75,11 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
             addItem(settingData.fields)
             clickListener = object : SettingColumnAdapter.ClickListener {
                 override fun click(index: Int, data: SettingDataItem.SettingField) {
-                    openColumnEditLayout(CallMode.Edit, data)
+                    if (context.getString(R.string.setting_name_title_default) == data.fieldName) { // 如果是檢核名稱的話要特殊處理，不讓使用者可以編輯檢核名稱欄位和其值
+                        openColumnEditLayout(CallMode.EditNameKeyField, data)
+                    } else {
+                        openColumnEditLayout(CallMode.Edit, data)
+                    }
                 }
 
                 override fun delete(index: Int) {
@@ -120,6 +124,12 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
 
     }
 
+    //控制當前應該只有一個編輯框打開的布林陣列，
+    // 第0個->設定檔名稱
+    // 第1個->導向網址
+    // 第2個->掃碼完成後動作
+    // 第3個->欄位設定
+    // 第4個->預設空值
     private val openBooleanList by lazy { resetBooleanList(arrayListOf()) }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -229,11 +239,11 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
         val editField = SettingDataItem.SettingField(mBinding.edtColumnEditName.text.toString(), mBinding.edtColumnEditKey.text.toString(), mBinding.edtColumnEditContent.text.toString())
 
         //找到當前的Fields裡面是否有editField，如果沒有就要新增，如果有就要更新舊的值
-        if (settingData.fields.none { it.columnKey == editField.columnKey }) { // 找不到，是新增
+        if (settingData.fields.none { it.columnKey == editField.columnKey || it.fieldName == editField.fieldName }) { // 找不到，是新增，或代表只要名稱相同或欄位相同都是編輯。
             settingData.fields.add(editField)
             mBinding.scContent.smoothScrollTo(0, mBinding.clMain.measuredHeight) // 新增的時候才要捲到最下面
         } else { //有找到，是編輯
-            val editIndex = settingData.fields.indexOfFirst { it.columnKey == editField.columnKey }
+            val editIndex = settingData.fields.indexOfFirst { it.columnKey == editField.columnKey || it.fieldName == editField.fieldName }
             settingData.fields[editIndex] = editField
         }
         mBinding.rvColumn.adapter?.notifyDataSetChanged() // 更新畫面
@@ -243,6 +253,7 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
 
     enum class CallMode {
         Edit,
+        EditNameKeyField,
         New,
         Confirm,
         OutSave
@@ -253,31 +264,41 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
 
         if (callFrom == CallMode.Confirm) openBooleanList[3] = false
 
-        val nowIsOpenEditLayoutAndClickEdit = !openBooleanList[3] && callFrom == CallMode.Edit
+        val nowIsOpenEditLayoutAndClickEdit = !openBooleanList[3] && (callFrom == CallMode.Edit || callFrom == CallMode.EditNameKeyField)
         logi(TAG, "openColumnEditLayout時，open是=>${openBooleanList[3]},callFrom =>$callFrom")
         logi(TAG, "openColumnEditLayout時，nowIsOpenEditLayoutAndClickEdit是=>${nowIsOpenEditLayoutAndClickEdit}")
 
 //        mBinding.tvColumnEditNameShadow.isVisible = if (nowIsOpenEditLayoutAndClickEdit) false else openBooleanList[3]  //是打開的情況下按下編輯就絕對不再顯示Shadow文字。
 //        mBinding.tvColumnEditContentShadow.isVisible = if (nowIsOpenEditLayoutAndClickEdit) false else openBooleanList[3]
 //        mBinding.tvColumnEditKeyShadow.isVisible = if (nowIsOpenEditLayoutAndClickEdit) false else openBooleanList[3]
-        mBinding.tvColumnEditNameShadow.isVisible = false // 不知道怎麼回事，editText在某次調整以後就會正常顯示(之前滑出後都沒有辦法直接顯示hint)，所以shadow部分暫時註解。
-        mBinding.tvColumnEditContentShadow.isVisible = false
-        mBinding.tvColumnEditKeyShadow.isVisible = false
 
-        mBinding.tvColumnEditNameShadow.text = if (judgeColumnIsEmpty(field?.fieldName)) mContext.getString(R.string.setting_adapter_column_title) else field?.fieldName
-        mBinding.tvColumnEditKeyShadow.text = if (judgeColumnIsEmpty(field?.columnKey)) mContext.getString(R.string.setting_adapter_column_key) else field?.columnKey
-        mBinding.tvColumnEditContentShadow.text = if (judgeColumnIsEmpty(field?.columnValue)) mContext.getString(R.string.setting_adapter_column_value) else field?.columnValue
+        // 不知道怎麼回事，editText在某次調整以後就會正常顯示(之前滑出後都沒有辦法直接顯示hint)，所以shadow部分暫時關閉與註解。
 
         mBinding.edtColumnEditName.setText(if (judgeColumnIsEmpty(field?.fieldName)) "" else field?.fieldName)
-        mBinding.edtColumnEditKey.setText(if (judgeColumnIsEmpty(field?.columnKey)) "" else field?.columnKey)
-        mBinding.edtColumnEditContent.setText(if (judgeColumnIsEmpty(field?.columnValue)) "" else field?.columnValue)
+        mBinding.tvColumnEditNameShadow.text = if (judgeColumnIsEmpty(field?.fieldName)) mContext.getString(R.string.setting_adapter_column_title) else field?.fieldName
 
-        if (!nowIsOpenEditLayoutAndClickEdit) {// 打開的情況按下編輯不控制EditLayout。
+        mBinding.tvColumnEditKeyShadow.text = if (judgeColumnIsEmpty(field?.columnKey)) mContext.getString(R.string.setting_adapter_column_key) else field?.columnKey
+        mBinding.tvColumnEditKeyShadow.isVisible = false
+        mBinding.edtColumnEditKey.setText(if (judgeColumnIsEmpty(field?.columnKey)) "" else field?.columnKey)
+
+        (callFrom == CallMode.EditNameKeyField).apply {
+
+            mBinding.tvColumnEditNameShadow.isVisible = this //如果是編輯檢核名稱欄位，只可編輯Key
+            mBinding.edtColumnEditName.isVisible = !this
+
+            mBinding.tvColumnEditContentShadow.isVisible = false
+            mBinding.tvColumnEditContentShadow.text = if (judgeColumnIsEmpty(field?.columnValue)) mContext.getString(R.string.setting_adapter_column_value) else field?.columnValue
+            mBinding.edtColumnEditContent.setText(if (judgeColumnIsEmpty(field?.columnValue)) "" else field?.columnValue)
+
+            // 是檢核名稱欄位，特殊顯示
+            mBinding.edtColumnEditContent.isVisible = !this
+        }
+
+        if (!nowIsOpenEditLayoutAndClickEdit) { // 打開的情況按下編輯不控制EditLayout。
             logi(TAG, "openColumnEditLayout時，即將執行開關動作，此時 nowIsOpenEditLayoutAndClickEdit是=>$nowIsOpenEditLayoutAndClickEdit")
             closeAllContentLayout(3)
             openBooleanList[3] = mBinding.clMain.openLayout(openBooleanList[3], mBinding.clColumnEditContent, mBinding.clColumnTitle)
         }
-
 
         return openBooleanList[3]
     }
@@ -382,9 +403,12 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
             val adapterBinding = viewHolder.binding as AdapterSettingColumnBinding
             adapterBinding.tvSettingColumnName.text = data.fieldName
             adapterBinding.tvSettingColumnKey.text = data.columnKey
-            adapterBinding.tvSettingColumnValue.text = if (data.columnValue.isEmpty()) "未設定值" else data.columnValue
-            adapterBinding.tvSettingColumnValue.setTextColor(if (data.columnValue.isEmpty()) context.getColor(R.color.gray) else context.getColor(R.color.theme_blue))
-
+            if (data.fieldName != context.getString(R.string.setting_name_title_default)) {
+                adapterBinding.tvSettingColumnValue.text = if (data.columnValue.isEmpty()) "未設定值" else data.columnValue
+                adapterBinding.tvSettingColumnValue.setTextColor(if (data.columnValue.isEmpty()) context.getColor(R.color.gray) else context.getColor(R.color.theme_blue))
+            } else { // 是檢核名稱，不顯示欄位內容
+                adapterBinding.tvSettingColumnValue.isVisible = false
+            }
         }
 
         override fun onItemClick(view: View, position: Int, data: SettingDataItem.SettingField): Boolean {
