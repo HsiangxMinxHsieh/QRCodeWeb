@@ -501,22 +501,22 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
             }
 
             if (selectMode == SelectMode.P2P) { // 是P2P的話才要以下操作：
-                logi("紀錄到紀錄選擇除錯", "selectId 是=>$selectId")
-                logi("紀錄到紀錄選擇除錯", "選到的ID是=>${data.sendId},移除判斷是=>${rangeList.any { data.sendId in it }},rangeList 是=>${rangeList.toJson()}")
+//                logi("紀錄到紀錄選擇除錯", "selectId 是=>$selectId")
+//                logi("紀錄到紀錄選擇除錯", "選到的ID是=>${data.sendId},移除判斷是=>${rangeList.any { data.sendId in it }},rangeList 是=>${rangeList.toJson()}")
 
                 if (rangeList.any { data.sendId in it }) { // 第二次選到之前選到過的內容，要在之前選過的選項中，要把那個選項找到，並取消選取。
                     //找到之前選過的，取消
                     val thisRange = rangeList.first { data.sendId in it }
-                    logi("紀錄到紀錄選擇除錯", "即將第一次移除：$thisRange")
-                    logi("紀錄到紀錄選擇除錯", "第一次移除大小=>${context.getRecordDao().searchByIdRange(thisRange).size}")
+//                    logi("紀錄到紀錄選擇除錯", "即將第一次移除：$thisRange")
+//                    logi("紀錄到紀錄選擇除錯", "第一次移除大小=>${context.getRecordDao().searchByIdRange(thisRange).size}")
                     context.getRecordDao().searchByIdRange(thisRange).forEach {
                         it.toSetSelectData(false)
                     }
-                    logi("紀錄到紀錄選擇除錯", "第一次移除後，isSelectMap 是=>${isSelectMap.toJson()}")
+//                    logi("紀錄到紀錄選擇除錯", "第一次移除後，isSelectMap 是=>${isSelectMap.toJson()}")
                     rangeList.remove(thisRange)
                     updateContent()
                 } else if (selectId == -1L) { // 第一次選取
-                    logi("紀錄到紀錄選擇除錯", "即將第一次選擇，此時的data.sendId是=>${data.sendId}")
+//                    logi("紀錄到紀錄選擇除錯", "即將第一次選擇，此時的data.sendId是=>${data.sendId}")
                     selectId = data.sendId
                     data.toSetSelectData(true)
                     view.setBackgroundColor(selectBackGroundColor)
@@ -524,7 +524,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                     //要把data.sendId到selectIndex全部選取，放到rangeMap、isSelectMap裡面。
 
                     rangeList.add(data.sendId.coerceAtMost(selectId)..data.sendId.coerceAtLeast(selectId))
-                    logi("紀錄到紀錄選擇除錯", "即將第二次選擇，DaoSearch結果大小是=>${context.getRecordDao().searchByIdRange(data.sendId..selectId).size}")
+//                    logi("紀錄到紀錄選擇除錯", "即將第二次選擇，DaoSearch結果大小是=>${context.getRecordDao().searchByIdRange(data.sendId..selectId).size}")
                     context.getRecordDao().searchByIdRange(data.sendId..selectId).forEach {
                         isSelectMap[it.sendId] = true
                         it.toSetSelectData(true)
