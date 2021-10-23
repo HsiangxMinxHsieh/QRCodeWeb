@@ -70,7 +70,7 @@ class KeyDefaultCheckDialog(val context: Context, val data: KeyDefault) : Dialog
                 tvTitle.visibility = View.GONE
             }
 
-            logi("KeyDefaultCheckDialog", "要設定的內容是=>${data.keyName}")
+//            logi("KeyDefaultCheckDialog", "要設定的內容是=>${data.keyName}")
 
             edtName.setText(data.keyName)
             edtPassword.setText(data.keyPassword)

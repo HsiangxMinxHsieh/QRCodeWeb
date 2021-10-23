@@ -75,7 +75,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
 
 
     private fun initLoading() {
-        logi(TAG, "totalLoadingSec是=>${totalLoadingSec}")
+//        logi(TAG, "totalLoadingSec是=>${totalLoadingSec}")
         loadingByStep(loadingTextArray, loadingPercent, totalLoadingSec)
     }
     //測試中 待刪除
@@ -88,7 +88,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
         if (activity.isFinishing)
             return
         val nowShowText = loadingTextArray.getOrNull(nowExeCuteIndex)
-        logi(TAG, "要顯示的文字是=>$nowShowText,文字列表是=>$loadingTextArray")
+//        logi(TAG, "要顯示的文字是=>$nowShowText,文字列表是=>$loadingTextArray")
         if (nowShowText == null) {
             toNextActivity()
             return
@@ -104,8 +104,8 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
             val totalPercent = loadingPercent.take(nowExeCuteIndex + 1).sum().toFloat() // 前 nowExeCuteIndex + 1 的總和
             val nowPercent = loadingPercent[nowExeCuteIndex]
             val delayTime = if (nowPercent < 1.0) (totalLoadingSec * nowPercent).toLong() else nowPercent.toLong() * DateTool.oneSec // 若大於等於1的話直接等該秒數
-            logi(TAG, "延遲時間是=>$delayTime,index是=>$nowExeCuteIndex")
-            logi(TAG, "顯示百分比是=>$nowPercent,總百分比要設定的是=>${totalPercent},loadingPercent是=>${loadingPercent}")
+//            logi(TAG, "延遲時間是=>$delayTime,index是=>$nowExeCuteIndex")
+//            logi(TAG, "顯示百分比是=>$nowPercent,總百分比要設定的是=>${totalPercent},loadingPercent是=>${loadingPercent}")
             mBinding.lvLoadingProgress.setProgressValue(mBinding.lvLoadingProgress.progress, totalPercent, delayTime)
             job = MainScope().launch {
                 delay(delayTime)

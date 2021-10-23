@@ -11,6 +11,8 @@ import androidx.lifecycle.Observer
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.ActivityRecordBinding
 import com.buddha.qrcodeweb.databinding.AdapterRecordBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import project.main.base.BaseActivity
@@ -80,9 +82,9 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
     private fun initObserver() {
 
         context.getRecordDao().liveData().observe(activity, Observer {
-            logi(TAG, "收到更新通知！新的size是=>${it.size}")
+//            logi(TAG, "收到更新通知！新的size是=>${it.size}")
             adapter.addItem(it.sortedByDescending { it.sendTime }.toMutableList())
-            logi(TAG, "最後一個是=>${it.getOrNull(it.size - 1)}")
+//            logi(TAG, "最後一個是=>${it.getOrNull(it.size - 1)}")
 //            adapter.notifyItemInserted(it.size - 1)
             adapter.notifyDataSetChanged()
 
@@ -90,7 +92,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
         })
 
         nowMultipleStatus.observe(activity, {
-            logi(TAG, "觀察到的內容是=>${it}")
+//            logi(TAG, "觀察到的內容是=>${it}")
             when (it.first) {
                 MultipleStatus.None -> {
                     adapter.clearSelectMap()
@@ -154,7 +156,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
             } else {
                 selectMap.remove(id)
             }
-            logi(TAG, "此時的 selectMap 是=>${selectMap.toJson()}")
+//            logi(TAG, "此時的 selectMap 是=>${selectMap.toJson()}")
         }
 
     }
@@ -164,7 +166,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
     inner class InfoListener : RecordAdapter.InfoListener {
 
         override fun resend(scanString: String) {
-            logi(TAG, "點擊到重新送出！掃描到的內容是=>$scanString")
+//            logi(TAG, "點擊到重新送出！掃描到的內容是=>$scanString")
             if (dialog == null) {
                 dialog = showConfirmDialog(context.getString(R.string.dialog_notice_title),
                     context.getString(R.string.record_resend_confirm).format(
@@ -180,7 +182,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
         }
 
         override fun showInfo(data: SendRecordEntity) {
-            logi(TAG, "點擊到顯示內容！要顯示的內容是=>${data.toJson()}")
+//            logi(TAG, "點擊到顯示內容！要顯示的內容是=>${data.toJson()}")
             if (dialog == null) {
                 dialog = showMessageDialogOnlyOKButton(
                     context.getString(R.string.record_info_dialog_title).format(data.getSignInPerson(context), data.sendTime.toString("HH:mm:ss")), data.toFullInfo(
@@ -270,6 +272,8 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
     }
 
     private fun multipleDelete() {
+        if (checkNowHasSelecToOperate()) return
+
         if (dialog == null) {
             activity.showConfirmDialog(context.getString(R.string.dialog_notice_title), context.getString(R.string.record_delete_confirm).format(selectClass.selectMap.size),
                 confirmAction = {
@@ -285,6 +289,25 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                     dialog = null
                 })
         }
+    }
+
+    private fun checkNowHasSelecToOperate(): Boolean {
+        if (selectClass.selectMap.isEmpty()) {
+            if (dialog == null) {
+                dialog = context.showConfirmDialog(context.getString(R.string.dialog_notice_title), context.getString(R.string.record_multiple_resend_no_select),
+                    confirmAction = { // 確定重選
+                        dialog = null
+                    }, cancelAction = { // 取消操作
+                        setNowStatusToNoneOrSelecting(MultipleStatus.None)
+                        dialog = null
+                    },
+                    confirmBtnStr = context.getString(R.string.record_multiple_resend_no_select_confirm),
+                    cancelBtnStr = context.getString(R.string.record_multiple_resend_no_select_cancel)
+                )
+            }
+            return true
+        }
+        return false
     }
 
     private fun chooseMultipleSelectMode() {
@@ -328,21 +351,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
     }
 
     private fun multipleResend() {
-        if (selectClass.selectMap.isEmpty()) {
-            if (dialog == null) {
-                dialog = context.showConfirmDialog(context.getString(R.string.dialog_notice_title), context.getString(R.string.record_multiple_resend_no_select),
-                    confirmAction = { // 確定重選
-                        dialog = null
-                    }, cancelAction = { // 取消不送
-                        setNowStatusToNoneOrSelecting(MultipleStatus.None)
-                        dialog = null
-                    },
-                    confirmBtnStr = context.getString(R.string.record_multiple_resend_no_select_confirm),
-                    cancelBtnStr = context.getString(R.string.record_multiple_resend_no_select_cancel)
-                )
-            }
-            return
-        }
+        if (checkNowHasSelecToOperate()) return
 
         if (dialog == null) {
             activity.showConfirmDialog(context.getString(R.string.dialog_notice_title),
@@ -441,11 +450,17 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
         }
 
         fun fullSelectMap() {
-            context.getRecordDao().allData.forEach {
-                isSelectMap[it.sendId] = true
-                (listener as? SelectListener)?.choose(true, it.sendId, it.scanContent)
+            CoroutineScope(Dispatchers.Default).launch {
+                context.getRecordDao().allData.forEach {
+                    isSelectMap[it.sendId] = true
+                    (listener as? SelectListener)?.choose(true, it.sendId, it.scanContent)
+                }
+                MainScope().launch {
+                    notifyDataSetChanged()
+                }
             }
-            notifyDataSetChanged()
+
+
         }
 
         private val isSelectMap by lazy { HashMap<Long, Boolean>() }
@@ -456,14 +471,14 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                 return true
             }
 
-            logi(TAG, "點擊前，isSelectMap判斷是=>${isSelectMap[data.sendId] != true}")
+//            logi(TAG, "點擊前，isSelectMap判斷是=>${isSelectMap[data.sendId] != true}")
             (isSelectMap[data.sendId] != true).apply {
                 (listener as? SelectListener)?.choose(this, data.sendId, data.scanContent)
                 isSelectMap[data.sendId] = this
                 view.setBackgroundColor(if (this) selectBackGroundColor else Color.TRANSPARENT)
             }
 
-            logi(TAG, "點擊完成後，isSelectMap是=>${isSelectMap[data.sendId]}")
+//            logi(TAG, "點擊完成後，isSelectMap是=>${isSelectMap[data.sendId]}")
 
             return false
         }

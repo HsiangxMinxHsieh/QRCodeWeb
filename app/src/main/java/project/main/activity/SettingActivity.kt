@@ -57,7 +57,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
     private fun initData() {
 
         if (context.getShare().isFirstTimeStartThisApp()) {
-            logi("initData", "偵測到是第一次進入！無設定檔，即將新增一筆預設的")
+//            logi("initData", "偵測到是第一次進入！無設定檔，即將新增一筆預設的")
             settings.add(getDefaultSetting(0))
         }
 

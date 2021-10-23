@@ -265,8 +265,8 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
         if (callFrom == CallMode.Confirm) openBooleanList[3] = false
 
         val nowIsOpenEditLayoutAndClickEdit = !openBooleanList[3] && (callFrom == CallMode.Edit || callFrom == CallMode.EditNameKeyField)
-        logi(TAG, "openColumnEditLayout時，open是=>${openBooleanList[3]},callFrom =>$callFrom")
-        logi(TAG, "openColumnEditLayout時，nowIsOpenEditLayoutAndClickEdit是=>${nowIsOpenEditLayoutAndClickEdit}")
+//        logi(TAG, "openColumnEditLayout時，open是=>${openBooleanList[3]},callFrom =>$callFrom")
+//        logi(TAG, "openColumnEditLayout時，nowIsOpenEditLayoutAndClickEdit是=>${nowIsOpenEditLayoutAndClickEdit}")
 
 //        mBinding.tvColumnEditNameShadow.isVisible = if (nowIsOpenEditLayoutAndClickEdit) false else openBooleanList[3]  //是打開的情況下按下編輯就絕對不再顯示Shadow文字。
 //        mBinding.tvColumnEditContentShadow.isVisible = if (nowIsOpenEditLayoutAndClickEdit) false else openBooleanList[3]
@@ -295,7 +295,7 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
         }
 
         if (!nowIsOpenEditLayoutAndClickEdit) { // 打開的情況按下編輯不控制EditLayout。
-            logi(TAG, "openColumnEditLayout時，即將執行開關動作，此時 nowIsOpenEditLayoutAndClickEdit是=>$nowIsOpenEditLayoutAndClickEdit")
+//            logi(TAG, "openColumnEditLayout時，即將執行開關動作，此時 nowIsOpenEditLayoutAndClickEdit是=>$nowIsOpenEditLayoutAndClickEdit")
             closeAllContentLayout(3)
             openBooleanList[3] = mBinding.clMain.openLayout(openBooleanList[3], mBinding.clColumnEditContent, mBinding.clColumnTitle)
         }
