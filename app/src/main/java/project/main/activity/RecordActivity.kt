@@ -24,7 +24,6 @@ import project.main.database.insertNewRecord
 import project.main.model.SettingDataItem
 import tool.dialog.*
 import tool.getShare
-import tool.getUrlKey
 import utils.*
 import java.util.*
 import kotlin.collections.HashMap
@@ -77,6 +76,29 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 //        repeat(10) { // 測試資料填入
 //            activity.getRecordDao().insertNewRecord(Date().time, "123", "456", activity.getShare().getNowUseSetting() ?: return)
 //        }
+
+        reAssociateDataSettingId()
+    }
+
+    /** 嘗試重新關聯簽到記錄與設定檔ID與設定檔名稱 */
+    private fun reAssociateDataSettingId() {
+        CoroutineScope(Dispatchers.Default).launch {
+            context.getRecordDao().allData.forEach {
+                if (context.getShare().getSettingById(it.sendSettingId) == null) {
+                    val beforeId = it.sendSettingId
+                    it.sendSettingId = context.getShare().getStoreSettings().filter { set -> set.name == it.sendSettingName }.getOrNull(0)?.id ?: it.sendSettingId
+                    if (beforeId != it.sendSettingId) { //不一樣才要存起來
+                        context.getRecordDao().update(it)
+                    }
+                } else if (it.sendSettingName != context.getShare().getSettingById(it.sendSettingId)?.name) { // 有這筆設定檔，要檢查儲存的 settingName 是否和設定檔中的名稱相同
+
+                    context.getRecordDao().update(it.apply {
+                        this.sendSettingName = context.getShare().getSettingById(it.sendSettingId)?.name ?: "impossible appear。"
+                    })
+                }
+
+            }
+        }
     }
 
     private fun initObserver() {
@@ -434,6 +456,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                 tvRecordScanContent.text = data.getSignInPerson(context)
                 tvRecordSendContent.text = data.sendContent
                 tvRecordSendSetting.text = context.getShare().getSettingNameById(data.sendSettingId, data)
+
                 ((listener as? InfoListener) != null).apply {
                     ivRecordResend.isVisible = this
                     ivRecordResend.setOnClickListener {
@@ -446,7 +469,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 
         fun clearSelectMap() {
             isSelectMap.clear()
-            notifyDataSetChanged()
+            updateContent()
         }
 
         fun fullSelectMap() {
@@ -456,11 +479,15 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                     (listener as? SelectListener)?.choose(true, it.sendId, it.scanContent)
                 }
                 MainScope().launch {
-                    notifyDataSetChanged()
+                    updateContent()
                 }
             }
 
 
+        }
+
+        private fun updateContent() {
+            notifyDataSetChanged()
         }
 
         private val isSelectMap by lazy { HashMap<Long, Boolean>() }
