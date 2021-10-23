@@ -180,7 +180,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
             logi(TAG, "點擊到顯示內容！要顯示的內容是=>${data.toJson()}")
             if (dialog == null) {
                 dialog = showMessageDialogOnlyOKButton(
-                    context.getString(R.string.record_info_dialog_title).format(data.getSignInPerson(context.getShare().getKeyName()), data.sendTime.toString("HH:mm:ss")), data.toFullInfo(
+                    context.getString(R.string.record_info_dialog_title).format(data.getSignInPerson(context), data.sendTime.toString("HH:mm:ss")), data.toFullInfo(
                         context.getString(R.string.record_time),
                         context.getString(R.string.record_scan_content),
                         context.getString(R.string.record_send_content),
@@ -397,7 +397,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 
             adapterBinding.apply {
                 tvRecordTime.text = data.sendTime.toString("yyyy/MM/dd HH:mm:ss")
-                tvRecordScanContent.text = data.getSignInPerson(context.getShare().getKeyName())
+                tvRecordScanContent.text = data.getSignInPerson(context)
                 tvRecordSendContent.text = data.sendContent
                 tvRecordSendSetting.text = context.getShare().getSettingNameById(data.sendSettingId, data)
                 ((listener as? InfoListener) != null).apply {

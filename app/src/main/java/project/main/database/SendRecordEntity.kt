@@ -1,9 +1,15 @@
 package project.main.database
 
+import android.content.Context
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.buddha.qrcodeweb.R
+import project.main.const.constantName
+import project.main.model.SettingDataItem
+import tool.getShare
 import tool.getUrlKey
+import utils.logi
 import utils.toString
 
 
@@ -30,6 +36,10 @@ data class SendRecordEntity(
             "${sendContentKey}:$sendContent\n" +
             "${sendSettingKey}:$sendSettingName"
 
-    /**取得這筆資料的簽到人員名稱*/
-    fun getSignInPerson(key: String) = this.scanContent.getUrlKey(key)
+    /**取得這筆資料的簽到人員名稱  三段式尋找，1.這筆簽到記錄的設定檔中的KEY 2.儲存的KEY 3.預設的KEY 都取不到則為null*/
+    fun getSignInPerson(context: Context): String {
+        return this.scanContent.getUrlKey(context.getShare().getSettingById(this.sendSettingId)?.fields?.filter { it.fieldName == context.getString(R.string.setting_name_title_default) }?.getOrNull(0)?.columnKey ?: "null")
+            ?: this.scanContent.getUrlKey(context.getShare().getKeyName())
+            ?: this.scanContent.getUrlKey(constantName) ?: "null"
+    }
 }

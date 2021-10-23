@@ -1,6 +1,8 @@
 package tool
 
 import android.net.Uri
+import utils.logi
+import utils.toJson
 import java.lang.Exception
 import java.lang.StringBuilder
 import java.net.URL
@@ -20,7 +22,7 @@ import java.util.LinkedHashMap
  * @param key 要取的key
  * @return String 結果
  */
-fun String.getUrlKey(key: String) = getUrlParams(this).getOrElse(key) { "null" }
+fun String.getUrlKey(key: String) = getUrlParams(this).getOrElse(key) { null }
 
 /**
  * 获得解析后的URL参数
