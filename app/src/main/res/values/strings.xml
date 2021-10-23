@@ -58,6 +58,7 @@
     <string name="record_multiple_resend_dialog_success_message">已將 %1$s 筆紀錄依照當前設定檔「%2$s」重新發送完成。</string>
     <string name="record_multiple_resend_dialog_check_message">請確定是否要依照當前「%1$s」的設定檔，將所選擇的 %2$s 人重新簽到？</string>
     <string name="record_multiple_resend_progress_text">正在將 %1$s 重新傳輸中，此為重新傳送中的第%2$s筆，請稍等…</string>
+    <string name="record_delete_confirm">確定要刪除這 %1$s 筆資料嗎？</string>
 
     <!--對話框共用-->
     <string name="dialog_ok">確定</string>

@@ -56,17 +56,13 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 
         initData()
 
-        if (context.getRecordDao().allData.isEmpty()) {
+        (context.getRecordDao().allData.isEmpty()).let {
             mBinding.apply {
-                tvEmptyRecord.isVisible = true
-                btnMultipleSelectMode.visibility = View.INVISIBLE
+                tvEmptyRecord.isVisible = it
+                btnMultipleSelectMode.visibility = if (it) View.INVISIBLE else View.VISIBLE
             }
-        } else {
-            mBinding.apply {
-                tvEmptyRecord.isVisible = false
-                mBinding.btnMultipleSelectMode.isVisible = true
-            }
-            initObserver()
+            if (!it)
+                initObserver()
         }
 
         initView()
@@ -98,9 +94,12 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
             when (it.first) {
                 MultipleStatus.None -> {
                     adapter.clearSelectMap()
-                    mBinding.clControl.isVisible = true
-                    mBinding.btnResend.isVisible = false
-                    mBinding.btnMultipleSelectMode.background = ContextCompat.getDrawable(context, R.drawable.ic_baseline_multiple_select_mode)
+                    mBinding.apply {
+                        clControl.isVisible = true
+                        btnDelete.isVisible = false
+                        btnResend.isVisible = false
+                        btnMultipleSelectMode.background = ContextCompat.getDrawable(context, R.drawable.ic_baseline_multiple_select_mode)
+                    }
                 }
                 MultipleStatus.SelectMode -> {
                     mBinding.btnMultipleSelectMode.background = ContextCompat.getDrawable(context, R.drawable.ic_baseline_multiple_selecting_mode)
@@ -117,7 +116,10 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                     if (it.second == SelectMode.All)
                         adapter.fullSelectMap()
 
-                    mBinding.btnResend.isVisible = true
+                    mBinding.apply {
+                        btnResend.isVisible = true
+                        btnDelete.isVisible = true
+                    }
                 }
                 MultipleStatus.Send -> {
                     adapter.clearSelectMap()
@@ -262,7 +264,27 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
         mBinding.btnResend.setOnClickListener {
             multipleResend()
         }
+        mBinding.btnDelete.setOnClickListener {
+            multipleDelete()
+        }
+    }
 
+    private fun multipleDelete() {
+        if (dialog == null) {
+            activity.showConfirmDialog(context.getString(R.string.dialog_notice_title), context.getString(R.string.record_delete_confirm).format(selectClass.selectMap.size),
+                confirmAction = {
+                    selectClass.selectMap.keys.forEach {
+                        context.getRecordDao().deleteByPkId(it)
+                    }
+                    setNowStatusToNoneOrSelecting(MultipleStatus.None)
+                    dialog = null
+
+                },
+                cancelAction = {
+                    setNowStatusToNoneOrSelecting(MultipleStatus.None)
+                    dialog = null
+                })
+        }
     }
 
     private fun chooseMultipleSelectMode() {
