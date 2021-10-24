@@ -83,8 +83,8 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
     private fun initObserver() {
         liveResult.observe(activity, Observer {
             // 掃描到的QRCode將在這裡處理。
-
-            if (it.getSignInPersonByScan(context) == "null") {
+            val getScanSignInPersonName = it.getSignInPersonByScan(context)
+            if (getScanSignInPersonName == "null") {
                 if (textDialog == null) {
                     textDialog = activity.showSignInErrorDialog {
                         resumeScreenAnimation()
@@ -94,7 +94,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
                 return@Observer
             }
             val signInTime = Date().time
-            signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${it.getSignInPersonByScan(context)}簽到完成。"
+            signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${getScanSignInPersonName}簽到完成。"
 
 //          // 導向至網頁
             val sendRequest = it.concatSettingColumn(context.getShare().getNowUseSetting())
