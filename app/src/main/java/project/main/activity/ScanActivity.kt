@@ -84,6 +84,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
         liveResult.observe(activity, Observer {
             // 掃描到的QRCode將在這裡處理。
             val getScanSignInPersonName = it.getSignInPersonByScan(context)
+
             if (getScanSignInPersonName == "null") {
                 if (textDialog == null) {
                     textDialog = activity.showSignInErrorDialog {
@@ -301,3 +302,5 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
     }
 
 }
+
+

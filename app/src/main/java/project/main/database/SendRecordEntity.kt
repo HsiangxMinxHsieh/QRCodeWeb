@@ -45,4 +45,16 @@ data class SendRecordEntity(
 fun String.getSignInPersonByScan(context: Context, settingId: Int = context.getShare().getNowUseSetting()?.id ?: 0) =
     this.getUrlKey(context.getShare().getSettingById(settingId)?.fields?.filter { it.fieldName == context.getString(R.string.setting_name_title_default) }?.getOrNull(0)?.columnKey ?: "null")
         ?: this.getUrlKey(context.getShare().getKeyName())
-        ?: this.getUrlKey(constantName) ?: "null"
+        ?: this.getUrlKey(constantName)
+        ?: this.findSignInPersonByScanInAllSetting(context)
+        ?: "null"
+
+/**藉由掃描到的字串，使用所有設定檔中的名稱Key來使用，以確定是否是null。*/
+fun String.findSignInPersonByScanInAllSetting(context: Context): String? {
+    context.getShare().getStoreSettings().forEach {
+        val result = this.getUrlKey(it.fields.find { it.fieldName == context.getString(R.string.setting_name_title_default) }?.columnKey ?: "null")
+        if (result != null)
+            return result
+    }
+    return null
+}
