@@ -18,7 +18,7 @@
 
 <h2>執行方法：</h2>
 <h3>一、直接執行</h3>
-請直接下載<a href="https://github.com/HsiangxMinxHsieh/QRCodeWeb/tree/master/readme/apk">此處</a>的APK並安裝到Android手機上即可執行
+請直接下載<a href="https://install.appcenter.ms/users/timmymikebackup-gmail05.com/apps/qr-fo2-tang2-sao3-ma3/distribution_groups/beta">此處</a>的APK並安裝到Android手機上即可執行
 
 <h3>二、下載源碼後Build與執行：</h3>
 (一)請先依照<a href="https://ithelp.ithome.com.tw/articles/10200176">此篇</a>內容下載Android Studio(請下載最新版，因後學所使用gradle版本的關係，造成舊版Android Studio無法執行)</br></br>
