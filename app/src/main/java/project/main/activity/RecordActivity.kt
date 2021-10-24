@@ -238,7 +238,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 
     private val empty: (Throwable?) -> Unit = {} // 是否是空方法判斷
 
-    private fun resendCallApi(scanString: String, nowUseSetting: SettingDataItem?, nowThNum: Int = 0, afterCallAction: (Throwable) -> Unit = empty) {
+    private fun resendCallApi(scanString: String, nowUseSetting: SettingDataItem?, nowThNum: Pair<Int, Int> = Pair(0, 0), afterCallAction: (Throwable) -> Unit = empty) {
         // Call API
         val sendRequest = scanString.concatSettingColumn(nowUseSetting)
         val signInTime = Date().time
@@ -249,7 +249,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                     if (afterCallAction == empty) {
                         context.getString(R.string.record_resend_progress_text).format(scanString.getSignInPersonByScan(context))
                     } else {
-                        context.getString(R.string.record_multiple_resend_progress_text).format(scanString.getSignInPersonByScan(context), nowThNum)
+                        context.getString(R.string.record_multiple_resend_progress_text).format(scanString.getSignInPersonByScan(context), nowThNum.first, nowThNum.second)
                     }
                 )
             ) {
@@ -402,7 +402,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
         val nowKey = map.keys.first()
         val nowSend = map[nowKey] ?: return
         //每次取第一個來重送
-        resendCallApi(nowSend, context.getShare().getNowUseSetting(), (oriSize - map.size) + 1) {
+        resendCallApi(nowSend, context.getShare().getNowUseSetting(), Pair((oriSize - map.size) + 1, oriSize)) {
             recursiveResend(map.apply { remove(nowKey) }, oriSize)
         }
 
@@ -556,7 +556,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
         private fun MutableList<LongRange>.findHaveSmallerRangeToRemove(thisRange: LongRange) {
             this.remove(thisRange)
             this.map {
-                if (it.first in thisRange && it.last in thisRange){
+                if (it.first in thisRange && it.last in thisRange) {
 //                    logi("紀錄到紀錄選擇除錯","找到較小Range了！是=>$it")
                     return@map it
                 }
@@ -565,8 +565,8 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
         }
 
         /**找到給定的數字中，範圍最大的Range*/
-        private fun  List<LongRange>.findMaxRange(sendId: Long): LongRange{
-           return this.sortedBy { it.last-it.first }.last{sendId in it}
+        private fun List<LongRange>.findMaxRange(sendId: Long): LongRange {
+            return this.sortedBy { it.last - it.first }.last { sendId in it }
         }
 
 
