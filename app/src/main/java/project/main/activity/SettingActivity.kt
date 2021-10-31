@@ -150,7 +150,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             setMarginByDpUnit(0, 0, 0, 10)
 
             val color = if (isFirstTab) //第一個Tab要設定不一樣的顏色
-
                     context.getColorByBuildVersion(R.color.theme_green)
             else
                 context.getColorByBuildVersion(R.color.light_green)
