@@ -19,6 +19,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import tool.getShare
+import utils.getColorByBuildVersion
 import utils.logi
 
 
@@ -461,8 +462,8 @@ fun View.setPressedBackgroundColor(unPressedColor: Int, pressedColor: Int) {
         this.setBackgroundResource(unPressedColor)
         return
     }
-    val unPressedcolorDrawable = ColorDrawable(context.resources.getColor(unPressedColor))
-    val pressedcolorDrawable = ColorDrawable(context.resources.getColor(pressedColor))
+    val unPressedcolorDrawable = ColorDrawable(context.getColorByBuildVersion(unPressedColor))
+    val pressedcolorDrawable = ColorDrawable(context.getColorByBuildVersion(pressedColor))
     val states = StateListDrawable()
     states.addState(intArrayOf(R.attr.state_pressed), pressedcolorDrawable)
     states.addState(intArrayOf(R.attr.state_focused), pressedcolorDrawable)
@@ -480,7 +481,7 @@ fun View.setPressedBackgroundColor(unPressedColor: Int, pressedColor: Int) {
 fun View.setPressedTextColor(unPressedColor: Int, pressedColor: Int) {
     val context = this.context
     if (pressedColor == 0) {
-        (this as TextView).setTextColor(context.resources.getColor(unPressedColor))
+        (this as TextView).setTextColor(context.getColorByBuildVersion(unPressedColor))
         return
     }
     val colorStateList = ColorStateList(
@@ -491,10 +492,10 @@ fun View.setPressedTextColor(unPressedColor: Int, pressedColor: Int) {
             intArrayOf()
         ),
         intArrayOf(
-            context.resources.getColor(pressedColor),
-            context.resources.getColor(pressedColor),
-            context.resources.getColor(pressedColor),
-            context.resources.getColor(unPressedColor)
+            context.getColorByBuildVersion(pressedColor),
+            context.getColorByBuildVersion(pressedColor),
+            context.getColorByBuildVersion(pressedColor),
+            context.getColorByBuildVersion(unPressedColor)
         )
     )
     (this as TextView).setTextColor(colorStateList)
@@ -561,12 +562,12 @@ fun View.setTabPressedImage(unPressedDrawableID: Int, pressedDrawableID: Int) {
     var unPressedDrawable: Drawable? = null
     var pressedDrawable: Drawable? = null
     if (unPressedDrawableID == 0) {
-        unPressedDrawable = ColorDrawable(this.resources.getColor(R.color.transparent))
+        unPressedDrawable = ColorDrawable(this.context.getColorByBuildVersion(R.color.transparent))
     } else {
         unPressedDrawable = this.resources.getDrawable(unPressedDrawableID)
     }
     if (pressedDrawableID == 0) {
-        pressedDrawable = ColorDrawable(this.resources.getColor(R.color.transparent))
+        pressedDrawable = ColorDrawable(this.context.getColorByBuildVersion(R.color.transparent))
     } else {
         pressedDrawable = this.resources.getDrawable(pressedDrawableID)
     }
@@ -597,12 +598,12 @@ fun View.setTabPressedBackgroundColor(unPressedDrawableID: Int, pressedDrawableI
     var unPressedDrawable: Drawable? = null
     var pressedDrawable: Drawable? = null
     if (unPressedDrawableID == 0) {
-        unPressedDrawable = ColorDrawable(this.resources.getColor(R.color.transparent))
+        unPressedDrawable = ColorDrawable(this.context.getColorByBuildVersion(R.color.transparent))
     } else {
         unPressedDrawable = this.resources.getDrawable(unPressedDrawableID)
     }
     if (pressedDrawableID == 0) {
-        pressedDrawable = ColorDrawable(this.resources.getColor(R.color.transparent))
+        pressedDrawable = ColorDrawable(this.context.getColorByBuildVersion(R.color.transparent))
     } else {
         pressedDrawable = this.resources.getDrawable(pressedDrawableID)
     }
@@ -616,12 +617,8 @@ fun View.setTabPressedBackgroundColor(unPressedDrawableID: Int, pressedDrawableI
     states.addState(intArrayOf(R.attr.state_checked), unPressedDrawable)
     states.addState(intArrayOf(R.attr.state_selected), pressedDrawable)
     states.addState(intArrayOf(), unPressedDrawable)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        //設定水波文
-        this.setRippleBackround(R.color.holo_blue_bright, states)
-    } else {
-        this.background = states
-    }
+    //設定水波文
+    this.setRippleBackround(R.color.holo_blue_bright, states)
 }
 
 /**
@@ -632,7 +629,7 @@ fun View.setTabPressedBackgroundColor(unPressedDrawableID: Int, pressedDrawableI
 fun View.setTabPressedTextColor(unPressedColor: Int, pressedColor: Int) {
     val context = this.context
     if (pressedColor == 0) {
-        (this as TextView).setTextColor(context.resources.getColor(unPressedColor))
+        (this as TextView).setTextColor(context.getColorByBuildVersion(unPressedColor))
         return
     }
     val colorStateList = ColorStateList(
@@ -644,11 +641,11 @@ fun View.setTabPressedTextColor(unPressedColor: Int, pressedColor: Int) {
             intArrayOf()
         ),
         intArrayOf(
-            context.resources.getColor(unPressedColor),
-            context.resources.getColor(unPressedColor),
-            context.resources.getColor(unPressedColor),
-            context.resources.getColor(pressedColor),
-            context.resources.getColor(unPressedColor)
+            context.getColorByBuildVersion(unPressedColor),
+            context.getColorByBuildVersion(unPressedColor),
+            context.getColorByBuildVersion(unPressedColor),
+            context.getColorByBuildVersion(pressedColor),
+            context.getColorByBuildVersion(unPressedColor)
         )
     )
     (this as TextView).setTextColor(colorStateList)
@@ -656,18 +653,16 @@ fun View.setTabPressedTextColor(unPressedColor: Int, pressedColor: Int) {
 
 /**設定水波文*/
 fun View.setRippleBackround(color: Int, states: Drawable?) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            val rippleDrawable = RippleDrawable(ColorStateList.valueOf(Color.BLACK) , states , null)
-        val attrs = intArrayOf(R.attr.selectableItemBackground)
-        val typedArray = this.context.obtainStyledAttributes(attrs)
-        val rippleDrawable = typedArray.getDrawable(0) as RippleDrawable
-        typedArray.recycle()
-        rippleDrawable.setColor(ColorStateList.valueOf(this.resources.getColor(color)))
-        if (states != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                rippleDrawable.addLayer(states)
-            }
+    //            val rippleDrawable = RippleDrawable(ColorStateList.valueOf(Color.BLACK) , states , null)
+    val attrs = intArrayOf(R.attr.selectableItemBackground)
+    val typedArray = this.context.obtainStyledAttributes(attrs)
+    val rippleDrawable = typedArray.getDrawable(0) as RippleDrawable
+    typedArray.recycle()
+    rippleDrawable.setColor(ColorStateList.valueOf(this.context.getColorByBuildVersion(color)))
+    if (states != null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            rippleDrawable.addLayer(states)
         }
-        this.background = rippleDrawable
     }
+    this.background = rippleDrawable
 }

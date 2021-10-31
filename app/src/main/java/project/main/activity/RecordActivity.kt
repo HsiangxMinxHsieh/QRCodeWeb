@@ -426,7 +426,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
     }
 
     class RecordAdapter(val context: Context) : BaseRecyclerViewDataBindingAdapter<SendRecordEntity>(context, R.layout.adapter_record) {
-        private val selectBackGroundColor: Int by lazy { context.getColor(R.color.gray) }
+        private val selectBackGroundColor: Int by lazy { context.getColorByBuildVersion(R.color.gray) }
 
         var selectMode: SelectMode = SelectMode.None // 這兩個變數都是P2P要使用的
         var selectId: Long = -1L

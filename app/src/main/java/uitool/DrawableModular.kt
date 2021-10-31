@@ -2,6 +2,7 @@ package uitool
 
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
+import utils.getColorByBuildVersion
 
 /**
  *
@@ -27,12 +28,12 @@ object DrawableModular {
      */
     fun createShapeDrawable(context: Context, colorID: Int, radii: FloatArray?, strokeWidth: Int, strokeColorID: Int, gradientDrawableShape: Int): GradientDrawable {
         val gradientDrawable = GradientDrawable()
-        gradientDrawable.setColor(context.resources.getColor(colorID))
+        gradientDrawable.setColor(context.getColorByBuildVersion(colorID))
         if (radii != null) {
             gradientDrawable.cornerRadii = radii
         }
         if (strokeWidth != 0) {
-            gradientDrawable.setStroke(strokeWidth, context.resources.getColor(strokeColorID))
+            gradientDrawable.setStroke(strokeWidth, context.getColorByBuildVersion(strokeColorID))
         }
 
         if (gradientDrawableShape != 0) {

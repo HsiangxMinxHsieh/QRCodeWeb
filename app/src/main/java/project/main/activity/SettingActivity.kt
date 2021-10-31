@@ -25,12 +25,15 @@ import tool.dialog.showMessageDialogOnlyOKButton
 import utils.logAllData
 import utils.logi
 import android.content.Intent
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
 import project.main.const.constantName
 import project.main.const.constantPassword
 import tool.dialog.showConfirmDialog
 import uitool.*
+import utils.getColorByBuildVersion
 
 
 class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBinding.inflate(it) }) {
@@ -147,9 +150,10 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             setMarginByDpUnit(0, 0, 0, 10)
 
             val color = if (isFirstTab) //第一個Tab要設定不一樣的顏色
-                context.resources.getColor(R.color.theme_green, null)
+
+                    context.getColorByBuildVersion(R.color.theme_green)
             else
-                context.resources.getColor(R.color.light_green, null)
+                context.getColorByBuildVersion(R.color.light_green)
             setTextColor(color)
         }
         (tabIndicator.findViewById(R.id.tv_id) as TextView).apply {
@@ -185,7 +189,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 //設定文字為深色
                 tab?.customView?.findViewById<TextView>(R.id.tv_tab_text).apply {
-                    this?.setTextColor(context.getColor(R.color.theme_green))
+                    this?.setTextColor(context.getColorByBuildVersion(R.color.theme_green))
                 }
                 val index = tab?.position ?: 0
                 nowTabIndex = index
@@ -198,7 +202,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             override fun onTabUnselected(tab: TabLayout.Tab?) {
                 //設定文字為淺色
                 tab?.customView?.findViewById<TextView>(R.id.tv_tab_text).apply {
-                    this?.setTextColor(context.getColor(R.color.light_green))
+                    this?.setTextColor(context.getColorByBuildVersion(R.color.light_green))
                 }
 
             }

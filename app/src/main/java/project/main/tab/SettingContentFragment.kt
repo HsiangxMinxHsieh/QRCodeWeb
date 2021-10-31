@@ -24,6 +24,7 @@ import tool.dialog.showConfirmDialog
 import tool.dialog.showMessageDialogOnlyOKButton
 import tool.getShare
 import uitool.setTextSize
+import utils.getColorByBuildVersion
 import utils.logi
 
 @SuppressLint("NotifyDataSetChanged") // 每次都要更新所有欄位中的所有值必須加上的Annotation(不然會出現黃色警告)
@@ -405,7 +406,7 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
             adapterBinding.tvSettingColumnKey.text = data.columnKey
             if (data.fieldName != context.getString(R.string.setting_name_title_default)) {
                 adapterBinding.tvSettingColumnValue.text = if (data.columnValue.isEmpty()) "未設定值" else data.columnValue
-                adapterBinding.tvSettingColumnValue.setTextColor(if (data.columnValue.isEmpty()) context.getColor(R.color.gray) else context.getColor(R.color.theme_blue))
+                adapterBinding.tvSettingColumnValue.setTextColor(if (data.columnValue.isEmpty()) context.getColorByBuildVersion(R.color.gray) else context.getColorByBuildVersion(R.color.theme_blue))
             } else { // 是檢核名稱，不顯示欄位內容
                 adapterBinding.tvSettingColumnValue.isVisible = false
             }
