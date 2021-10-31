@@ -240,7 +240,9 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             if (!openBoolean) { //若以打開，輕按即可關閉，不提示訊息。
                 openBoolean = mBinding.clMain.popUpLayout(openBoolean, mBinding.clKeyEdit, mBinding.clControl)
             } else {
-                toast(context.getString(R.string.setting_key_default_not_arbitrary_modify))
+                textDialog = activity.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title),context.getString(R.string.setting_key_default_not_arbitrary_modify)){
+                    textDialog = null
+                }
             }
         }
 

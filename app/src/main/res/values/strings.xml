@@ -11,6 +11,7 @@
     <string name="splash_column_title_name">姓名欄位</string>
     <string name="splash_column_title_password">密碼欄位</string>
     <string name="splash_column_could_not_be_empty">欄位不可為空!</string>
+    <string name="splash_version">V_%1$s</string>
 
     <!--Setting Page-->
     <string name="setting_file_name_default">未命名的設定檔</string>

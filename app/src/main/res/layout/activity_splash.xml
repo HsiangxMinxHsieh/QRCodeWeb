@@ -8,12 +8,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="project.main.activity.SplashActivity">
+
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/splash_bg"
             android:scaleType="fitXY"
-            />
+            android:src="@drawable/splash_bg" />
+
         <ImageView
             android:id="@+id/iv_logo"
             android:layout_width="0dp"
@@ -27,17 +28,17 @@
             app:layout_constraintVertical_bias="0.3"
             app:layout_constraintWidth_percent="0.7" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/tv_title"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:gravity="center"-->
-<!--            android:text="@string/splash_title"-->
-<!--            android:textColor="@color/black"-->
-<!--            android:textSize="40sp"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/iv_logo" />-->
+        <!--        <TextView-->
+        <!--            android:id="@+id/tv_title"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:gravity="center"-->
+        <!--            android:text="@string/splash_title"-->
+        <!--            android:textColor="@color/black"-->
+        <!--            android:textSize="40sp"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/iv_logo" />-->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ll_loading_status"
@@ -62,16 +63,27 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.airbnb.lottie.LottieAnimationView
-                android:layout_marginTop="10dp"
                 android:id="@+id/lv_loading_progress"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_loading_status"
                 app:lottie_autoPlay="false"
                 app:lottie_loop="false" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/tv_build_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@string/splash_version"
+            android:textColor="@color/theme_blue"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

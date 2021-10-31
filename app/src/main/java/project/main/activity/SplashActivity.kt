@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import com.buddha.qrcodeweb.BuildConfig
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.ActivitySplashBinding
 import kotlinx.coroutines.Job
@@ -71,6 +72,9 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
     private fun initView() {
         mBinding.lvLoadingProgress.initialLottieByFileName(context, AnimationFileName.SPLASH_LOADING, startAfterLoading = false)
         mBinding.tvLoadingStatus.setTextSize(16)
+        mBinding.tvBuildVersion.setTextSize(14)
+
+        mBinding.tvBuildVersion.text = context.getString(R.string.splash_version).format(BuildConfig.VERSION_NAME)
     }
 
 
