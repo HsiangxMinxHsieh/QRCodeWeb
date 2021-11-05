@@ -9,6 +9,7 @@ import android.util.Log
 import com.buddha.qrcodeweb.BuildConfig
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import project.main.model.SendMode
 import project.main.model.SettingDataItem
 import java.io.*
 import java.text.DecimalFormat
@@ -19,7 +20,13 @@ import java.util.*
 
 
 /**導向網址+設定檔欄位結合的功用方法*/
-fun String.concatSettingColumn(settingDataItem: SettingDataItem?) = this + "&" + settingDataItem?.fields?.map { field -> "${field.columnKey}=${field.columnValue}" }?.toString()?.replace(", ", "&")?.replace("[", "")?.replace("]", "") ?: ""
+fun String.concatSettingColumn(settingDataItem: SettingDataItem?): String {
+    val fieldStr = "&" + settingDataItem?.fields?.map { field -> "${field.columnKey}=${field.columnValue}" }?.toString()?.replace(", ", "&")?.replace("[", "")?.replace("]", "") ?: ""
+    return if (settingDataItem?.goWebSiteByScan?.scanMode == SendMode.ByScan)
+        this + fieldStr
+    else
+        (settingDataItem?.goWebSiteByScan?.sendHtml ?: "") + fieldStr
+}
 
 fun Double.format(format: String = "#.#"): String {
     return DecimalFormat(format).format(this)

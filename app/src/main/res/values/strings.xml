@@ -17,6 +17,7 @@
     <string name="setting_file_name_default">未命名的設定檔</string>
     <string name="setting_password_title_default">檢核密碼</string>
     <string name="setting_name_title_default">檢核名稱</string>
+    <string name="setting_id_title_default">檢核ID</string>
     <string name="setting_name_title">設定檔名稱</string>
     <string name="setting_cant_delete_by_size_is_1">當前只有一個設定檔，無法刪除。</string>
     <string name="setting_cant_add_by_not_saved_current">請先編輯當前設定檔，儲存後再新增。</string>

@@ -23,6 +23,7 @@ import project.main.base.BaseActivity
 import project.main.database.getRecordDao
 import project.main.database.getSignInPersonByScan
 import project.main.database.insertNewRecord
+import project.main.model.ActionMode
 import tool.*
 import uitool.ViewTool
 import utils.*
@@ -82,6 +83,14 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
 
     private fun initObserver() {
         liveResult.observe(activity, Observer {
+
+            if (context.getShare().isFirstTimeStartThisApp()) {
+                textDialog = activity.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_file_scan_after_action_1)) {
+                    textDialog = null
+                }
+                return@Observer
+            }
+            val nowSetting = context.getShare().getNowUseSetting()!!
             // 掃描到的QRCode將在這裡處理。
             val getScanSignInPersonName = it.getSignInPersonByScan(context)
 
@@ -97,35 +106,47 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
             val signInTime = Date().time
             signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${getScanSignInPersonName}簽到完成。"
 
-//          // 導向至網頁
-            val sendRequest = it.concatSettingColumn(context.getShare().getNowUseSetting())
-//            Intent().apply {
-//                action = Intent.ACTION_VIEW
-//                data = Uri.parse(sendRequest)
-//                startActivity(this)
-//            }
 
-            // 應用程式內打API
-            MainScope().launch {
-                if (activity.sendApi(sendRequest) { }) {
-                    // 關閉進度框、顯示簽到結果視窗。
-                    if (textDialog == null && signInResult.isNotEmpty()) {
-                        textDialog = activity.showSignInCompleteDialog(signInResult) {
-                            signInResult = ""
-                            resumeScreenAnimation()
-                            textDialog = null
-                            activity.getRecordDao().insertNewRecord(signInTime, it, sendRequest, activity.getShare().getNowUseSetting() ?: return@showSignInCompleteDialog)
+//          // 導向至網頁
+            val sendRequest = it.concatSettingColumn(nowSetting)
+
+            if (nowSetting.afterScanAction.actionMode == ActionMode.OpenBrowser) {
+                Intent().apply {
+                    action = Intent.ACTION_VIEW
+                    data = Uri.parse(sendRequest)
+                    startActivity(this)
+                }
+            } else {
+                // 應用程式內打API
+                MainScope().launch {
+                    if (activity.sendApi(sendRequest) { }) {
+                        // 關閉進度框、顯示簽到結果視窗。
+                        if (nowSetting.afterScanAction.actionMode == ActionMode.StayApp) {
+                            if (textDialog == null && signInResult.isNotEmpty()) {
+
+                                textDialog = activity.showSignInCompleteDialog(signInResult) {
+                                    signInResult = ""
+                                    resumeScreenAnimation()
+                                    textDialog = null
+                                    activity.getRecordDao().insertNewRecord(signInTime, it, sendRequest, nowSetting)
+                                }
+                            }
+                        } else { // 導向至設定的網頁
+                            Intent().apply {
+                                action = Intent.ACTION_VIEW
+                                data = Uri.parse(nowSetting.afterScanAction.toHtml)
+                                startActivity(this)
+                            }
                         }
-                    }
-                } else {
-                    if (textDialog == null) {
-                        textDialog = activity.showSignInErrorDialog {
-                            resumeScreenAnimation()
-                            textDialog = null
+                    } else {
+                        if (textDialog == null) {
+                            textDialog = activity.showSignInErrorDialog {
+                                resumeScreenAnimation()
+                                textDialog = null
+                            }
                         }
                     }
                 }
-
             }
         })
 
@@ -281,7 +302,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
         //權限被拒
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             if (textDialog == null) {
-                textDialog = context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.permission_request)) {
+                textDialog = activity.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.permission_request)) {
                     textDialog = null
                     //連續拒絕，導向設定頁設定權限。
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)

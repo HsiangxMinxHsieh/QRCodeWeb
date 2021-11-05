@@ -12,6 +12,9 @@ data class KeyDefault(
     @SerializedName("key_password")
     var keyPassword: String = constantPassword,
 
+    @SerializedName("key_id")
+    var keyID: String = constantPassword,
+
     @SerializedName("setting_Status")
     var settingStatus: Int = 0 // 0=>未設定,有值以後是1，每次設定都+1
 

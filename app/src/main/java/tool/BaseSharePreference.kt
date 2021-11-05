@@ -2,6 +2,7 @@ package tool
 
 import android.content.Context
 import com.buddha.qrcodeweb.BuildConfig
+import project.main.const.constantID
 import project.main.const.constantName
 import project.main.const.constantPassword
 import project.main.database.SendRecordEntity
@@ -133,6 +134,11 @@ class BaseSharePreference(val context: Context) {
     /**設定送出網頁的Password */
     fun setPassword(password: String) {
         putString(context, KEY_HTML_PASSWORD, password)
+    }
+
+    /**取得ID欄位的欄位標題(供新增設定檔時使用) */
+    fun getKeyID(): String {
+        return getNowKeyDefault()?.keyID?: constantID
     }
 
     /**取得密碼欄位的欄位標題(供新增設定檔時使用) */
