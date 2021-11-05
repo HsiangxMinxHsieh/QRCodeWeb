@@ -21,6 +21,8 @@
     <color name="theme_red">#e01616</color>
 
     <color name="gray">#b2bdd1</color>
+    <color name="dark_gray">#464646</color>
+    <color name="light_gray">#F5F5F5</color>
     <color name="light_green">#b9e3c2</color>
     <color name="light_yellow">#f7e771</color>
 

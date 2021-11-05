@@ -150,7 +150,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             setMarginByDpUnit(0, 0, 0, 10)
 
             val color = if (isFirstTab) //第一個Tab要設定不一樣的顏色
-                    context.getColorByBuildVersion(R.color.theme_green)
+                context.getColorByBuildVersion(R.color.theme_green)
             else
                 context.getColorByBuildVersion(R.color.light_green)
             setTextColor(color)
@@ -243,7 +243,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             if (!openBoolean) { //若以打開，輕按即可關閉，不提示訊息。
                 openBoolean = mBinding.clMain.popUpLayout(openBoolean, mBinding.clKeyEdit, mBinding.clControl)
             } else {
-                textDialog = activity.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title),context.getString(R.string.setting_key_default_not_arbitrary_modify)){
+                textDialog = activity.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_key_default_not_arbitrary_modify)) {
                     textDialog = null
                 }
             }
@@ -376,6 +376,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             mBinding.edtPasswordLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
             return
         }
+        sendBroadcastToUpdateFragment(index)
         mBinding.edtNameLayout.error = null
         mBinding.edtPasswordLayout.error = null
 
@@ -393,8 +394,10 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         context.getShare().savaAllSettings(settings.apply { this[index].haveSaved = true })
         context.getShare().setNowUseSetting(saveData)
 
+        logi("saveData", "saveData時，saveData 01Name是=>${saveData.name}")
+
+        logi("saveData", "saveData時，saveData 02Name是=>${saveData.name}")
         setTabText(saveData)
-        sendBroadcastToUpdateFragment(index)
         afterSaveAction.invoke(Throwable())
     }
 
@@ -428,7 +431,12 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         }
 
         override fun createFragment(position: Int): Fragment {
-            return SettingContentFragment(settingData = setting.getOrNull(position)!!, position)
+            return SettingContentFragment().apply {
+                arguments = Bundle().apply {
+                    putSerializable(SettingContentFragment.BUNDLE_KEY_SETTING_DATA, setting.getOrNull(position))
+                    putInt(SettingContentFragment.BUNDLE_KEY_POSITION, position)
+                }
+            }
         }
     }
 }

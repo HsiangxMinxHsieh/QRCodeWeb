@@ -50,7 +50,7 @@ data class SettingDataItem(
     var name: String = "", // 設定檔案名稱
 
     @SerializedName("GoWebSiteByScan")
-    val goWebSiteByScan: GoWebSiteByScan = GoWebSiteByScan(),  // 是否依照QRcode掃到的網址去導向(否的時候能提供文字框輸入)
+    var goWebSiteByScan: GoWebSiteByScan = GoWebSiteByScan(),  // 是否依照QRcode掃到的網址去導向(否的時候能提供文字框輸入)
     // 依照掃碼掃到什麼送什麼              // sendByScan
     // 輸入自定義的網址組合設定欄位並送出    // sendByCustom
 
@@ -73,16 +73,16 @@ data class SettingDataItem(
 
     data class GoWebSiteByScan(
         @SerializedName("ScanMode")
-        val scanMode: SendMode = SendMode.ByScan,
+        var scanMode: SendMode = SendMode.ByScan,
         @SerializedName("SendHtml")
-        val sendHtml: String? = null
+        var sendHtml: String = "https://"
     )
 
     data class AfterScanAction(
         @SerializedName("ActionMode")
-        val actionMode: ActionMode = ActionMode.StayApp,
+        var actionMode: ActionMode = ActionMode.StayApp,
         @SerializedName("ToHtml")
-        val toHtml: String? = null
+        var toHtml: String = "https://"
     )
 
     data class SettingField(

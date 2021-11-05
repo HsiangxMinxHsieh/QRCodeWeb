@@ -21,6 +21,7 @@
                 android:id="@+id/cl_setting_name_content"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:background="@color/light_gray"
                 app:layout_constraintBottom_toBottomOf="@+id/cl_setting_name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
@@ -171,6 +172,7 @@
                 android:id="@+id/cl_scan_to_direct_content"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:background="@color/light_gray"
                 app:layout_constraintBottom_toBottomOf="@+id/cl_scan_to_direct"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
@@ -257,7 +259,7 @@
                             android:text="https://docs.google.com/spreadsheets/d/1_qmaRk-KMPNBzVrO45WyvUI1-7-s56yUOhtrF56XDTw/edit#gid=0"
                             android:textColor="@color/gray"
                             android:textStyle="bold"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintBottom_toBottomOf="@+id/edt_scan_to_direct_content"
                             app:layout_constraintEnd_toEndOf="@+id/edt_scan_to_direct_content"
                             app:layout_constraintStart_toStartOf="@+id/edt_scan_to_direct_content"
                             app:layout_constraintTop_toBottomOf="@+id/sw_direct" />
@@ -376,6 +378,7 @@
                 android:id="@+id/cl_after_scan_action_content"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:background="@color/light_gray"
                 app:layout_constraintBottom_toBottomOf="@+id/cl_after_scan_action"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
@@ -431,6 +434,7 @@
                             android:id="@+id/tv_after_scan_action_show_1"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
                             android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                             android:gravity="end"
                             android:text="@string/setting_file_scan_after_action_1"
@@ -446,6 +450,7 @@
                             android:id="@+id/tv_after_scan_action_show_2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
                             android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                             android:gravity="end"
                             android:text="@string/setting_file_scan_after_action_2"
@@ -461,7 +466,9 @@
                             android:id="@+id/tv_after_scan_action_show_3"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
                             android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                            android:layout_marginBottom="@dimen/setting_item_margin_top_bottom"
                             android:gravity="end"
                             android:text="@string/setting_file_scan_after_action_3"
                             android:textColor="@color/theme_blue"
@@ -663,6 +670,7 @@
                 android:id="@+id/cl_column_edit_content"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:background="@color/light_gray"
                 app:layout_constraintBottom_toBottomOf="@+id/cl_column_title"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">

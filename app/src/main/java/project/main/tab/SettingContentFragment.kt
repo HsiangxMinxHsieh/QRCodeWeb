@@ -28,7 +28,15 @@ import utils.getColorByBuildVersion
 import utils.logi
 
 @SuppressLint("NotifyDataSetChanged") // 每次都要更新所有欄位中的所有值必須加上的Annotation(不然會出現黃色警告)
-class SettingContentFragment(val settingData: SettingDataItem, val position: Int) : BaseFragment<FragmentSettingContentBinding>(FragmentSettingContentBinding::inflate) {
+class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(FragmentSettingContentBinding::inflate) {
+    companion object {
+        const val BUNDLE_KEY_SETTING_DATA = "BUNDLE_KEY_SETTING_DATA"
+        const val BUNDLE_KEY_POSITION = "BUNDLE_KEY_POSITION"
+    }
+
+    private val settingData by lazy { arguments?.getSerializable(BUNDLE_KEY_SETTING_DATA) as SettingDataItem }
+
+    private val position by lazy { arguments?.getInt(BUNDLE_KEY_POSITION) }
 
     private val upDateDataKey by lazy { mContext.getString(R.string.setting_receiver).format(position) }
 
@@ -48,10 +56,6 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
 
     private val mBroadcastReceiver by lazy { UpdateDataReceiver() }
 
-    private fun unRegisterReceiver() {
-        mActivity.unregisterReceiver(mBroadcastReceiver) // 註銷廣播接收器
-    }
-
 
     private fun initData() {
 
@@ -60,10 +64,10 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
     private fun initView() {
 
 
-        // 開發中  暫時隱藏
-        mBinding.clScanToDirect.isVisible = false
+        // 開發中
+        mBinding.clScanToDirect.isVisible = true
 
-        mBinding.clAfterScanAction.isVisible = false
+        mBinding.clAfterScanAction.isVisible = true
 
         val edtTextSize = 14
         mBinding.edtColumnEditName.setTextSize(edtTextSize)
@@ -99,22 +103,7 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
         }
     }
 
-//    private fun setColumeEditLayoutValue(field: SettingDataItem.SettingField) {
-//        mBinding.tvColumnEditName.isVisible = false
-//        mBinding.tvColumnEditContent.isVisible = false
-//        mBinding.tvColumnEditKey.isVisible = false
-//
-//        mBinding.tvColumnEditName.text = if (judgeColumnIsEmpty(field.fieldName)) mContext.getString(R.string.setting_adapter_column_title) else field.fieldName
-//        mBinding.tvColumnEditKey.text = if (judgeColumnIsEmpty(field.columnKey)) mContext.getString(R.string.setting_adapter_column_key) else field.columnKey
-//        mBinding.tvColumnEditContent.text = if (judgeColumnIsEmpty(field.columnValue)) mContext.getString(R.string.setting_adapter_column_value) else field.columnValue
-//
-//        mBinding.edtColumnEditName.setText(if (judgeColumnIsEmpty(field.fieldName)) "" else field.fieldName)
-//        mBinding.edtColumnEditKey.setText(if (judgeColumnIsEmpty(field.columnKey)) "" else field.columnKey)
-//        mBinding.edtColumnEditContent.setText(if (judgeColumnIsEmpty(field.columnValue)) "" else field.columnValue)
-//    }
-
-
-    private fun initValue() {
+    private fun setScreenValue() {
 
         val setValue = mContext.getShare().getSettingById(settingData.id) // 取出設定檔來設定
         val showName = if (setValue?.haveSaved == true) setValue.name else mContext.getString(R.string.setting_file_name_default)
@@ -122,7 +111,60 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
         mBinding.tvSettingNameShadow.text = showName
         mBinding.tvSettingNameShow.text = showName
 
+        mBinding.setScanModeTextValue(settingData.goWebSiteByScan.scanMode == SendMode.ByScan) // false是自定義，true是掃到什麼傳什麼
 
+        mBinding.setAfterScanAction(settingData.afterScanAction)
+
+    }
+
+
+    private fun FragmentSettingContentBinding.setScanModeTextValue(isChecked: Boolean) {
+        this.apply {
+            swDirect.isChecked = isChecked
+            val result = if (isChecked) mContext.getString(R.string.setting_file_send_mode_by_scan) else
+                mContext.getString(R.string.setting_file_send_mode_by_custom)
+            tvScanToDirectShow.text = result
+            tvScanToDirectHtml.isVisible = !isChecked
+            tvScanToDirectHtml.text = settingData.goWebSiteByScan.sendHtml
+            tvScanToDirectContentShow.text = result
+            edtScanToDirectContent.isVisible = !isChecked
+            edtScanToDirectContent.setText(settingData.goWebSiteByScan.sendHtml)
+            tvScanToDirectContentShadow.text = settingData.goWebSiteByScan.sendHtml
+            tvScanToDirectContentShadow.isVisible = !isChecked
+        }
+    }
+
+    private fun FragmentSettingContentBinding.setAfterScanAction(action: SettingDataItem.AfterScanAction) {
+        this.apply {
+            tvAfterScanActionShow.text = when (action.actionMode) {
+                ActionMode.StayApp -> {
+                    setAllChoiceTextToGrayExclusiveIndex(0)
+                    mContext.getString(R.string.setting_file_scan_after_action_1)
+                }
+                ActionMode.OpenBrowser -> {
+                    setAllChoiceTextToGrayExclusiveIndex(1)
+                    mContext.getString(R.string.setting_file_scan_after_action_2)
+                }
+                ActionMode.AnotherWeb -> {
+                    setAllChoiceTextToGrayExclusiveIndex(2)
+                    mContext.getString(R.string.setting_file_scan_after_action_3)
+                }
+            }
+            (action.actionMode == ActionMode.AnotherWeb).apply {
+                tvAfterScanActionHtml.isVisible = this
+                tvAfterScanActionHtml.text = action.toHtml
+                edtAfterScanToDirect.setText(action.toHtml)
+            }
+
+        }
+    }
+
+    private fun FragmentSettingContentBinding.setAllChoiceTextToGrayExclusiveIndex(index: Int) {
+        val textViewArray = arrayOf(tvAfterScanActionShow1, tvAfterScanActionShow2, tvAfterScanActionShow3)
+        this.apply {
+            textViewArray.forEach { it.setTextColor(mContext.getColorByBuildVersion(R.color.dark_gray)) }
+            textViewArray[index].setTextColor(mContext.getColorByBuildVersion(R.color.theme_blue))
+        }
     }
 
     //控制當前應該只有一個編輯框打開的布林陣列，
@@ -145,7 +187,6 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
             openBooleanList[0] = mBinding.clMain.openLayout(openBooleanList[0], mBinding.clSettingNameContent, mBinding.clSettingName)
         }
 
-
         mBinding.clScanToDirect.setOnClickListener {
             closeAllContentLayout(1)
 //            logi(TAG, "此時openLayout布林值是：$openBooleanList")
@@ -162,7 +203,6 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
             openBooleanList[2] = mBinding.clMain.openLayout(openBooleanList[2], mBinding.clAfterScanActionContent, mBinding.clAfterScanAction)
             judgeNeedShowHtmlEdit(settingData.afterScanAction.actionMode == ActionMode.AnotherWeb, settingData.afterScanAction.toHtml, mBinding.tvAfterScanActionHtmlShadow, mBinding.edtAfterScanToDirect)
 //            judgeNeedShowHtmlEdit(true, "settingData.afterScanAction.toHtml", mBinding.tvAfterScanActionHtmlShadow, mBinding.edtAfterScanToDirect)
-
         }
 
         mBinding.clColumnTitle.setOnClickListener {
@@ -206,20 +246,49 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
             false
         }
 
-        // 內容修改設定
+        // 內容修改設定 //因為儲存時要更新到Tab，所以如果儲存時再指定值會來不及。
         mBinding.edtSettingNameContent.addTextChangedListener {
             settingData.name = it.toString()
         }
 
+        mBinding.swDirect.setOnCheckedChangeListener { _, isChecked ->
+            mBinding.apply {
+                tvScanToDirectContentShow.text = if (isChecked) mContext.getString(R.string.setting_file_send_mode_by_scan) else
+                    mContext.getString(R.string.setting_file_send_mode_by_custom)
+                edtScanToDirectContent.isVisible = !isChecked //自定義(為false時)才要顯示
+                tvScanToDirectContentShadow.isVisible = false
+            }
+        }
+
+        mBinding.tvAfterScanActionShow1.setOnClickListener {
+            mBinding.setAllChoiceTextToGrayExclusiveIndex(0)
+            mBinding.tvAfterScanActionHtmlShadow.isVisible = false
+            mBinding.edtAfterScanToDirect.isVisible = false
+            settingData.afterScanAction.actionMode = ActionMode.StayApp
+        }
+
+        mBinding.tvAfterScanActionShow2.setOnClickListener {
+            mBinding.setAllChoiceTextToGrayExclusiveIndex(1)
+            mBinding.tvAfterScanActionHtmlShadow.isVisible = false
+            mBinding.edtAfterScanToDirect.isVisible = false
+            settingData.afterScanAction.actionMode = ActionMode.OpenBrowser
+        }
+
+        mBinding.tvAfterScanActionShow3.setOnClickListener {
+            mBinding.setAllChoiceTextToGrayExclusiveIndex(2)
+            mBinding.tvAfterScanActionHtmlShadow.isVisible = false
+            mBinding.edtAfterScanToDirect.isVisible = true
+            settingData.afterScanAction.actionMode = ActionMode.AnotherWeb
+        }
 
         mBinding.ivColumnCheck.setOnClickListener {
             if (saveFieldToData(CallMode.Confirm)) { //儲存成功才要收回編輯Layout與捲動頁面
                 openColumnEditLayout(callFrom = CallMode.Confirm)
-
             }
         }
 
     }
+
 
     /** 按下欄位編輯的綠色勾勾要執行的方法：  */
 
@@ -358,7 +427,7 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
     override fun onResume() {
         super.onResume()
 //        logi("name Setting trace", "onResume")
-        initValue() // 返回時更新值
+        setScreenValue() // 返回時更新值
     }
 
     override fun onPause() {
@@ -372,17 +441,46 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
         unRegisterReceiver()
     }
 
+    private fun unRegisterReceiver() {
+        mActivity.unregisterReceiver(mBroadcastReceiver) // 註銷廣播接收器
+    }
+
+
+    fun storeDataToSettingItem() {
+
+        settingData.apply {
+            // 設定檔名稱
+
+            name = mBinding.edtSettingNameContent.text.toString()
+
+            // 掃碼網址內容
+            goWebSiteByScan = SettingDataItem.GoWebSiteByScan().apply {
+                scanMode = if (mBinding.swDirect.isChecked) SendMode.ByScan else SendMode.ByCustom
+                sendHtml = mBinding.edtScanToDirectContent.text.toString()
+            }
+
+            // 掃碼後動作(導到網頁)
+            afterScanAction.toHtml = mBinding.edtAfterScanToDirect.text.toString()
+
+        }
+    }
+
     inner class UpdateDataReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            initValue() // 收到SaveData發的BroadCast時要更新值
 
+            //將畫面內容設定值儲存至
+            storeDataToSettingItem()
+//            logi(TAG, "儲存完畢，名稱內容是=>${mBinding.edtSettingNameContent.text}")
             // 按下儲存時要做綠色勾勾做的事
             saveFieldToData(CallMode.OutSave) // 無論是否儲存成功都要收回編輯Layout與捲動頁面
             openColumnEditLayout(callFrom = CallMode.Confirm)
             closeAllContentLayout(4)
+
+
             mContext.getShare().savaSetting(settingData)
             mContext.getShare().setNowUseSetting(settingData)
 
+            setScreenValue() // 收到SaveData發的BroadCast時，儲存完畢要更新值
 
         }
     }
@@ -424,5 +522,7 @@ class SettingContentFragment(val settingData: SettingDataItem, val position: Int
         }
     }
 }
+
+
 
 

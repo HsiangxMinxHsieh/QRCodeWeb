@@ -29,6 +29,7 @@
     <string name="setting_receiver">updateDataKey_%1$s</string>
     <string name="setting_scan_to_direct_title">掃描導向方式</string>
     <string name="setting_file_send_mode_by_scan">依照掃描內容</string>
+    <string name="setting_file_send_mode_by_custom">自定義網址</string>
     <string name="setting_after_scan_action_title">掃碼後動作</string>
     <string name="setting_file_scan_after_action_1">停留於App</string>
     <string name="setting_file_scan_after_action_2">另開瀏覽器至掃碼結果網頁</string>
