@@ -63,11 +63,13 @@ data class SettingDataItem(
     val fields: ArrayList<SettingField> = arrayListOf() //設定值 (多個)
 ) : Serializable {
 
+    fun getFieldsKeyByName(name: String) = this.fields.firstOrNull { it.fieldName == name }?.columnKey
+
     /**依照ID取得預設的設定檔*/
     companion object {
         fun getDefalutSetting(id: Int, context: Context) = SettingDataItem(id = id, name = (context.getString(R.string.setting_file_name_default))).apply {
-            fields.add(SettingField(fieldName = context.getString(R.string.setting_id_title_default), columnKey = context.getShare().getKeyPassword()))
-            fields.add(SettingField(fieldName = context.getString(R.string.setting_name_title_default), columnKey = context.getShare().getKeyName()))
+            fields.add(SettingField(fieldName = context.getString(R.string.setting_id_title_default), columnKey = context.getShare().getKeyID(), columnValue = null))
+            fields.add(SettingField(fieldName = context.getString(R.string.setting_name_title_default), columnKey = context.getShare().getKeyName(), columnValue = null))
             fields.add(SettingField(fieldName = context.getString(R.string.setting_password_title_default), columnKey = context.getShare().getKeyPassword()))
         }
     }
@@ -77,14 +79,14 @@ data class SettingDataItem(
         var scanMode: SendMode = SendMode.ByScan,
         @SerializedName("SendHtml")
         var sendHtml: String = "https://"
-    )
+    ) : Serializable
 
     data class AfterScanAction(
         @SerializedName("ActionMode")
         var actionMode: ActionMode = ActionMode.StayApp,
         @SerializedName("ToHtml")
         var toHtml: String = "https://"
-    )
+    ) : Serializable
 
     data class SettingField(
         @SerializedName("fieldName")
@@ -92,6 +94,6 @@ data class SettingDataItem(
         @SerializedName("ColumnName")
         val columnKey: String = "",
         @SerializedName("ColumnValue")
-        val columnValue: String = ""
-    )
+        var columnValue: String? = ""
+    ) : Serializable
 }

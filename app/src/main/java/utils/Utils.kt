@@ -1,16 +1,16 @@
 package utils
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.provider.Settings.System.DATE_FORMAT
 import android.util.Log
 import com.buddha.qrcodeweb.BuildConfig
+import com.buddha.qrcodeweb.R
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import project.main.model.SendMode
-import project.main.model.SettingDataItem
+import tool.getShare
+import tool.getUrlKey
 import java.io.*
 import java.text.DecimalFormat
 import java.text.Format
@@ -20,12 +20,24 @@ import java.util.*
 
 
 /**導向網址+設定檔欄位結合的功用方法*/
-fun String.concatSettingColumn(settingDataItem: SettingDataItem?): String {
-    val fieldStr = "&" + settingDataItem?.fields?.map { field -> "${field.columnKey}=${field.columnValue}" }?.toString()?.replace(", ", "&")?.replace("[", "")?.replace("]", "") ?: ""
-    return if (settingDataItem?.goWebSiteByScan?.scanMode == SendMode.ByScan)
-        this + fieldStr
-    else
-        (settingDataItem?.goWebSiteByScan?.sendHtml ?: "") + fieldStr
+fun String.concatSettingColumn(context: Context): String {
+    val settingDataItem = context.getShare().getNowUseSetting()!!
+    logi("concatSettingColumn", "settingDataItem.field內容是=>${settingDataItem.fields}")
+    val fieldsStr = "&" + settingDataItem.fields.filterNot { it.columnValue.isNullOrEmpty() }.map { field -> "${field.columnKey}=${field.columnValue}" }.toString().replace(", ", "&").replace("[", "").replace("]", "")
+    return if (settingDataItem.goWebSiteByScan.scanMode == SendMode.ByScan)
+        this + fieldsStr
+    else { // 這裡要把設定檔中的field重新組合，依照ID、Name、Password的欄位重組
+        logi("concatSettingColumn", "第1個值是=>${this.getUrlKey(0)}")
+        logi("concatSettingColumn", "第2個值是=>${this.getUrlKey(1)}")
+        logi("concatSettingColumn", "第3個值是=>${this.getUrlKey(2)}")
+
+        settingDataItem.let {
+            return it.goWebSiteByScan.sendHtml + "?" +
+                    "&" + it.getFieldsKeyByName(context.getString(R.string.setting_id_title_default)) + "=" + this.getUrlKey(1) +
+                    "&" + it.getFieldsKeyByName(context.getString(R.string.setting_name_title_default)) + "=" + this.getUrlKey(2) + fieldsStr
+        }
+    }
+
 }
 
 fun Double.format(format: String = "#.#"): String {

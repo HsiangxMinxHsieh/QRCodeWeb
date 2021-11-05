@@ -24,6 +24,17 @@ import java.util.LinkedHashMap
  */
 fun String.getUrlKey(key: String) = getUrlParams(this).getOrElse(key) { null }
 
+fun String.getUrlKey(index: Int): String? {
+    var count = 0
+    val urlMap = getUrlParams(this)
+    urlMap.keys.forEach {
+        if (count == index)
+            return urlMap[it]
+        count++
+    }
+    return null
+}
+
 /**
  * 获得解析后的URL参数
  * @param url url对象

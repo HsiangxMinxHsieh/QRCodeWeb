@@ -108,7 +108,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
 
 
 //          // 導向至網頁
-            val sendRequest = it.concatSettingColumn(nowSetting)
+            val sendRequest = it.concatSettingColumn(context)
 
             if (nowSetting.afterScanAction.actionMode == ActionMode.OpenBrowser) {
                 Intent().apply {

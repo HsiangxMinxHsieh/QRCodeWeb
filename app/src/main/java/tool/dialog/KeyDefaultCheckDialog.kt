@@ -26,6 +26,12 @@ fun Activity.showKeyDefaultCheckDialog(data: KeyDefault = KeyDefault(), finishAc
             dialogBinding.btnLift.visibility = View.GONE
             dialogBinding.btnRight.text = context.getString(R.string.dialog_ok)
             dialogBinding.btnRight.setOnClickListener {
+
+                if (dialogBinding.edtId.text.toString().isEmpty()) {
+                    dialogBinding.edtIdLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
+                    return@setOnClickListener
+                }
+
                 if (dialogBinding.edtName.text.toString().isEmpty()) {
                     dialogBinding.edtNameLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
                     return@setOnClickListener
@@ -37,6 +43,7 @@ fun Activity.showKeyDefaultCheckDialog(data: KeyDefault = KeyDefault(), finishAc
                 }
 
                 context.getShare().setNowKeyDefault(data.apply {
+                    keyID = dialogBinding.edtId.text.toString()
                     keyName = dialogBinding.edtName.text.toString()
                     keyPassword = dialogBinding.edtPassword.text.toString()
                     settingStatus = data.settingStatus + 1
@@ -71,7 +78,7 @@ class KeyDefaultCheckDialog(val context: Context, val data: KeyDefault) : Dialog
             }
 
 //            logi("KeyDefaultCheckDialog", "要設定的內容是=>${data.keyName}")
-
+            edtId.setText(data.keyID)
             edtName.setText(data.keyName)
             edtPassword.setText(data.keyPassword)
 

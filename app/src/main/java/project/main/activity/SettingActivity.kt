@@ -29,6 +29,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
+import project.main.const.constantID
 import project.main.const.constantName
 import project.main.const.constantPassword
 import tool.dialog.showConfirmDialog
@@ -77,6 +78,12 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
     }
 
     private fun initKeyDefalut() {
+        mBinding.edtIdLayout.apply {
+            endIconMode = TextInputLayout.END_ICON_CUSTOM
+            isEndIconVisible = true
+            endIconDrawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_default_setting)
+        }
+
         mBinding.edtNameLayout.apply {
             endIconMode = TextInputLayout.END_ICON_CUSTOM
             isEndIconVisible = true
@@ -250,6 +257,12 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         }
 
         // 設定回預設值
+        mBinding.edtIdLayout.setEndIconOnLongClickListener {
+            mBinding.edtId.setText(constantID)
+            true
+        }
+
+        // 設定回預設值
         mBinding.edtNameLayout.setEndIconOnLongClickListener {
             mBinding.edtName.setText(constantName)
             true
@@ -263,6 +276,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
     }
 
     private fun initValue() {
+        mBinding.edtId.setText(context.getShare().getKeyID())
         mBinding.edtName.setText(context.getShare().getKeyName())
         mBinding.edtPassword.setText(context.getShare().getKeyPassword())
     }
@@ -376,7 +390,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             mBinding.edtPasswordLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
             return
         }
-        sendBroadcastToUpdateFragment(index)
+
         mBinding.edtNameLayout.error = null
         mBinding.edtPasswordLayout.error = null
 
@@ -393,11 +407,8 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         logi("saveData", "saveData時，saveData 是=>${saveData}")
         context.getShare().savaAllSettings(settings.apply { this[index].haveSaved = true })
         context.getShare().setNowUseSetting(saveData)
-
-        logi("saveData", "saveData時，saveData 01Name是=>${saveData.name}")
-
-        logi("saveData", "saveData時，saveData 02Name是=>${saveData.name}")
         setTabText(saveData)
+        sendBroadcastToUpdateFragment(index)
         afterSaveAction.invoke(Throwable())
     }
 

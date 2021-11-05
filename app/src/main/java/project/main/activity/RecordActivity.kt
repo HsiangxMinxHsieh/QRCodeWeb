@@ -240,7 +240,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 
     private fun resendCallApi(scanString: String, nowUseSetting: SettingDataItem?, nowThNum: Pair<Int, Int> = Pair(0, 0), afterCallAction: (Throwable) -> Unit = empty) {
         // Call API
-        val sendRequest = scanString.concatSettingColumn(nowUseSetting)
+        val sendRequest = scanString.concatSettingColumn(context)
         val signInTime = Date().time
         signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${scanString.getSignInPersonByScan(context)}簽到完成。"
         MainScope().launch {

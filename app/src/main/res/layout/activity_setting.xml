@@ -77,6 +77,30 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/edt_id_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="16dp"
+                    android:hint="@string/splash_column_title_id"
+                    android:textColorHint="@color/theme_green"
+                    android:theme="@style/EditColumnDefault"
+                    app:endIconTint="@color/theme_green"
+                    app:errorEnabled="true"
+                    app:hintEnabled="true"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_title">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_id"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:paddingTop="20dp"
+                        android:text="entry.123456"
+                        android:textColor="@color/theme_blue" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/edt_name_layout"
@@ -91,7 +115,7 @@
                     app:endIconTint="@color/theme_green"
                     app:errorEnabled="true"
                     app:hintEnabled="true"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_title">
+                    app:layout_constraintTop_toBottomOf="@+id/edt_id_layout">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_name"

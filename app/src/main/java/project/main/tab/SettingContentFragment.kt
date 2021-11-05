@@ -26,6 +26,7 @@ import tool.getShare
 import uitool.setTextSize
 import utils.getColorByBuildVersion
 import utils.logi
+import utils.toJson
 
 @SuppressLint("NotifyDataSetChanged") // 每次都要更新所有欄位中的所有值必須加上的Annotation(不然會出現黃色警告)
 class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(FragmentSettingContentBinding::inflate) {
@@ -80,7 +81,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
             addItem(settingData.fields)
             clickListener = object : SettingColumnAdapter.ClickListener {
                 override fun click(index: Int, data: SettingDataItem.SettingField) {
-                    if (context.getString(R.string.setting_name_title_default) == data.fieldName) { // 如果是檢核名稱的話要特殊處理，不讓使用者可以編輯檢核名稱欄位和其值
+                    if (context.getString(R.string.setting_name_title_default) == data.fieldName || context.getString(R.string.setting_id_title_default) == data.fieldName) { // 如果是檢核名稱的話要特殊處理，不讓使用者可以編輯檢核名稱欄位和其值
                         openColumnEditLayout(CallMode.EditNameKeyField, data)
                     } else {
                         openColumnEditLayout(CallMode.Edit, data)
@@ -293,7 +294,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
     /** 按下欄位編輯的綠色勾勾要執行的方法：  */
 
     private fun saveFieldToData(callFrom: CallMode): Boolean {
-        if (mBinding.edtColumnEditKey.text.toString().isEmpty() && callFrom == CallMode.Confirm) { //
+        if (mBinding.edtColumnEditKey.text.toString().isEmpty() && mBinding.edtColumnEditName.text.toString().isNotEmpty() && callFrom == CallMode.OutSave) { //不能只有欄位索引是空的。
             if (textDialog == null) {
                 textDialog = mContext.showMessageDialogOnlyOKButton(mContext.getString(R.string.dialog_notice_title), mContext.getString(R.string.setting_adapter_key_can_not_be_empty)) {
                     textDialog = null
@@ -306,8 +307,10 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
             return false
         }
 
-        val editField = SettingDataItem.SettingField(mBinding.edtColumnEditName.text.toString(), mBinding.edtColumnEditKey.text.toString(), mBinding.edtColumnEditContent.text.toString())
-
+        val editField = SettingDataItem.SettingField(mBinding.edtColumnEditName.text.toString(), mBinding.edtColumnEditKey.text.toString(), mBinding.edtColumnEditContent.text.toString()).apply {
+            if (this.fieldName == mContext.getString(R.string.setting_id_title_default) || this.fieldName == mContext.getString(R.string.setting_name_title_default))
+                columnValue = null
+        }
         //找到當前的Fields裡面是否有editField，如果沒有就要新增，如果有就要更新舊的值
         if (settingData.fields.none { it.columnKey == editField.columnKey || it.fieldName == editField.fieldName }) { // 找不到，是新增，或代表只要名稱相同或欄位相同都是編輯。
             settingData.fields.add(editField)
@@ -317,7 +320,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
             settingData.fields[editIndex] = editField
         }
         mBinding.rvColumn.adapter?.notifyDataSetChanged() // 更新畫面
-
+        logi(TAG, "儲存完畢的fields是=>${settingData.fields}")
         return true
     }
 
@@ -450,7 +453,6 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
 
         settingData.apply {
             // 設定檔名稱
-
             name = mBinding.edtSettingNameContent.text.toString()
 
             // 掃碼網址內容
@@ -502,10 +504,10 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
             val adapterBinding = viewHolder.binding as AdapterSettingColumnBinding
             adapterBinding.tvSettingColumnName.text = data.fieldName
             adapterBinding.tvSettingColumnKey.text = data.columnKey
-            if (data.fieldName != context.getString(R.string.setting_name_title_default)) {
-                adapterBinding.tvSettingColumnValue.text = if (data.columnValue.isEmpty()) "未設定值" else data.columnValue
-                adapterBinding.tvSettingColumnValue.setTextColor(if (data.columnValue.isEmpty()) context.getColorByBuildVersion(R.color.gray) else context.getColorByBuildVersion(R.color.theme_blue))
-            } else { // 是檢核名稱，不顯示欄位內容
+            if (data.fieldName != context.getString(R.string.setting_name_title_default) && data.fieldName != context.getString(R.string.setting_id_title_default)) {
+                adapterBinding.tvSettingColumnValue.text = if (data.columnValue.isNullOrEmpty()) "未設定值" else data.columnValue
+                adapterBinding.tvSettingColumnValue.setTextColor(if (data.columnValue.isNullOrEmpty()) context.getColorByBuildVersion(R.color.gray) else context.getColorByBuildVersion(R.color.theme_blue))
+            } else { // 是檢核名稱 或 ID，不顯示欄位內容
                 adapterBinding.tvSettingColumnValue.isVisible = false
             }
         }
