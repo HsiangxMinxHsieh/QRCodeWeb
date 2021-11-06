@@ -2,6 +2,7 @@ package utils
 
 import android.app.Activity
 import android.content.Intent
+import androidx.core.net.toUri
 import com.buddha.qrcodeweb.R
 import kotlinx.coroutines.*
 import project.main.api.getURLResponse
@@ -53,4 +54,12 @@ fun Activity.showSignInErrorDialog(afterShowErrorAction: () -> Unit = {}) = this
 fun Activity.goToNextPageFinishThisPage(intent: Intent) {
     this.startActivity(intent)
     this.finish()
+}
+
+fun Activity.intentToWebPage(url: String?) {
+    Intent().let {
+        it.action = Intent.ACTION_VIEW
+        it.data = url?.toUri()
+        this.startActivity(it)
+    }
 }

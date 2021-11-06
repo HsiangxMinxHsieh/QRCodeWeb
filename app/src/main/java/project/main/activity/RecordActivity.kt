@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import project.main.base.BaseActivity
 import project.main.base.BaseRecyclerViewDataBindingAdapter
 import project.main.database.*
+import project.main.model.ActionMode
 import project.main.model.SettingDataItem
 import tool.dialog.*
 import tool.getShare
@@ -70,30 +71,26 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
     }
 
     private fun initData() {
-//        repeat(10) { // 測試資料填入
-//            activity.getRecordDao().insertNewRecord(Date().time, "123", "456", activity.getShare().getNowUseSetting() ?: return)
-//        }
 
         reAssociateDataSettingId()
+
     }
 
     /** 嘗試重新關聯簽到記錄與設定檔ID與設定檔名稱 */
     private fun reAssociateDataSettingId() {
         CoroutineScope(Dispatchers.Default).launch {
             context.getRecordDao().allData.forEach {
-                if (context.getShare().getSettingById(it.sendSettingId) == null) {
+                if (context.getShare().getSettingById(it.sendSettingId) == null) { // 如果找不到這筆設定檔才要重新找關聯性
                     val beforeId = it.sendSettingId
                     it.sendSettingId = context.getShare().getStoreSettings().filter { set -> set.name == it.sendSettingName }.getOrNull(0)?.id ?: it.sendSettingId
                     if (beforeId != it.sendSettingId) { //不一樣才要存起來
                         context.getRecordDao().update(it)
                     }
                 } else if (it.sendSettingName != context.getShare().getSettingById(it.sendSettingId)?.name) { // 有這筆設定檔，要檢查儲存的 settingName 是否和設定檔中的名稱相同
-
                     context.getRecordDao().update(it.apply {
                         this.sendSettingName = context.getShare().getSettingById(it.sendSettingId)?.name ?: "impossible appear。"
                     })
                 }
-
             }
         }
     }
@@ -186,6 +183,8 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 
     private val infoClass: InfoListener by lazy { InfoListener() }
 
+    private val nowSetting: SettingDataItem? by lazy { context.getShare().getNowUseSetting() }
+
     inner class InfoListener : RecordAdapter.InfoListener {
 
         override fun resend(scanString: String) {
@@ -193,10 +192,10 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
             if (dialog == null) {
                 dialog = showConfirmDialog(context.getString(R.string.dialog_notice_title),
                     context.getString(R.string.record_resend_confirm).format(
-                        context.getShare().getNowUseSetting()?.name,
+                        nowSetting?.name,
                         scanString.getSignInPersonByScan(context)
                     ), {
-                        resendCallApi(scanString, context.getShare().getNowUseSetting())
+                        resendCallApi(scanString)
                         dialog = null
                     }, {
                         dialog = null
@@ -238,7 +237,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 
     private val empty: (Throwable?) -> Unit = {} // 是否是空方法判斷
 
-    private fun resendCallApi(scanString: String, nowUseSetting: SettingDataItem?, nowThNum: Pair<Int, Int> = Pair(0, 0), afterCallAction: (Throwable) -> Unit = empty) {
+    private fun resendCallApi(scanString: String, nowThNum: Pair<Int, Int> = Pair(0, 0), afterCallAction: (Throwable) -> Unit = empty) {
         // Call API
         val sendRequest = scanString.concatSettingColumn(context)
         val signInTime = Date().time
@@ -254,16 +253,25 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                 )
             ) {
                 // 顯示簽到結果視窗。
-                if (afterCallAction == empty) {
-                    if (dialog == null) {
-                        dialog = activity.showSignInCompleteDialog(signInResult) {
-                            signInResult = ""
-                            dialog = null
-                            activity.getRecordDao().insertNewRecord(signInTime, scanString, sendRequest, activity.getShare().getNowUseSetting() ?: return@showSignInCompleteDialog)
+                if (afterCallAction == empty) { // 單一重送
+                    if (nowSetting?.afterScanAction?.actionMode == ActionMode.OpenBrowser) { //進入該網頁開瀏覽器。
+                        activity.intentToWebPage(sendRequest)
+                        activity.getRecordDao().insertNewRecord(signInTime, scanString, sendRequest, nowSetting ?: return@launch)
+                    } else {
+                        if (nowSetting?.afterScanAction?.actionMode == ActionMode.StayApp) {
+                            if (dialog == null) {
+                                dialog = activity.showSignInCompleteDialog(signInResult) {
+                                    signInResult = ""
+                                    dialog = null
+                                    activity.getRecordDao().insertNewRecord(signInTime, scanString, sendRequest, nowSetting ?: return@showSignInCompleteDialog)
+                                }
+                            }
+                        } else { // 導向至設定的網頁
+                            activity.intentToWebPage(nowSetting?.afterScanAction?.toHtml)
                         }
                     }
                 } else {
-                    activity.getRecordDao().insertNewRecord(signInTime, scanString, sendRequest, activity.getShare().getNowUseSetting() ?: return@launch)
+                    activity.getRecordDao().insertNewRecord(signInTime, scanString, sendRequest, nowSetting ?: return@launch)
                     afterCallAction.invoke(Throwable())
                 }
             } else {
@@ -276,6 +284,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
             }
         }
     }
+
 
     private fun initEvent() {
         mBinding.btnBack.setOnClickListener {
@@ -374,7 +383,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
         if (dialog == null) {
             activity.showConfirmDialog(context.getString(R.string.dialog_notice_title),
                 context.getString(R.string.record_multiple_resend_dialog_check_message)
-                    .format(context.getShare().getNowUseSetting()?.name, selectClass.selectMap.size),
+                    .format(nowSetting?.name, selectClass.selectMap.size),
                 {
                     nowMultipleStatus.postValue(Pair(MultipleStatus.Send, SelectMode.None))
                     recursiveResend(selectClass.selectMap, selectClass.selectMap.size)
@@ -390,19 +399,25 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 
     private fun recursiveResend(map: HashMap<Long, String>, oriSize: Int) {
         if (map.isEmpty()) { // 全部送完
-            dialog = activity.showMessageDialogOnlyOKButton(
-                context.getString(R.string.record_multiple_resend_dialog_success_title),
-                context.getString(R.string.record_multiple_resend_dialog_success_message).format(oriSize, context.getShare().getNowUseSetting()?.name)
-            ) {
+
+            if (nowSetting?.afterScanAction?.actionMode == ActionMode.AnotherWeb) {
+                activity.intentToWebPage(nowSetting?.afterScanAction?.toHtml)
                 setNowStatusToNoneOrSelecting(MultipleStatus.None)
-                dialog = null
+            } else {
+                dialog = activity.showMessageDialogOnlyOKButton(
+                    context.getString(R.string.record_multiple_resend_dialog_success_title),
+                    context.getString(R.string.record_multiple_resend_dialog_success_message).format(oriSize, nowSetting?.name)
+                ) {
+                    setNowStatusToNoneOrSelecting(MultipleStatus.None)
+                    dialog = null
+                }
             }
             return
         }
         val nowKey = map.keys.first()
         val nowSend = map[nowKey] ?: return
         //每次取第一個來重送
-        resendCallApi(nowSend, context.getShare().getNowUseSetting(), Pair((oriSize - map.size) + 1, oriSize)) {
+        resendCallApi(nowSend, Pair((oriSize - map.size) + 1, oriSize)) {
             recursiveResend(map.apply { remove(nowKey) }, oriSize)
         }
 

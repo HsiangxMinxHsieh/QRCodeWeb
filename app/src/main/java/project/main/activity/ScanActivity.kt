@@ -24,6 +24,7 @@ import project.main.database.getRecordDao
 import project.main.database.getSignInPersonByScan
 import project.main.database.insertNewRecord
 import project.main.model.ActionMode
+import project.main.model.SettingDataItem
 import tool.*
 import uitool.ViewTool
 import utils.*
@@ -60,11 +61,12 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
 
     }
 
+    private val nowSetting: SettingDataItem? by lazy { context.getShare().getNowUseSetting() }
 
     private fun setSettingFabText() { // 如果有儲存的設定值才要設定fab按鍵內容(要顯示當前的設定檔名稱)。
 
         if (!context.getShare().isFirstTimeStartThisApp()) { //不是第一次進入才要顯示設定檔名稱
-            val nowSetting = context.getShare().getNowUseSetting()
+
             mBinding.fabSetting.icon = null
             mBinding.fabSetting.text = nowSetting?.name ?: ""
 
@@ -90,7 +92,6 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
                 }
                 return@Observer
             }
-            val nowSetting = context.getShare().getNowUseSetting()!!
             // 掃描到的QRCode將在這裡處理。
             val getScanSignInPersonName = it.getSignInPersonByScan(context)
 
@@ -107,36 +108,30 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
             signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${getScanSignInPersonName}簽到完成。"
 
 
-//          // 導向至網頁
+//
             val sendRequest = it.concatSettingColumn(context)
 
-            if (nowSetting.afterScanAction.actionMode == ActionMode.OpenBrowser) {
-                Intent().apply {
-                    action = Intent.ACTION_VIEW
-                    data = Uri.parse(sendRequest)
-                    startActivity(this)
-                }
+            if (nowSetting?.afterScanAction?.actionMode == ActionMode.OpenBrowser) {  // 導向至網頁
+                activity.getRecordDao().insertNewRecord(signInTime, it, sendRequest, nowSetting ?: return@Observer)
+                activity.intentToWebPage(sendRequest)
             } else {
                 // 應用程式內打API
                 MainScope().launch {
                     if (activity.sendApi(sendRequest) { }) {
                         // 關閉進度框、顯示簽到結果視窗。
-                        if (nowSetting.afterScanAction.actionMode == ActionMode.StayApp) {
+                        if (nowSetting?.afterScanAction?.actionMode == ActionMode.StayApp) {
                             if (textDialog == null && signInResult.isNotEmpty()) {
 
                                 textDialog = activity.showSignInCompleteDialog(signInResult) {
                                     signInResult = ""
                                     resumeScreenAnimation()
                                     textDialog = null
-                                    activity.getRecordDao().insertNewRecord(signInTime, it, sendRequest, nowSetting)
+                                    activity.getRecordDao().insertNewRecord(signInTime, it, sendRequest, nowSetting ?: return@showSignInCompleteDialog)
                                 }
                             }
                         } else { // 導向至設定的網頁
-                            Intent().apply {
-                                action = Intent.ACTION_VIEW
-                                data = Uri.parse(nowSetting.afterScanAction.toHtml)
-                                startActivity(this)
-                            }
+                            activity.getRecordDao().insertNewRecord(signInTime, it, sendRequest, nowSetting ?: return@launch)
+                            activity.intentToWebPage(nowSetting?.afterScanAction?.toHtml)
                         }
                     } else {
                         if (textDialog == null) {
