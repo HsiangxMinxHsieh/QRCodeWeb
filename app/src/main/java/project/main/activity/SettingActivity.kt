@@ -48,7 +48,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         initData()
 
-
         initView()
 
         initEvent()
@@ -60,10 +59,11 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
     private fun initData() {
 
-        if (context.getShare().isFirstTimeStartThisApp()) {
-//            logi("initData", "偵測到是第一次進入！無設定檔，即將新增一筆預設的")
-            settings.add(getDefaultSetting(0))
-        }
+        // 2021/11/06 嘉伸講師指示，如果用戶沒有設定檔的話，在開始畫面按下確認時應該就要產生一個預設的設定檔
+//        if (context.getShare().isFirstTimeStartThisApp()) {
+////            logi("initData", "偵測到是第一次進入！無設定檔，即將新增一筆預設的")
+//            settings.add(getDefaultSetting(0))
+//        }
 
     }
 
@@ -304,7 +304,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         }
 
-        context.getShare().addID() //ID + 1
+
 
         // 新增預設資料
         settings.add(getDefaultSetting(context.getShare().getID()))

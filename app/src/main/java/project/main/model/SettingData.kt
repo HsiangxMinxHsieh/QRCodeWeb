@@ -3,7 +3,6 @@ package project.main.model
 import android.content.Context
 import com.buddha.qrcodeweb.R
 import com.google.gson.annotations.SerializedName
-import project.main.const.constantName
 import tool.getShare
 import java.io.Serializable
 
@@ -35,7 +34,7 @@ enum class ActionMode {
 }
 
 enum class FieldType {
-    Scan,           //1.掃碼時會填入的欄位，不能刪除，沒有value值(為null)。
+    KeyColumn,      //1.掃碼時會填入的欄位，不能刪除，沒有value值(為null)。
     CanNotBeDelete, //2.可由使用者自行編輯的欄位，但不可刪除，有value值。
     AddColumn       //3.由使用者自行新增欄位，可刪除，有value值。
 }
@@ -70,13 +69,25 @@ data class SettingDataItem(
 ) : Serializable {
 
     fun getFieldsKeyByName(name: String) = this.fields.firstOrNull { it.fieldName == name }?.columnKey
-
+//if (id == 0) else
     /**依照ID取得預設的設定檔*/
     companion object {
+        fun getFirstDefaultSetting(context: Context) = SettingDataItem(id = 0, name = context.getString(R.string.splash_setting_default_name), haveSaved = true).apply {
+            fields.add(SettingField(fieldType = FieldType.CanNotBeDelete,
+                fieldName = context.getString(R.string.setting_password_title_default),
+                columnKey = context.getShare().getKeyPassword(),
+                columnValue = context.getString(R.string.splash_setting_default_password)))
+            addIDandNameKeyItem(context)
+        }
+
         fun getDefalutSetting(id: Int, context: Context) = SettingDataItem(id = id, name = (context.getString(R.string.setting_file_name_default))).apply {
-            fields.add(SettingField(fieldType = FieldType.CanNotBeDelete,fieldName = context.getString(R.string.setting_password_title_default), columnKey = context.getShare().getKeyPassword()))
-            fields.add(SettingField(fieldType = FieldType.Scan, fieldName = context.getString(R.string.setting_id_title_default), columnKey = context.getShare().getKeyID(), columnValue = null))
-            fields.add(SettingField(fieldType = FieldType.Scan, fieldName = context.getString(R.string.setting_name_title_default), columnKey = context.getShare().getKeyName(), columnValue = null))
+            fields.add(SettingField(fieldType = FieldType.CanNotBeDelete, fieldName = context.getString(R.string.setting_password_title_default), columnKey = context.getShare().getKeyPassword()))
+            addIDandNameKeyItem(context)
+        }
+
+        private fun SettingDataItem.addIDandNameKeyItem(context: Context) {
+            fields.add(SettingField(fieldType = FieldType.KeyColumn, fieldName = context.getString(R.string.setting_id_title_default), columnKey = context.getShare().getKeyID(), columnValue = null))
+            fields.add(SettingField(fieldType = FieldType.KeyColumn, fieldName = context.getString(R.string.setting_name_title_default), columnKey = context.getShare().getKeyName(), columnValue = null))
         }
     }
 

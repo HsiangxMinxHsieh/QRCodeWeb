@@ -138,17 +138,17 @@ class BaseSharePreference(val context: Context) {
 
     /**取得ID欄位的欄位標題(供新增設定檔時使用) */
     fun getKeyID(): String {
-        return getNowKeyDefault()?.keyID?: constantID
+        return getNowKeyDefault()?.keyID ?: constantID
     }
 
     /**取得密碼欄位的欄位標題(供新增設定檔時使用) */
     fun getKeyPassword(): String {
-        return getNowKeyDefault()?.keyPassword?: constantPassword
+        return getNowKeyDefault()?.keyPassword ?: constantPassword
     }
 
     /**取得姓名欄位的欄位標題(供掃碼時判斷、紀錄檔提取時使用)  */
     fun getKeyName(): String {
-        return getNowKeyDefault()?.keyName?: constantName
+        return getNowKeyDefault()?.keyName ?: constantName
     }
 
     /**取得現在使用的欄位預設值設定檔*/
@@ -180,13 +180,12 @@ class BaseSharePreference(val context: Context) {
     }
 
     /**取得所有設定檔*/
-    fun getStoreSettings(): SettingData {
-        return try {
-            getString(context, KEY_STORE_SETTING_FILE, "").toDataBean(SettingData())
-        } catch (e: Exception) {
-            SettingData()
-        }
+    fun getStoreSettings(): SettingData = runCatching {
+        (getString(context, KEY_STORE_SETTING_FILE, "").toDataBean(SettingData())) ?: SettingData()
+    }.getOrElse {
+        SettingData()
     }
+
 
     /**儲存所有設定檔*/
     fun savaAllSettings(list: SettingData) {
@@ -201,9 +200,12 @@ class BaseSharePreference(val context: Context) {
     }
 
     /**取得當前的設定檔ID*/
-    fun getID() = getInt(context, KEY_ID, 0)
+    fun getID(): Int = getInt(context, KEY_ID, 0).apply {
+        addID(this)
+    }
 
-    fun addID() = putInt(context, KEY_ID, getID() + 1)
+
+    fun addID(id: Int) = putInt(context, KEY_ID, id + 1)
 
 
 }

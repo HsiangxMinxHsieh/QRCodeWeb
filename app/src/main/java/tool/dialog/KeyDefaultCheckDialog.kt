@@ -12,10 +12,12 @@ import com.buddha.qrcodeweb.databinding.DialogKeyCheckBinding
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import project.main.model.KeyDefault
+import project.main.model.SettingDataItem
 import tool.getShare
 import uitool.getRectangleBg
 import uitool.setTextSize
 import utils.logi
+import utils.toJson
 
 fun Activity.showKeyDefaultCheckDialog(data: KeyDefault = KeyDefault(), finishAction: () -> Unit = {}) {
     val context = this
@@ -49,6 +51,18 @@ fun Activity.showKeyDefaultCheckDialog(data: KeyDefault = KeyDefault(), finishAc
                     settingStatus = data.settingStatus + 1
                 })
 
+                //嘉伸講師指示，第一次按下確定後，自動產生一個預設設定檔供使用者直接使用。
+                val initSetting = SettingDataItem.getFirstDefaultSetting(context)
+                context.apply {
+                    getShare().apply {
+                        getID()
+                        savaAllSettings(getShare().getStoreSettings().also {
+                            it.add(initSetting)
+                        })
+                        setNowUseSetting(initSetting)
+
+                    }
+                }
                 finishAction.invoke()
                 dialog.dismiss()
             }

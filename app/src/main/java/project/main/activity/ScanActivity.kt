@@ -86,13 +86,6 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
     private fun initObserver() {
         liveResult.observe(activity, Observer {
 
-            if (context.getShare().isFirstTimeStartThisApp()) {
-                textDialog = activity.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.scan_no_setting)) {
-                    resumeScreenAnimation()
-                    textDialog = null
-                }
-                return@Observer
-            }
             // 掃描到的QRCode將在這裡處理。
             val getScanSignInPersonName = it.getSignInPersonByScan(context)
 
@@ -255,6 +248,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
 //                textDialog = null
 //            }
         nowSetting = context.getShare().getNowUseSetting()
+//        logi(TAG, "onResume取到的設定檔內容是=>${nowSetting}")
 
         resumeScreenAnimation()
 

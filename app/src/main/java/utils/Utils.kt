@@ -22,7 +22,7 @@ import java.util.*
 /**導向網址+設定檔欄位結合的功用方法*/
 fun String.concatSettingColumn(context: Context): String {
     val settingDataItem = context.getShare().getNowUseSetting()!!
-    logi("concatSettingColumn", "settingDataItem.field內容是=>${settingDataItem.fields}")
+//    logi("concatSettingColumn", "settingDataItem.field內容是=>${settingDataItem.fields}")
     val fieldsStr = "&" + settingDataItem.fields.filterNot { it.columnValue.isNullOrEmpty() }.map { field -> "${field.columnKey}=${field.columnValue}" }.toString().replace(", ", "&").replace("[", "").replace("]", "")
     return if (settingDataItem.goWebSiteByScan.scanMode == SendMode.ByScan)
         this + fieldsStr
