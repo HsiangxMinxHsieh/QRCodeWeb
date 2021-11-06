@@ -166,6 +166,233 @@
                     app:layout_constraintTop_toTopOf="@+id/tv_setting_name_show" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+            <!--設定檔顏色-->
+            <!--未來大致功能完成以後再開始製作。-->
+
+
+            <!--欄位設定-->
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_column_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cl_setting_name_content">
+
+                <TextView
+                    android:id="@+id/tv_column_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                    android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
+                    android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                    android:layout_marginBottom="@dimen/setting_item_margin_top_bottom"
+                    android:text="@string/setting_column_title"
+                    android:textColor="@color/theme_blue"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/vv_column_title_divider"
+                    app:layout_constraintHorizontal_bias="0.1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/vv_column_title_divider"
+                    android:layout_width="2dp"
+                    android:layout_height="0dp"
+                    android:layout_margin="10dp"
+                    android:background="@color/light_blue"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="@dimen/setting_item_center_divider_ratio"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <ImageView
+                    android:id="@+id/iv_column_title_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_baseline_list_add"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_column_edit_content"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@color/light_gray"
+                app:layout_constraintBottom_toBottomOf="@+id/cl_column_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <FrameLayout
+                        android:id="@+id/fl_column_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                        app:layout_constraintEnd_toStartOf="@+id/vv_column_edit_content_divider"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/tv_column_edit_name_shadow"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="start"
+                            android:text="@string/setting_adapter_column_title"
+                            android:textColor="@color/theme_blue"
+                            android:textSize="16sp" />
+
+                        <EditText
+                            android:id="@+id/edt_column_edit_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="start"
+                            android:hint="@string/setting_adapter_column_title"
+                            android:importantForAutofill="no"
+                            android:inputType="text|textMultiLine"
+                            android:textColor="@color/theme_blue"
+                            android:theme="@style/EditTextHint" />
+                    </FrameLayout>
+
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/vv_column_edit_content_divider"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/fl_column_name">
+
+                        <TextView
+                            android:id="@+id/tv_column_edit_key_shadow"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="start"
+                            android:text="@string/setting_adapter_column_key"
+                            android:textColor="@color/theme_blue"
+                            android:textStyle="bold" />
+
+                        <EditText
+                            android:id="@+id/edt_column_edit_key"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="start"
+                            android:hint="@string/setting_adapter_column_key"
+                            android:importantForAutofill="no"
+                            android:inputType="text|textMultiLine"
+                            android:textColor="@color/theme_blue"
+                            android:theme="@style/EditTextHint" />
+                    </FrameLayout>
+
+                    <View
+                        android:id="@+id/vv_column_edit_content_divider"
+                        android:layout_width="2dp"
+                        android:layout_height="0dp"
+                        android:layout_margin="10dp"
+                        android:background="@color/light_blue"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="@dimen/setting_item_center_divider_ratio"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/fl_column_name" />
+
+                    <FrameLayout
+                        android:id="@+id/fl_column_value"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/setting_item_margin_start_end"
+                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/iv_column_check"
+                        app:layout_constraintStart_toEndOf="@+id/vv_column_edit_content_divider"
+                        app:layout_constraintTop_toBottomOf="@+id/fl_column_name">
+
+                        <TextView
+                            android:id="@+id/tv_column_edit_content_shadow"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="end"
+                            android:text="@string/setting_adapter_column_value"
+                            android:textColor="@color/gray"
+                            android:textStyle="bold" />
+
+                        <EditText
+                            android:id="@+id/edt_column_edit_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="end"
+                            android:hint="@string/setting_adapter_column_value"
+                            android:importantForAutofill="no"
+                            android:inputType="text|textMultiLine"
+                            android:textColor="@color/theme_blue"
+                            android:theme="@style/EditTextHint" />
+                    </FrameLayout>
+
+                    <ImageView
+                        android:id="@+id/iv_column_check"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"
+                        android:contentDescription="@null"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_baseline_check"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@+id/fl_column_value"
+                        app:layout_constraintDimensionRatio="1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/fl_column_value" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_column_content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cl_column_edit_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_column"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:overScrollMode="never"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/adapter_setting_column" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <!--ScanToDirect-->
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -287,13 +514,23 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_scan_to_direct"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:background="@color/theme_blue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cl_setting_name_content">
+                app:layout_constraintTop_toBottomOf="@+id/cl_column_content">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/light_yellow"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/tv_scan_to_direct_title"
@@ -304,7 +541,7 @@
                     android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                     android:layout_marginBottom="@dimen/setting_item_margin_top_bottom"
                     android:text="@string/setting_scan_to_direct_title"
-                    android:textColor="@color/theme_blue"
+                    android:textColor="@color/white"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/vv_scan_to_direct_title_divider"
@@ -333,7 +570,7 @@
                     android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                     android:gravity="end"
                     android:text="@string/setting_file_send_mode_by_scan"
-                    android:textColor="@color/theme_blue"
+                    android:textColor="@color/white"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/iv_scan_to_direct_edit"
                     app:layout_constraintHorizontal_bias="0.9"
@@ -526,6 +763,7 @@
                 android:id="@+id/cl_after_scan_action"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:background="@color/theme_blue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cl_scan_to_direct_content">
@@ -539,7 +777,7 @@
                     android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                     android:layout_marginBottom="@dimen/setting_item_margin_top_bottom"
                     android:text="@string/setting_after_scan_action_title"
-                    android:textColor="@color/theme_blue"
+                    android:textColor="@color/white"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/vv_after_scan_action_title_divider"
@@ -568,7 +806,7 @@
                     android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                     android:gravity="end"
                     android:text="@string/setting_file_scan_after_action_1"
-                    android:textColor="@color/theme_blue"
+                    android:textColor="@color/white"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/iv_after_scan_action_edit"
                     app:layout_constraintHorizontal_bias="0.9"
@@ -605,233 +843,6 @@
                     app:layout_constraintHorizontal_bias="0.9"
                     app:layout_constraintStart_toEndOf="@+id/vv_after_scan_action_title_divider"
                     app:layout_constraintTop_toBottomOf="@+id/iv_after_scan_action_edit" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <!--設定檔顏色-->
-            <!--未來大致功能完成以後再開始製作。-->
-
-
-            <!--欄位設定-->
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/cl_column_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cl_after_scan_action_content">
-
-                <TextView
-                    android:id="@+id/tv_column_title"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/setting_item_margin_start_end"
-                    android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
-                    android:layout_marginEnd="@dimen/setting_item_margin_start_end"
-                    android:layout_marginBottom="@dimen/setting_item_margin_top_bottom"
-                    android:text="@string/setting_column_title"
-                    android:textColor="@color/theme_blue"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/vv_column_title_divider"
-                    app:layout_constraintHorizontal_bias="0.1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <View
-                    android:id="@+id/vv_column_title_divider"
-                    android:layout_width="2dp"
-                    android:layout_height="0dp"
-                    android:layout_margin="10dp"
-                    android:background="@color/light_blue"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="@dimen/setting_item_center_divider_ratio"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-
-                <ImageView
-                    android:id="@+id/iv_column_title_add"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/setting_item_margin_start_end"
-                    android:contentDescription="@null"
-                    android:src="@drawable/ic_baseline_list_add"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintDimensionRatio="1"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/cl_column_edit_content"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:background="@color/light_gray"
-                app:layout_constraintBottom_toBottomOf="@+id/cl_column_title"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <FrameLayout
-                        android:id="@+id/fl_column_name"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/setting_item_margin_start_end"
-                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"
-                        app:layout_constraintEnd_toStartOf="@+id/vv_column_edit_content_divider"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <TextView
-                            android:id="@+id/tv_column_edit_name_shadow"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:gravity="start"
-                            android:text="@string/setting_adapter_column_title"
-                            android:textColor="@color/theme_blue"
-                            android:textSize="16sp" />
-
-                        <EditText
-                            android:id="@+id/edt_column_edit_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:gravity="start"
-                            android:hint="@string/setting_adapter_column_title"
-                            android:importantForAutofill="no"
-                            android:inputType="text|textMultiLine"
-                            android:textColor="@color/theme_blue"
-                            android:theme="@style/EditTextHint" />
-                    </FrameLayout>
-
-
-                    <FrameLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/setting_item_margin_start_end"
-                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/vv_column_edit_content_divider"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/fl_column_name">
-
-                        <TextView
-                            android:id="@+id/tv_column_edit_key_shadow"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:gravity="start"
-                            android:text="@string/setting_adapter_column_key"
-                            android:textColor="@color/theme_blue"
-                            android:textStyle="bold" />
-
-                        <EditText
-                            android:id="@+id/edt_column_edit_key"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:gravity="start"
-                            android:hint="@string/setting_adapter_column_key"
-                            android:importantForAutofill="no"
-                            android:inputType="text|textMultiLine"
-                            android:textColor="@color/theme_blue"
-                            android:theme="@style/EditTextHint" />
-                    </FrameLayout>
-
-                    <View
-                        android:id="@+id/vv_column_edit_content_divider"
-                        android:layout_width="2dp"
-                        android:layout_height="0dp"
-                        android:layout_margin="10dp"
-                        android:background="@color/light_blue"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="@dimen/setting_item_center_divider_ratio"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/fl_column_name" />
-
-                    <FrameLayout
-                        android:id="@+id/fl_column_value"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/setting_item_margin_start_end"
-                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/iv_column_check"
-                        app:layout_constraintStart_toEndOf="@+id/vv_column_edit_content_divider"
-                        app:layout_constraintTop_toBottomOf="@+id/fl_column_name">
-
-                        <TextView
-                            android:id="@+id/tv_column_edit_content_shadow"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:gravity="end"
-                            android:text="@string/setting_adapter_column_value"
-                            android:textColor="@color/gray"
-                            android:textStyle="bold"
-                        />
-
-                        <EditText
-                            android:id="@+id/edt_column_edit_content"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:gravity="end"
-                            android:hint="@string/setting_adapter_column_value"
-                            android:importantForAutofill="no"
-                            android:inputType="text|textMultiLine"
-                            android:textColor="@color/theme_blue"
-                            android:theme="@style/EditTextHint" />
-                    </FrameLayout>
-
-                    <ImageView
-                        android:id="@+id/iv_column_check"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_marginEnd="@dimen/setting_item_margin_start_end"
-                        android:contentDescription="@null"
-                        android:padding="10dp"
-                        android:src="@drawable/ic_baseline_check"
-                        android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="@+id/fl_column_value"
-                        app:layout_constraintDimensionRatio="1"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/fl_column_value" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/cl_column_content"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cl_column_edit_content">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_column"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:overScrollMode="never"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:itemCount="3"
-                    tools:listitem="@layout/adapter_setting_column" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

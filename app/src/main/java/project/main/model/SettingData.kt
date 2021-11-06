@@ -35,8 +35,9 @@ enum class ActionMode {
 }
 
 enum class FieldType {
-    Scan,           //1.掃碼時會填入的內容，不能刪除，沒有value值(為null)。
-    Edit            //2.可由使用者自行編輯的內容，可刪除，有value值。
+    Scan,           //1.掃碼時會填入的欄位，不能刪除，沒有value值(為null)。
+    CanNotBeDelete, //2.可由使用者自行編輯的欄位，但不可刪除，有value值。
+    AddColumn       //3.由使用者自行新增欄位，可刪除，有value值。
 }
 
 
@@ -73,9 +74,9 @@ data class SettingDataItem(
     /**依照ID取得預設的設定檔*/
     companion object {
         fun getDefalutSetting(id: Int, context: Context) = SettingDataItem(id = id, name = (context.getString(R.string.setting_file_name_default))).apply {
+            fields.add(SettingField(fieldType = FieldType.CanNotBeDelete,fieldName = context.getString(R.string.setting_password_title_default), columnKey = context.getShare().getKeyPassword()))
             fields.add(SettingField(fieldType = FieldType.Scan, fieldName = context.getString(R.string.setting_id_title_default), columnKey = context.getShare().getKeyID(), columnValue = null))
             fields.add(SettingField(fieldType = FieldType.Scan, fieldName = context.getString(R.string.setting_name_title_default), columnKey = context.getShare().getKeyName(), columnValue = null))
-            fields.add(SettingField(fieldName = context.getString(R.string.setting_password_title_default), columnKey = context.getShare().getKeyPassword()))
         }
     }
 
@@ -95,7 +96,7 @@ data class SettingDataItem(
 
     data class SettingField(
         @SerializedName("fieldType")
-        val fieldType: FieldType = FieldType.Edit,
+        val fieldType: FieldType = FieldType.AddColumn,
         @SerializedName("fieldName")
         val fieldName: String = "",
         @SerializedName("ColumnName")

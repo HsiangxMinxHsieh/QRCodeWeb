@@ -1,7 +1,10 @@
 package utils
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.core.net.toUri
 import com.buddha.qrcodeweb.R
 import kotlinx.coroutines.*
@@ -41,6 +44,19 @@ suspend fun Activity.sendApi(sendRequest: String, waitingText: String = this.get
     }
 
     return result.await()
+}
+
+fun Activity.setKeyboard(open: Boolean, editFocus: EditText?= null) {
+    if (open) { // 關閉中，要打開
+        if (editFocus?.requestFocus() == true) {
+            val imm = (this.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager) ?: return
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+        }
+    } else { //打開中，要關閉
+        if (this.currentFocus != null) {
+            ((this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)).hideSoftInputFromWindow(this.currentFocus!!.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+        }
+    }
 }
 
 fun Activity.showSignInCompleteDialog(signInResult: String, okButtonClickAction: () -> Unit = {}) = this.showMessageDialogOnlyOKButton(this.getString(R.string.dialog_sign_in_success_title), signInResult) {

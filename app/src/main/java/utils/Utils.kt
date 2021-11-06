@@ -27,9 +27,6 @@ fun String.concatSettingColumn(context: Context): String {
     return if (settingDataItem.goWebSiteByScan.scanMode == SendMode.ByScan)
         this + fieldsStr
     else { // 這裡要把設定檔中的field重新組合，依照ID、Name、Password的欄位重組
-        logi("concatSettingColumn", "第1個值是=>${this.getUrlKey(0)}")
-        logi("concatSettingColumn", "第2個值是=>${this.getUrlKey(1)}")
-        logi("concatSettingColumn", "第3個值是=>${this.getUrlKey(2)}")
 
         settingDataItem.let {
             return it.goWebSiteByScan.sendHtml + "?" +

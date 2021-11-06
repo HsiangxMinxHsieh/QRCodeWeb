@@ -42,6 +42,7 @@
     <string name="setting_could_not_delete">「%1$s」是必要欄位，無法刪除。</string>
     <string name="setting_column_title">欄位設定</string>
     <string name="setting_adapter_column_title">欄位名稱</string>
+    <string name="setting_adapter_column_title_default">未設定的欄位名稱</string>
     <string name="setting_adapter_column_key">欄位索引</string>
     <string name="setting_adapter_column_value">欄位值</string>
     <string name="setting_key_default_not_arbitrary_modify">請確認是否要更改欄位預設值，若確認要修改請長按按鈕！</string>
@@ -87,6 +88,7 @@
     <!--SharePreference Default Key Value -->
     <string name="share_default_name_column">Null_Name_Column</string>
     <string name="share_default_password_column">Null_Password_Column</string>
+    <string name="scan_no_setting">請先建立一個設定檔！</string>
 
 
 </resources>

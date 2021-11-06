@@ -61,7 +61,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
 
     }
 
-    private val nowSetting: SettingDataItem? by lazy { context.getShare().getNowUseSetting() }
+    private var nowSetting: SettingDataItem? = null
 
     private fun setSettingFabText() { // 如果有儲存的設定值才要設定fab按鍵內容(要顯示當前的設定檔名稱)。
 
@@ -87,7 +87,8 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
         liveResult.observe(activity, Observer {
 
             if (context.getShare().isFirstTimeStartThisApp()) {
-                textDialog = activity.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_file_scan_after_action_1)) {
+                textDialog = activity.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.scan_no_setting)) {
+                    resumeScreenAnimation()
                     textDialog = null
                 }
                 return@Observer
@@ -107,8 +108,6 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
             val signInTime = Date().time
             signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${getScanSignInPersonName}簽到完成。"
 
-
-//
             val sendRequest = it.concatSettingColumn(context)
 
             if (nowSetting?.afterScanAction?.actionMode == ActionMode.OpenBrowser) {  // 導向至網頁
@@ -246,6 +245,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
 
     override fun onResume() {
         super.onResume()
+
         requestPermissions() //若沒有請求權限會是一片黑屏 // 無論之前是否有權限都要再次請求權限，因為要開相機(實測過後發現)
 
 //        // 顯示簽到完成對話框。
@@ -254,6 +254,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
 //                signInResult = ""
 //                textDialog = null
 //            }
+        nowSetting = context.getShare().getNowUseSetting()
 
         resumeScreenAnimation()
 
