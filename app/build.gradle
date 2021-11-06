@@ -11,8 +11,8 @@ android {
         applicationId "com.buddha.qrcodeweb"
         minSdk 21
         targetSdk 30
-        versionCode 8
-        versionName "0.1.0_Beta"
+        versionCode 9
+        versionName "0.1.1_Beta"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
