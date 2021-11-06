@@ -34,6 +34,11 @@ enum class ActionMode {
     AnotherWeb      //3.打出去以後想看結果頁(多一個輸入框)
 }
 
+enum class FieldType {
+    Scan,           //1.掃碼時會填入的內容，不能刪除，沒有value值(為null)。
+    Edit            //2.可由使用者自行編輯的內容，可刪除，有value值。
+}
+
 
 data class SettingDataItem(
 
@@ -68,8 +73,8 @@ data class SettingDataItem(
     /**依照ID取得預設的設定檔*/
     companion object {
         fun getDefalutSetting(id: Int, context: Context) = SettingDataItem(id = id, name = (context.getString(R.string.setting_file_name_default))).apply {
-            fields.add(SettingField(fieldName = context.getString(R.string.setting_id_title_default), columnKey = context.getShare().getKeyID(), columnValue = null))
-            fields.add(SettingField(fieldName = context.getString(R.string.setting_name_title_default), columnKey = context.getShare().getKeyName(), columnValue = null))
+            fields.add(SettingField(fieldType = FieldType.Scan, fieldName = context.getString(R.string.setting_id_title_default), columnKey = context.getShare().getKeyID(), columnValue = null))
+            fields.add(SettingField(fieldType = FieldType.Scan, fieldName = context.getString(R.string.setting_name_title_default), columnKey = context.getShare().getKeyName(), columnValue = null))
             fields.add(SettingField(fieldName = context.getString(R.string.setting_password_title_default), columnKey = context.getShare().getKeyPassword()))
         }
     }
@@ -89,6 +94,8 @@ data class SettingDataItem(
     ) : Serializable
 
     data class SettingField(
+        @SerializedName("fieldType")
+        val fieldType: FieldType = FieldType.Edit,
         @SerializedName("fieldName")
         val fieldName: String = "",
         @SerializedName("ColumnName")

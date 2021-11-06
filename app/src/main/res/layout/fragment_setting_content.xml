@@ -732,7 +732,7 @@
                             android:layout_gravity="center"
                             android:gravity="start"
                             android:text="@string/setting_adapter_column_key"
-                            android:textColor="@color/gray"
+                            android:textColor="@color/theme_blue"
                             android:textStyle="bold" />
 
                         <EditText
@@ -779,7 +779,8 @@
                             android:gravity="end"
                             android:text="@string/setting_adapter_column_value"
                             android:textColor="@color/gray"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                        />
 
                         <EditText
                             android:id="@+id/edt_column_edit_content"

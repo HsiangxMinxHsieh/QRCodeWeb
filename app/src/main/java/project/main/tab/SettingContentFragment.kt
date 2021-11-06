@@ -18,6 +18,7 @@ import android.widget.TextView
 import com.buddha.qrcodeweb.databinding.AdapterSettingColumnBinding
 import project.main.base.BaseRecyclerViewDataBindingAdapter
 import project.main.model.ActionMode
+import project.main.model.FieldType
 import project.main.model.SendMode
 import tool.dialog.TextDialog
 import tool.dialog.showConfirmDialog
@@ -26,7 +27,6 @@ import tool.getShare
 import uitool.setTextSize
 import utils.getColorByBuildVersion
 import utils.logi
-import utils.toJson
 
 @SuppressLint("NotifyDataSetChanged") // 每次都要更新所有欄位中的所有值必須加上的Annotation(不然會出現黃色警告)
 class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(FragmentSettingContentBinding::inflate) {
@@ -81,7 +81,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
             addItem(settingData.fields)
             clickListener = object : SettingColumnAdapter.ClickListener {
                 override fun click(index: Int, data: SettingDataItem.SettingField) {
-                    if (context.getString(R.string.setting_name_title_default) == data.fieldName || context.getString(R.string.setting_id_title_default) == data.fieldName) { // 如果是檢核名稱的話要特殊處理，不讓使用者可以編輯檢核名稱欄位和其值
+                    if (data.fieldType == FieldType.Scan) { // 如果是檢核名稱的話要特殊處理，不讓使用者可以編輯檢核名稱欄位和其值
                         openColumnEditLayout(CallMode.EditNameKeyField, data)
                     } else {
                         openColumnEditLayout(CallMode.Edit, data)
@@ -98,6 +98,14 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
                         }, {
                             textDialog = null
                         })
+                    }
+                }
+
+                override fun couldNotDelete(fieldName: String) {
+                    if (textDialog == null) {
+                        textDialog = mActivity.showMessageDialogOnlyOKButton(mContext.getString(R.string.dialog_notice_title), mContext.getString(R.string.setting_could_not_delete).format(fieldName)) {
+                            textDialog = null
+                        }
                     }
                 }
             }
@@ -294,23 +302,41 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
     /** 按下欄位編輯的綠色勾勾要執行的方法：  */
 
     private fun saveFieldToData(callFrom: CallMode): Boolean {
-        if (mBinding.edtColumnEditKey.text.toString().isEmpty() && mBinding.edtColumnEditName.text.toString().isNotEmpty() && callFrom == CallMode.OutSave) { //不能只有欄位索引是空的。
+
+
+        if (mBinding.edtColumnEditKey.text.toString().isEmpty() && mBinding.edtColumnEditName.text.toString().isEmpty() && mBinding.edtColumnEditContent.text.toString().isEmpty())
+            return false  //全部空值，不儲存。(通常發生在取消新增或直接儲存的情況。)
+
+        val fieldTypeIsScan = !mBinding.edtColumnEditName.isVisible
+
+
+        val fieldName = mBinding.edtColumnEditName.text.toString().trim()
+        logi(TAG, "儲存時，fieldName 是=>$fieldName")
+        if (fieldName == mContext.getString(R.string.setting_id_title_default) || fieldName == mContext.getString(R.string.setting_name_title_default)) {
             if (textDialog == null) {
-                textDialog = mContext.showMessageDialogOnlyOKButton(mContext.getString(R.string.dialog_notice_title), mContext.getString(R.string.setting_adapter_key_can_not_be_empty)) {
+                textDialog = mContext.showMessageDialogOnlyOKButton(mContext.getString(R.string.dialog_notice_title), mContext.getString(R.string.setting_illegal_operation_can_not_modify_scan_var)) {
                     textDialog = null
                 }
             }
             return false
         }
 
-        if (mBinding.edtColumnEditKey.text.toString().isEmpty()) { //如果是空的，不儲存。
+        if (mBinding.edtColumnEditContent.text.toString().isEmpty() && fieldTypeIsScan) { // 不能只有欄位索引是空的。
+            showFieldCouldNotEmptyDialog()
             return false
         }
 
-        val editField = SettingDataItem.SettingField(mBinding.edtColumnEditName.text.toString(), mBinding.edtColumnEditKey.text.toString(), mBinding.edtColumnEditContent.text.toString()).apply {
-            if (this.fieldName == mContext.getString(R.string.setting_id_title_default) || this.fieldName == mContext.getString(R.string.setting_name_title_default))
-                columnValue = null
+        if (mBinding.edtColumnEditKey.text.toString().isEmpty() && mBinding.edtColumnEditName.text.toString().isNotEmpty() && mBinding.edtColumnEditContent.text.toString().isNotEmpty() && !fieldTypeIsScan) { // 不能只有欄位索引是空的。
+            showFieldCouldNotEmptyDialog()
+            return false
         }
+
+        val editField = if (fieldTypeIsScan) {//Scan
+            SettingDataItem.SettingField(FieldType.Scan, mBinding.tvColumnEditNameShadow.text.toString(), mBinding.edtColumnEditContent.text.toString(), null)
+        } else {
+            SettingDataItem.SettingField(FieldType.Edit, mBinding.edtColumnEditName.text.toString(), mBinding.edtColumnEditKey.text.toString(), mBinding.edtColumnEditContent.text.toString())
+        }
+
         //找到當前的Fields裡面是否有editField，如果沒有就要新增，如果有就要更新舊的值
         if (settingData.fields.none { it.columnKey == editField.columnKey || it.fieldName == editField.fieldName }) { // 找不到，是新增，或代表只要名稱相同或欄位相同都是編輯。
             settingData.fields.add(editField)
@@ -322,6 +348,14 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
         mBinding.rvColumn.adapter?.notifyDataSetChanged() // 更新畫面
         logi(TAG, "儲存完畢的fields是=>${settingData.fields}")
         return true
+    }
+
+    private fun showFieldCouldNotEmptyDialog() {
+        if (textDialog == null) {
+            textDialog = mContext.showMessageDialogOnlyOKButton(mContext.getString(R.string.dialog_notice_title), mContext.getString(R.string.setting_adapter_key_can_not_be_empty)) {
+                textDialog = null
+            }
+        }
     }
 
     enum class CallMode {
@@ -346,27 +380,38 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
 //        mBinding.tvColumnEditKeyShadow.isVisible = if (nowIsOpenEditLayoutAndClickEdit) false else openBooleanList[3]
 
         // 不知道怎麼回事，editText在某次調整以後就會正常顯示(之前滑出後都沒有辦法直接顯示hint)，所以shadow部分暫時關閉與註解。
+        // ColumnEditName =>欄位名稱
+        // ColumnEditKey =>欄位索引
+        // ColumnEditContent =>欄位值
+        mBinding.apply {
 
-        mBinding.edtColumnEditName.setText(if (judgeColumnIsEmpty(field?.fieldName)) "" else field?.fieldName)
-        mBinding.tvColumnEditNameShadow.text = if (judgeColumnIsEmpty(field?.fieldName)) mContext.getString(R.string.setting_adapter_column_title) else field?.fieldName
+            tvColumnEditContentShadow.isVisible = false
 
-        mBinding.tvColumnEditKeyShadow.text = if (judgeColumnIsEmpty(field?.columnKey)) mContext.getString(R.string.setting_adapter_column_key) else field?.columnKey
-        mBinding.tvColumnEditKeyShadow.isVisible = false
-        mBinding.edtColumnEditKey.setText(if (judgeColumnIsEmpty(field?.columnKey)) "" else field?.columnKey)
 
-        (callFrom == CallMode.EditNameKeyField).apply {
+            tvColumnEditNameShadow.text = if (judgeColumnIsEmpty(field?.fieldName)) mContext.getString(R.string.setting_adapter_column_title) else field?.fieldName
 
-            mBinding.tvColumnEditNameShadow.isVisible = this //如果是編輯檢核名稱欄位，只可編輯Key
-            mBinding.edtColumnEditName.isVisible = !this
+            tvColumnEditKeyShadow.text = if (judgeColumnIsEmpty(field?.columnKey)) mContext.getString(R.string.setting_adapter_column_key) else field?.columnKey
 
-            mBinding.tvColumnEditContentShadow.isVisible = false
-            mBinding.tvColumnEditContentShadow.text = if (judgeColumnIsEmpty(field?.columnValue)) mContext.getString(R.string.setting_adapter_column_value) else field?.columnValue
-            mBinding.edtColumnEditContent.setText(if (judgeColumnIsEmpty(field?.columnValue)) "" else field?.columnValue)
+            (callFrom == CallMode.EditNameKeyField).apply {  //如果是編輯檢核名稱欄位，只可編輯Key // 變為長方形編輯模式
+                edtColumnEditName.setText(if (this) "" else field?.fieldName)
+                tvColumnEditNameShadow.isVisible = false
+                edtColumnEditName.isVisible = !this
+                edtColumnEditKey.isVisible = !this
+                tvColumnEditKeyShadow.isVisible = this
+                tvColumnEditKeyShadow.text = field?.fieldName
+//                tvColumnEditContentShadow.isVisible = false
+//                tvColumnEditContentShadow.text = if (judgeColumnIsEmpty(field?.columnValue)) mContext.getString(R.string.setting_adapter_column_value) else field?.columnValue
 
-            // 是檢核名稱欄位，特殊顯示
-            mBinding.edtColumnEditContent.isVisible = !this
+                if (this) {
+                    edtColumnEditContent.setText(field?.columnKey)
+                } else {
+                    edtColumnEditKey.setText(if (judgeColumnIsEmpty(field?.columnKey)) "" else field?.columnKey)
+                    edtColumnEditContent.setText(if (judgeColumnIsEmpty(field?.columnValue)) "" else field?.columnValue)
+                }
+                // 是否是Type= Scan欄位，特殊顯示
+                edtColumnEditContent.isVisible = true
+            }
         }
-
         if (!nowIsOpenEditLayoutAndClickEdit) { // 打開的情況按下編輯不控制EditLayout。
 //            logi(TAG, "openColumnEditLayout時，即將執行開關動作，此時 nowIsOpenEditLayoutAndClickEdit是=>$nowIsOpenEditLayoutAndClickEdit")
             closeAllContentLayout(3)
@@ -492,6 +537,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
         interface ClickListener {
             fun click(index: Int, data: SettingDataItem.SettingField)
             fun delete(index: Int)
+            fun couldNotDelete(fieldName: String)
         }
 
         var clickListener: ClickListener? = null
@@ -502,13 +548,26 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
 
         override fun onBindViewHolder(viewHolder: ViewHolder, position: Int, data: SettingDataItem.SettingField) {
             val adapterBinding = viewHolder.binding as AdapterSettingColumnBinding
-            adapterBinding.tvSettingColumnName.text = data.fieldName
-            adapterBinding.tvSettingColumnKey.text = data.columnKey
-            if (data.fieldName != context.getString(R.string.setting_name_title_default) && data.fieldName != context.getString(R.string.setting_id_title_default)) {
-                adapterBinding.tvSettingColumnValue.text = if (data.columnValue.isNullOrEmpty()) "未設定值" else data.columnValue
-                adapterBinding.tvSettingColumnValue.setTextColor(if (data.columnValue.isNullOrEmpty()) context.getColorByBuildVersion(R.color.gray) else context.getColorByBuildVersion(R.color.theme_blue))
-            } else { // 是檢核名稱 或 ID，不顯示欄位內容
-                adapterBinding.tvSettingColumnValue.isVisible = false
+            val layouts = arrayOf(adapterBinding.icKey, adapterBinding.icValue)
+            layouts.forEach { it.root.isVisible = false }
+
+            adapterBinding.apply {
+                if (data.fieldType == FieldType.Scan) {
+                    icKey.apply {
+                        tvSettingColumnName.text = data.fieldName
+                        tvSettingColumnKey.text = data.columnKey
+                    }
+                    layouts.getOrNull(0)?.root?.isVisible = true
+                } else {
+                    icValue.apply {
+                        tvSettingColumnName.text = data.fieldName
+                        tvSettingColumnKey.text = data.columnKey
+                        tvSettingColumnValue.text = if (data.columnValue.isNullOrEmpty()) "未設定值" else data.columnValue
+                        tvSettingColumnValue.setTextColor(if (data.columnValue.isNullOrEmpty()) context.getColorByBuildVersion(R.color.gray) else context.getColorByBuildVersion(R.color.theme_blue))
+                    }
+                    layouts.getOrNull(1)?.root?.isVisible = true
+
+                }
             }
         }
 
@@ -519,7 +578,11 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
         }
 
         override fun onItemLongClick(view: View, position: Int, data: SettingDataItem.SettingField): Boolean {
-            clickListener?.delete(position)
+            if (data.fieldType == FieldType.Scan) {
+                clickListener?.couldNotDelete(data.fieldName)
+            } else {
+                clickListener?.delete(position)
+            }
             return false
         }
     }
