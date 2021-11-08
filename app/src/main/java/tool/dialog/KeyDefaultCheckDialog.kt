@@ -96,8 +96,9 @@ class KeyDefaultCheckDialog(val context: Context, val data: KeyDefault) : Dialog
             edtName.setText(data.keyName)
             edtPassword.setText(data.keyPassword)
 
-            edtName.setTextSize(14)
-            edtPassword.setTextSize(14)
+            edtId.setTextSize(16)
+            edtName.setTextSize(16)
+            edtPassword.setTextSize(16)
 
             //按鈕設定參數：
             val btnTextSize = context.resources.getDimensionPixelSize(R.dimen.btn_text_size) //按鍵文字大小

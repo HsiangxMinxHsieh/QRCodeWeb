@@ -305,7 +305,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         }
 
 
-
         // 新增預設資料
         settings.add(getDefaultSetting(context.getShare().getID()))
 
@@ -398,6 +397,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         // 取出KeyDefault並存回SharedPreference
         context.getShare().setNowKeyDefault(context.getShare().getNowKeyDefault()?.apply {
+            keyID = mBinding.edtId.text.toString()
             keyName = mBinding.edtName.text.toString()
             keyPassword = mBinding.edtPassword.text.toString()
             settingStatus += 1

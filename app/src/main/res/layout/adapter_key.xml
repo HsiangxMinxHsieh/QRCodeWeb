@@ -48,6 +48,8 @@
             android:layout_marginBottom="@dimen/setting_item_margin_top_bottom"
             android:gravity="end"
             android:text="@string/setting_adapter_column_key"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textColor="@color/theme_blue"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"

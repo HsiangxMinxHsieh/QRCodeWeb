@@ -114,6 +114,7 @@
             android:maxLines="1"
             android:text="@string/dialog_cancel"
             android:textAllCaps="false"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:backgroundTint="@color/light_green"
             app:cornerRadius="@dimen/dialog_button_corner"
