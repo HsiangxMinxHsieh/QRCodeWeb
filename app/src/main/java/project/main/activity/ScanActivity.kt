@@ -173,17 +173,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
 
         mBinding.fabSetting.setOnClickListener {
             clickToSettingPage()
-//            clickPasswordInputAction()
         }
-
-//        forSettingResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-//            if (it.resultCode == Activity.RESULT_OK) {
-//
-//                logi("clickToSettingPage", "OK，我正確的返回了。")
-//            } else {
-//                logi("clickToSettingPage", "我不正確的返回了。")
-//            }
-//        }
     }
 
 
@@ -200,53 +190,11 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
         activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
-//    private fun clickPasswordInputAction() {
-//        if (inputDialog == null) {
-//            inputDialog = PasswordInputDialog(context).apply {
-//
-//                title = context.getString(R.string.password_dialog_title)
-//                limitTextSize = 0
-//                editText = context.getShare().getStorePassword()
-//                hintText = context.getString(R.string.password_dialog_hint)
-//                //                var editString = context.getShare().getStorePassword()
-//                dialogBinding.edtText.addTextChangedListener {
-//                    editText = it.toString()
-//                }
-//                dialogBinding.btnLift.setOnClickListener {
-//                    inputDialog = null
-//                    dialog.dismiss()
-//                }
-//                dialogBinding.btnRight.setOnClickListener {
-//                    inputDialog = null
-//                    if (editText.isNotEmpty()) {
-//                        livePassword.postValue(editText)
-//                        context.getShare().setPassword(editText)
-//                        dialog.dismiss()
-//                    } else {
-//                        if (textDialog == null) {
-//                            textDialog = showMessageDialogOnlyOKButton(context, context.getString(R.string.dialog_notice_title), "${context.getString(R.string.password_dialog_hint)}!") {
-//                                textDialog = null
-//                            }
-//                        }
-//                    }
-//                }
-//
-//            }
-//            inputDialog?.show()
-//        }
-//    }
-
     override fun onResume() {
         super.onResume()
 
         requestPermissions() //若沒有請求權限會是一片黑屏 // 無論之前是否有權限都要再次請求權限，因為要開相機(實測過後發現)
 
-//        // 顯示簽到完成對話框。
-//        if (textDialog == null)
-//            showSignInCompleteDialog {
-//                signInResult = ""
-//                textDialog = null
-//            }
         nowSetting = context.getShare().getNowUseSetting()
 //        logi(TAG, "onResume取到的設定檔內容是=>${nowSetting}")
 
@@ -275,10 +223,6 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
         mBinding.lvScanQrcodeMotion.resumeAnimation()
     }
 
-    //    private fun checkPermission(): Boolean {
-//        return EasyPermissions.hasPermissions(this, *permissionPerms)
-//    }
-//
     private fun requestPermissions() {
         EasyPermissions.requestPermissions(this, activity.getString(R.string.permission_request), PERMISSIONS_REQUEST_CODE, *permissionPerms)
     }
@@ -299,7 +243,6 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
                     val uri: Uri = Uri.fromParts("package", packageName, null)
                     intent.data = uri
                     startActivity(intent)
-
                 }
             }
         }

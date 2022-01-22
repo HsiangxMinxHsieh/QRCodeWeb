@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -11,8 +13,8 @@ android {
         applicationId "com.buddha.qrcodeweb"
         minSdk 21
         targetSdk 30
-        versionCode 10
-        versionName "0.1.2_Beta"
+        versionCode 11
+        versionName "0.1.3_Beta"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -103,6 +105,11 @@ dependencies {
     def appCenterSdkVersion = '4.3.1'
     implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
     implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
+
+    // Firebase
+    implementation platform('com.google.firebase:firebase-bom:29.0.4')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
 
 }
 

@@ -155,13 +155,12 @@
 
                 <ImageView
                     android:id="@+id/iv_setting_name_edit"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_baseline_mode_edit_outline"
                     app:layout_constraintBottom_toBottomOf="@+id/tv_setting_name_show"
-                    app:layout_constraintDimensionRatio="1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/tv_setting_name_show" />
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -579,8 +578,8 @@
 
                 <ImageView
                     android:id="@+id/iv_scan_to_direct_edit"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_baseline_mode_edit_outline"
@@ -631,8 +630,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/setting_item_margin_start_end"
-                        android:layout_marginTop="@dimen/setting_item_margin_top_bottom"
-                        android:layout_marginBottom="@dimen/setting_item_margin_top_bottom"
                         android:text="@string/setting_after_scan_action_title"
                         android:textColor="@color/theme_blue"
                         android:textStyle="bold"
@@ -815,8 +812,8 @@
 
                 <ImageView
                     android:id="@+id/iv_after_scan_action_edit"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/setting_item_margin_start_end"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_baseline_mode_edit_outline"
