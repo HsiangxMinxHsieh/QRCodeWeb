@@ -38,7 +38,7 @@ suspend fun Activity.sendApi(sendRequest: String, waitingText: String = this.get
         } finally {
             MainScope().launch {
                 afterSendAction.invoke()
-                progressDialog.dismiss()
+                progressDialog.dismiss() // 關閉進度框
             }
         }
     }

@@ -84,10 +84,46 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
     private var signInResult = ""
 
     private fun initObserver() {
-        liveResult.observe(activity, Observer {
+        liveResult.observe(activity, Observer { scanContent ->
+//            logi(TAG, "外面收到的內容是=>${scanContent}")
+            if (scanContent.startsWith("QRCodeSignIn")) { // 掃描到設定檔
+                scanContent.split("※").getOrNull(1)?.toDataBean(SettingDataItem())?.let { item ->
+                    if (textDialog == null) {
+                        val isNew = context.getShare().getStoreSettings().none { it.name == item.name }
+                        val message = context.getString(R.string.setting_scan_action).format(
+                            if (isNew)// 新增
+                                getString(R.string.setting_scan_action_new)
+                            else // 更新
+                                getString(R.string.setting_scan_action_update),
+                            item.name
+                        )
 
-            // 掃描到的QRCode將在這裡處理。
-            val getScanSignInPersonName = it.getSignInPersonByScan(context)
+                        textDialog = showConfirmDialog(context.getString(R.string.dialog_notice_title), message,
+                            confirmAction = {
+                                context.getShare().storeSetting(isNew, item)
+                                mBinding.fabSetting.text = nowSetting?.name ?: ""
+                                resumeScreenAnimation()
+                                textDialog = null
+                            },
+                            cancelAction = {
+                                resumeScreenAnimation()
+                                textDialog = null
+                            })
+                    }
+
+                }?:resumeScreenAnimation()
+
+                return@Observer
+            }
+
+            // 到這裡應該只要處理Google表單的網址，不是的話就不處理。
+            if (!scanContent.startsWith("https://docs.google.com/forms/")) {
+                resumeScreenAnimation()
+                return@Observer
+            }
+
+            // 處理掃描到的簽到QRCode：
+            val getScanSignInPersonName = scanContent.getSignInPersonByScan(context)
 
             if (getScanSignInPersonName == "null") {
                 if (textDialog == null) {
@@ -101,28 +137,27 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
             val signInTime = Date().time
             signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${getScanSignInPersonName}簽到完成。"
 
-            val sendRequest = it.concatSettingColumn(context)
+            val sendRequest = scanContent.concatSettingColumn(context)
 
             if (nowSetting?.afterScanAction?.actionMode == ActionMode.OpenBrowser.value) {  // 導向至網頁
-                activity.getRecordDao().insertNewRecord(signInTime, it, sendRequest, nowSetting ?: return@Observer)
+                activity.getRecordDao().insertNewRecord(signInTime, scanContent, sendRequest, nowSetting ?: return@Observer)
                 activity.intentToWebPage(sendRequest)
             } else {
                 // 應用程式內打API
                 MainScope().launch {
-                    if (activity.sendApi(sendRequest) { }) {
-                        // 關閉進度框、顯示簽到結果視窗。
+                    if (activity.sendApi(sendRequest)) {
+                        // 顯示簽到結果視窗。
                         if (nowSetting?.afterScanAction?.actionMode == ActionMode.StayApp.value) {
                             if (textDialog == null && signInResult.isNotEmpty()) {
-
                                 textDialog = activity.showSignInCompleteDialog(signInResult) {
                                     signInResult = ""
                                     resumeScreenAnimation()
                                     textDialog = null
-                                    activity.getRecordDao().insertNewRecord(signInTime, it, sendRequest, nowSetting ?: return@showSignInCompleteDialog)
+                                    activity.getRecordDao().insertNewRecord(signInTime, scanContent, sendRequest, nowSetting ?: return@showSignInCompleteDialog)
                                 }
                             }
                         } else { // 導向至設定的網頁
-                            activity.getRecordDao().insertNewRecord(signInTime, it, sendRequest, nowSetting ?: return@launch)
+                            activity.getRecordDao().insertNewRecord(signInTime, scanContent, sendRequest, nowSetting ?: return@launch)
                             activity.intentToWebPage(nowSetting?.afterScanAction?.toHtml)
                         }
                     } else {
@@ -136,7 +171,24 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
                 }
             }
         })
+    }
 
+    private fun BaseSharePreference.storeSetting(isNew: Boolean, item: SettingDataItem) {
+        savaAllSettings( // 將掃描到的設定儲存至SharePreference
+            getStoreSettings().apply {
+                var oid = 0
+                remove(firstOrNull { item.name == it.name }?.apply { oid = this.id })   // 用name找到settings裡面的那個，先移除再更新 // 如果找不到則移除失敗。
+                add(item.apply {
+                    id = if (isNew) // 新增
+                        context.getShare().getID()
+                    else // 更新
+                        oid
+                    haveSaved = true
+                    nowSetting = this
+                })
+            }
+        )
+        setNowUseSetting(nowSetting ?: return)
     }
 
 

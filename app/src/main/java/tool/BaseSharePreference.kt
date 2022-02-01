@@ -9,6 +9,7 @@ import project.main.database.SendRecordEntity
 import project.main.model.KeyDefault
 import project.main.model.SettingData
 import project.main.model.SettingDataItem
+import utils.logi
 import utils.toDataBean
 import utils.toJson
 

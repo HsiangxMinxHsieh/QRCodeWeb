@@ -8,17 +8,78 @@ import java.io.Serializable
 
 
 /***
- * 範例Json如下：
-[{"SettingName":"",
-"GoWebSiteByScan":{"ScanMode":1,"SendHtml":null},
-"AfterScanAction":{"ActionMode":1,"ToHtml":null},
-"SettingField":[{
-"fieldName":"name",
-"ColumnName":"entry.1199127502",
-"ColumnValue":"510502"
+ *
+ *  ※※※ 範例Json如下：
+[{
+"AfterScanAction": {
+"ActionMode": 1,
+"ToHtml": "https://"
+},
+"SettingField": [
+{
+"ColumnName": "entry.1823314342",
+"ColumnValue": "1234",
+"fieldName": "檢核密碼",
+"fieldType": 2
+},
+{
+"ColumnName": "entry.1486848017",
+"ColumnValue": "",
+"fieldName": "檢核ID",
+"fieldType": 1
+},
+{
+"ColumnName": "entry.186778128",
+"ColumnValue": "",
+"fieldName": "檢核名稱",
+"fieldType": 1
+}
+],
+"GoWebSiteByScan": {
+"ScanMode": 1,
+"SendHtml": "https://"
+},
+"haveSaved": true,
+"id": 0,
+"SettingName": "預設設定檔",
+"themeColor": 0
 }]
 
-}]
+ * ※※※掃描到，要處理的設定檔範例如下：
+QRCodeSighIn#{
+"AfterScanAction": {
+"ActionMode": 1,
+"ToHtml": "https://"
+},
+"SettingField": [
+{
+"ColumnName": "entry.1823314342",
+"ColumnValue": "1234",
+"fieldName": "檢核密碼",
+"fieldType": 2
+},
+{
+"ColumnName": "entry.1486848017",
+"ColumnValue": "",
+"fieldName": "檢核ID",
+"fieldType": 1
+},
+{
+"ColumnName": "entry.186778128",
+"ColumnValue": "",
+"fieldName": "檢核名稱",
+"fieldType": 1
+}
+],
+"GoWebSiteByScan": {
+"ScanMode": 1,
+"SendHtml": "https://"
+},
+"haveSaved": true,
+"id": 0,
+"SettingName": "預設設定檔",
+"themeColor": 0
+}
  */
 class SettingData : ArrayList<SettingDataItem>()
 

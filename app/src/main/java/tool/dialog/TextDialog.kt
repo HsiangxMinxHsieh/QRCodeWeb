@@ -91,9 +91,9 @@ class TextDialog(val context: Context) : Dialog {
             tvMessage.text = message
             tvMessage.setTextSize(16)
 //            tvMessage.movementMethod = ScrollingMovementMethod.getInstance()
-            if (message.length > 600) {
+            if (message.length > 200) {
                 val layoutParams = scrollView.layoutParams ?: ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
-                layoutParams.height = (getScreenHeightPixels(context) * 0.4).toInt()
+                layoutParams.height = (getScreenHeightPixels(context) * 0.5).toInt()
                 scrollView.layoutParams = layoutParams
             }
             if (message == "") {

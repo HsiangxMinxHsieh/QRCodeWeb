@@ -8,6 +8,7 @@ import com.buddha.qrcodeweb.BuildConfig
 import com.buddha.qrcodeweb.R
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import org.json.JSONObject
 import project.main.model.SendMode
 import tool.getShare
 import tool.getUrlKey

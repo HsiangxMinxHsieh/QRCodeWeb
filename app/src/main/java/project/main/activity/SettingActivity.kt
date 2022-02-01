@@ -218,7 +218,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         })
 
-        //下方頁面捲動設定(上面頁籤藥可以跟著動)
+        //下方頁面捲動設定(上面頁籤要可以跟著動)
         mBinding.vpContent.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
