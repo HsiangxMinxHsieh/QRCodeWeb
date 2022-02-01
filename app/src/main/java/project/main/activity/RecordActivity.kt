@@ -254,11 +254,11 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
             ) {
                 // 顯示簽到結果視窗。
                 if (afterCallAction == empty) { // 單一重送
-                    if (nowSetting?.afterScanAction?.actionMode == ActionMode.OpenBrowser) { //進入該網頁開瀏覽器。
+                    if (nowSetting?.afterScanAction?.actionMode == ActionMode.OpenBrowser.value) { //進入該網頁開瀏覽器。
                         activity.intentToWebPage(sendRequest)
                         activity.getRecordDao().insertNewRecord(signInTime, scanString, sendRequest, nowSetting ?: return@launch)
                     } else {
-                        if (nowSetting?.afterScanAction?.actionMode == ActionMode.StayApp) {
+                        if (nowSetting?.afterScanAction?.actionMode == ActionMode.StayApp.value) {
                             if (dialog == null) {
                                 dialog = activity.showSignInCompleteDialog(signInResult) {
                                     signInResult = ""
@@ -400,7 +400,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
     private fun recursiveResend(map: HashMap<Long, String>, oriSize: Int) {
         if (map.isEmpty()) { // 全部送完
 
-            if (nowSetting?.afterScanAction?.actionMode == ActionMode.AnotherWeb) {
+            if (nowSetting?.afterScanAction?.actionMode == ActionMode.AnotherWeb.value) {
                 activity.intentToWebPage(nowSetting?.afterScanAction?.toHtml)
                 setNowStatusToNoneOrSelecting(MultipleStatus.None)
             } else {

@@ -25,8 +25,6 @@ import tool.dialog.showMessageDialogOnlyOKButton
 import utils.logAllData
 import utils.logi
 import android.content.Intent
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
 import project.main.const.constantID
@@ -35,6 +33,7 @@ import project.main.const.constantPassword
 import tool.dialog.showConfirmDialog
 import uitool.*
 import utils.getColorByBuildVersion
+import utils.toJson
 
 
 class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBinding.inflate(it) }) {
@@ -146,7 +145,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
     }
 
-    private fun getDefaultSetting(id: Int) = SettingDataItem.getDefalutSetting(id, context)
+    private fun getDefaultSetting(id: Int) = SettingDataItem.getDefaultSetting(id, context)
 
     /**取得TabLayout中的View*/
     private fun getTabViewByText(s: SettingDataItem, isFirstTab: Boolean = false): View {
@@ -404,7 +403,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         } ?: return)
 
         saveData.haveSaved = true
-        logi("saveData", "saveData時，saveData 是=>${saveData}")
+        logi("saveData", "saveData時，saveData 是=>${saveData.toJson()}")
         context.getShare().savaAllSettings(settings.apply { this[index].haveSaved = true })
         context.getShare().setNowUseSetting(saveData)
         setTabText(saveData)

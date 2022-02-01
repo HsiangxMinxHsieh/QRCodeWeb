@@ -103,7 +103,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
 
             val sendRequest = it.concatSettingColumn(context)
 
-            if (nowSetting?.afterScanAction?.actionMode == ActionMode.OpenBrowser) {  // 導向至網頁
+            if (nowSetting?.afterScanAction?.actionMode == ActionMode.OpenBrowser.value) {  // 導向至網頁
                 activity.getRecordDao().insertNewRecord(signInTime, it, sendRequest, nowSetting ?: return@Observer)
                 activity.intentToWebPage(sendRequest)
             } else {
@@ -111,7 +111,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
                 MainScope().launch {
                     if (activity.sendApi(sendRequest) { }) {
                         // 關閉進度框、顯示簽到結果視窗。
-                        if (nowSetting?.afterScanAction?.actionMode == ActionMode.StayApp) {
+                        if (nowSetting?.afterScanAction?.actionMode == ActionMode.StayApp.value) {
                             if (textDialog == null && signInResult.isNotEmpty()) {
 
                                 textDialog = activity.showSignInCompleteDialog(signInResult) {
@@ -136,11 +136,6 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
                 }
             }
         })
-
-//        livePassword.observe(activity, {
-//            //設定的密碼將在這裡收到。
-//            context.getShare().setPassword(it)
-//        })
 
     }
 

@@ -46,7 +46,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
 
     private var textDialog: TextDialog? = null
 
-    private var storeStatus: FieldType = FieldType.AddColumn // 現在的欄位編輯狀態，決定儲存的內容與顯示的Type。
+    private var storeStatus: Int = FieldType.AddColumn.value // 現在的欄位編輯狀態，決定儲存的內容與顯示的Type。
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -82,10 +82,10 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
                 override fun click(index: Int, data: SettingDataItem.SettingField) {
                     storeStatus = data.fieldType
                     when (data.fieldType) {
-                        FieldType.KeyColumn -> { // 如果是檢核名稱的話要特殊處理，不讓使用者可以編輯檢核名稱欄位和其值
+                        FieldType.KeyColumn.value -> { // 如果是檢核名稱的話要特殊處理，不讓使用者可以編輯檢核名稱欄位和其值
                             openColumnEditLayout(data)
                         }
-                        FieldType.CanNotBeDelete -> {
+                        FieldType.CanNotBeDelete.value -> {
                             openColumnEditLayout(data)
                         }
                         else -> {
@@ -126,7 +126,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
         mBinding.tvSettingNameShadow.text = showName
         mBinding.tvSettingNameShow.text = showName
 
-        mBinding.setScanModeTextValue(settingData.goWebSiteByScan.scanMode == SendMode.ByScan) // false是自定義，true是掃到什麼傳什麼
+        mBinding.setScanModeTextValue(settingData.goWebSiteByScan.scanMode == SendMode.ByScan.value) // false是自定義，true是掃到什麼傳什麼
 
         mBinding.setAfterScanAction(settingData.afterScanAction)
 
@@ -151,20 +151,21 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
     private fun FragmentSettingContentBinding.setAfterScanAction(action: SettingDataItem.AfterScanAction) {
         this.apply {
             tvAfterScanActionShow.text = when (action.actionMode) {
-                ActionMode.StayApp -> {
+                ActionMode.StayApp.value -> {
                     setAllChoiceTextToGrayExclusiveIndex(0)
                     mContext.getString(R.string.setting_file_scan_after_action_1)
                 }
-                ActionMode.OpenBrowser -> {
+                ActionMode.OpenBrowser.value -> {
                     setAllChoiceTextToGrayExclusiveIndex(1)
                     mContext.getString(R.string.setting_file_scan_after_action_2)
                 }
-                ActionMode.AnotherWeb -> {
+                ActionMode.AnotherWeb.value -> {
                     setAllChoiceTextToGrayExclusiveIndex(2)
                     mContext.getString(R.string.setting_file_scan_after_action_3)
                 }
+                else -> "Not Appear"
             }
-            (action.actionMode == ActionMode.AnotherWeb).apply {
+            (action.actionMode == ActionMode.AnotherWeb.value).apply {
                 tvAfterScanActionHtml.isVisible = this
                 tvAfterScanActionHtml.text = action.toHtml
                 edtAfterScanToDirect.setText(action.toHtml)
@@ -206,7 +207,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
 //            logi(TAG, "此時openLayout布林值是：$openBooleanList")
             mBinding.tvScanToDirectContentShadow.isVisible = openBooleanList[1]
             openBooleanList[1] = mBinding.clMain.openLayout(openBooleanList[1], mBinding.clScanToDirectContent, mBinding.clScanToDirect)
-            judgeNeedShowHtmlEdit(settingData.goWebSiteByScan.scanMode == SendMode.ByCustom, settingData.goWebSiteByScan.sendHtml, mBinding.tvScanToDirectContentShadow, mBinding.edtScanToDirectContent)
+            judgeNeedShowHtmlEdit(settingData.goWebSiteByScan.scanMode == SendMode.ByCustom.value, settingData.goWebSiteByScan.sendHtml, mBinding.tvScanToDirectContentShadow, mBinding.edtScanToDirectContent)
 //            judgeNeedShowHtmlEdit(true," settingData.goWebSiteByScan.sendHtml", mBinding.tvScanToDirectContentShadow, mBinding.edtScanToDirectContent)
         }
 
@@ -215,12 +216,12 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
 //            logi(TAG, "此時openLayout布林值是：$openBooleanList")
             mBinding.tvAfterScanActionHtmlShadow.isVisible = openBooleanList[2]
             openBooleanList[2] = mBinding.clMain.openLayout(openBooleanList[2], mBinding.clAfterScanActionContent, mBinding.clAfterScanAction)
-            judgeNeedShowHtmlEdit(settingData.afterScanAction.actionMode == ActionMode.AnotherWeb, settingData.afterScanAction.toHtml, mBinding.tvAfterScanActionHtmlShadow, mBinding.edtAfterScanToDirect)
+            judgeNeedShowHtmlEdit(settingData.afterScanAction.actionMode == ActionMode.AnotherWeb.value, settingData.afterScanAction.toHtml, mBinding.tvAfterScanActionHtmlShadow, mBinding.edtAfterScanToDirect)
 //            judgeNeedShowHtmlEdit(true, "settingData.afterScanAction.toHtml", mBinding.tvAfterScanActionHtmlShadow, mBinding.edtAfterScanToDirect)
         }
 
         mBinding.clColumnTitle.setOnClickListener {
-            storeStatus = FieldType.AddColumn
+            storeStatus = FieldType.AddColumn.value
             openColumnEditLayout()
         }
 
@@ -279,21 +280,21 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
             mBinding.setAllChoiceTextToGrayExclusiveIndex(0)
             mBinding.tvAfterScanActionHtmlShadow.isVisible = false
             mBinding.edtAfterScanToDirect.isVisible = false
-            settingData.afterScanAction.actionMode = ActionMode.StayApp
+            settingData.afterScanAction.actionMode = ActionMode.StayApp.value
         }
 
         mBinding.tvAfterScanActionShow2.setOnClickListener {
             mBinding.setAllChoiceTextToGrayExclusiveIndex(1)
             mBinding.tvAfterScanActionHtmlShadow.isVisible = false
             mBinding.edtAfterScanToDirect.isVisible = false
-            settingData.afterScanAction.actionMode = ActionMode.OpenBrowser
+            settingData.afterScanAction.actionMode = ActionMode.OpenBrowser.value
         }
 
         mBinding.tvAfterScanActionShow3.setOnClickListener {
             mBinding.setAllChoiceTextToGrayExclusiveIndex(2)
             mBinding.tvAfterScanActionHtmlShadow.isVisible = false
             mBinding.edtAfterScanToDirect.isVisible = true
-            settingData.afterScanAction.actionMode = ActionMode.AnotherWeb
+            settingData.afterScanAction.actionMode = ActionMode.AnotherWeb.value
         }
 
         mBinding.ivColumnCheck.setOnClickListener {
@@ -305,8 +306,9 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
     }
 
 
-    /** 按下欄位編輯的綠色勾勾要執行的方法：  */
-
+    /** 按下欄位編輯的綠色勾勾要執行的方法：
+     *  成功儲存回傳true，失敗回傳false。
+     * */
     private fun saveFieldToData(): Boolean {
 
         if (mBinding.edtColumnEditKey.text.toString().isEmpty() && mBinding.edtColumnEditName.text.toString().isEmpty() && mBinding.edtColumnEditContent.text.toString().isEmpty())
@@ -318,7 +320,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
         val fieldName = mBinding.edtColumnEditName.text.toString().trim()
 
         //以下判斷使用者想要透過新增的方法來修改預設欄位值
-        if (storeStatus != FieldType.CanNotBeDelete && (fieldName == mContext.getString(R.string.setting_id_title_default) || fieldName == mContext.getString(R.string.setting_name_title_default) || fieldName == mContext.getString(R.string.setting_password_title_default))) {
+        if (storeStatus != FieldType.CanNotBeDelete.value && (fieldName == mContext.getString(R.string.setting_id_title_default) || fieldName == mContext.getString(R.string.setting_name_title_default) || fieldName == mContext.getString(R.string.setting_password_title_default))) {
             if (textDialog == null) {
                 textDialog = mContext.showMessageDialogOnlyOKButton(mContext.getString(R.string.dialog_notice_title), mContext.getString(R.string.setting_illegal_operation_can_not_modify_scan_var)) {
                     textDialog = null
@@ -327,35 +329,36 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
             return false
         }
 
-        if (mBinding.edtColumnEditContent.text.toString().isEmpty() && storeStatus == FieldType.KeyColumn) { // 不能只有欄位索引是空的。
+        if (mBinding.edtColumnEditContent.text.toString().isEmpty() && storeStatus == FieldType.KeyColumn.value) { // 不能只有欄位索引是空的。
             showFieldCouldNotEmptyDialog()
             return false
         }
 
-        if (mBinding.edtColumnEditKey.text.toString().isEmpty() && storeStatus != FieldType.KeyColumn) { // 不能只有欄位索引是空的。
+        if (mBinding.edtColumnEditKey.text.toString().isEmpty() && storeStatus != FieldType.KeyColumn.value) { // 不能只有欄位索引是空的。
             showFieldCouldNotEmptyDialog()
             return false
         }
 
         val editField = when (storeStatus) {//KeyColumn
-            FieldType.KeyColumn -> {
-                SettingDataItem.SettingField(FieldType.KeyColumn, mBinding.tvColumnEditNameShadow.text.toString(), mBinding.edtColumnEditContent.text.toString(), null)
+            FieldType.KeyColumn.value -> {
+                SettingDataItem.SettingField(FieldType.KeyColumn.value, mBinding.tvColumnEditNameShadow.text.toString(), mBinding.edtColumnEditContent.text.toString(), null)
             }
-            FieldType.CanNotBeDelete -> {
-                SettingDataItem.SettingField(FieldType.CanNotBeDelete, mBinding.tvColumnEditNameShadow.text.toString(), mBinding.edtColumnEditKey.text.toString(), mBinding.edtColumnEditContent.text.toString())
+            FieldType.CanNotBeDelete.value -> {
+                SettingDataItem.SettingField(FieldType.CanNotBeDelete.value, mBinding.tvColumnEditNameShadow.text.toString(), mBinding.edtColumnEditKey.text.toString(), mBinding.edtColumnEditContent.text.toString())
             }
-            FieldType.AddColumn -> {
-                SettingDataItem.SettingField(FieldType.AddColumn, mBinding.edtColumnEditName.text.toString(), mBinding.edtColumnEditKey.text.toString(), mBinding.edtColumnEditContent.text.toString())
+            FieldType.AddColumn.value -> {
+                SettingDataItem.SettingField(FieldType.AddColumn.value, mBinding.edtColumnEditName.text.toString(), mBinding.edtColumnEditKey.text.toString(), mBinding.edtColumnEditContent.text.toString())
             }
+            else -> null
         }
 
         //找到當前的Fields裡面是否有editField，如果沒有就要新增，如果有就要更新舊的值
-        if (settingData.fields.none { it.columnKey == editField.columnKey || it.fieldName == editField.fieldName }) { // 找不到，是新增，或代表只要名稱相同或欄位相同都是編輯。
-            settingData.fields.add(editField)
+        if (settingData.fields.none { it.columnKey == editField?.columnKey || it.fieldName == editField?.fieldName }) { // 找不到，是新增，或代表只要名稱相同或欄位相同都是編輯。
+            settingData.fields.add(editField?:return false)
             mBinding.scContent.smoothScrollTo(0, mBinding.clMain.measuredHeight) // 新增的時候才要捲到最下面
         } else { //有找到，是編輯
-            val editIndex = settingData.fields.indexOfFirst { it.columnKey == editField.columnKey || it.fieldName == editField.fieldName }
-            settingData.fields[editIndex] = editField
+            val editIndex = settingData.fields.indexOfFirst { it.columnKey == editField?.columnKey || it.fieldName == editField?.fieldName }
+            settingData.fields[editIndex] = editField?:return false
         }
         mBinding.rvColumn.adapter?.notifyDataSetChanged() // 更新畫面
 //        logi(TAG, "儲存完畢的fields是=>${settingData.fields}")
@@ -392,19 +395,19 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
 
 //            logi("openColumnEditLayout", "storeStatus 是=>${storeStatus}")
 
-            tvColumnEditNameShadow.isVisible = storeStatus == FieldType.CanNotBeDelete
+            tvColumnEditNameShadow.isVisible = storeStatus == FieldType.CanNotBeDelete.value
             tvColumnEditNameShadow.text = if (judgeColumnIsEmpty(field?.fieldName)) mContext.getString(R.string.setting_adapter_column_title) else field?.fieldName
 
-            tvColumnEditKeyShadow.isVisible = storeStatus == FieldType.KeyColumn // 只有是掃碼時才要顯示，因此直接指定值。
+            tvColumnEditKeyShadow.isVisible = storeStatus == FieldType.KeyColumn.value // 只有是掃碼時才要顯示，因此直接指定值。
             tvColumnEditKeyShadow.text = field?.fieldName
 
-            edtColumnEditName.isVisible = storeStatus == FieldType.AddColumn
-            edtColumnEditName.setText(if (storeStatus == FieldType.KeyColumn) "" else field?.fieldName)
+            edtColumnEditName.isVisible = storeStatus == FieldType.AddColumn.value
+            edtColumnEditName.setText(if (storeStatus == FieldType.KeyColumn.value) "" else field?.fieldName)
 
-            edtColumnEditKey.isVisible = storeStatus != FieldType.KeyColumn
+            edtColumnEditKey.isVisible = storeStatus != FieldType.KeyColumn.value
             edtColumnEditKey.setText(field?.columnKey)
 
-            edtColumnEditContent.setText(if (storeStatus == FieldType.KeyColumn) field?.columnKey else field?.columnValue ?: "")
+            edtColumnEditContent.setText(if (storeStatus == FieldType.KeyColumn.value) field?.columnKey else field?.columnValue ?: "")
 
             //無論如何都要顯示value的編輯欄位。
             edtColumnEditContent.isVisible = true
@@ -487,7 +490,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
 
             // 掃碼網址內容
             goWebSiteByScan = SettingDataItem.GoWebSiteByScan().apply {
-                scanMode = if (mBinding.swDirect.isChecked) SendMode.ByScan else SendMode.ByCustom
+                scanMode = if (mBinding.swDirect.isChecked) SendMode.ByScan.value else SendMode.ByCustom.value
                 sendHtml = mBinding.edtScanToDirectContent.text.toString()
             }
 
@@ -537,7 +540,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
             layouts.forEach { it.root.isVisible = false } // 老方法，把所有Layout關起來再打開要開的那個。
 
             adapterBinding.apply {
-                if (data.fieldType != FieldType.CanNotBeDelete) { // 不是密碼的欄位都要是藍底白字
+                if (data.fieldType != FieldType.CanNotBeDelete.value) { // 不是密碼的欄位都要是藍底白字
                     root.setBackgroundColor(context.getColorByBuildVersion(R.color.theme_blue))
                     setTextViewsToColor(context.getColorByBuildVersion(R.color.white), icKey.tvSettingColumnName, icKey.tvSettingColumnKey, icKey.tvSettingColumnKey, icValue.tvSettingColumnName, icValue.tvSettingColumnKey, icValue.tvSettingColumnValue)
                 } else {
@@ -545,7 +548,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
                     setTextViewsToColor(context.getColorByBuildVersion(R.color.theme_blue), icKey.tvSettingColumnName, icKey.tvSettingColumnKey, icValue.tvSettingColumnName, icValue.tvSettingColumnKey, icValue.tvSettingColumnValue)
                 }
 
-                if (data.fieldType == FieldType.KeyColumn) {
+                if (data.fieldType == FieldType.KeyColumn.value) {
                     icKey.apply {
                         tvSettingColumnName.text = data.fieldName
                         tvSettingColumnKey.text = data.columnKey
@@ -574,7 +577,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
         }
 
         override fun onItemLongClick(view: View, position: Int, data: SettingDataItem.SettingField): Boolean {
-            if (data.fieldType == FieldType.AddColumn) { // 只有由使用者新增的的才可以刪除。
+            if (data.fieldType == FieldType.AddColumn.value) { // 只有由使用者新增的的才可以刪除。
                 clickListener?.delete(position)
             } else {
                 clickListener?.couldNotDelete(data.fieldName)

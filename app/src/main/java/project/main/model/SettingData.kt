@@ -22,21 +22,21 @@ import java.io.Serializable
  */
 class SettingData : ArrayList<SettingDataItem>()
 
-enum class SendMode {
-    ByScan,         // 依照掃碼掃到什麼送什麼
-    ByCustom        // 輸入自定義的網址組合設定欄位並送出
+enum class SendMode(val value: Int) {
+    ByScan(1),         // 1.依照掃碼掃到什麼送什麼
+    ByCustom(2)        // 2.輸入自定義的網址組合設定欄位並送出
 }
 
-enum class ActionMode {
-    StayApp,        //1.組完的字串當網址打出去，不離開App。
-    OpenBrowser,    //2.打開瀏覽器做後續動作
-    AnotherWeb      //3.打出去以後想看結果頁(多一個輸入框)
+enum class ActionMode(val value: Int) {
+    StayApp(1),        //1.組完的字串當網址打出去，不離開App。
+    OpenBrowser(2),    //2.打開瀏覽器做後續動作
+    AnotherWeb(3)      //3.打出去以後想看結果頁(多一個輸入框)
 }
 
-enum class FieldType {
-    KeyColumn,      //1.掃碼時會填入的欄位，不能刪除，沒有value值(為null)。
-    CanNotBeDelete, //2.可由使用者自行編輯的欄位，但不可刪除，有value值。
-    AddColumn       //3.由使用者自行新增欄位，可刪除，有value值。
+enum class FieldType(val value: Int) {
+    KeyColumn(1),      //1.掃碼時會填入的欄位，不能刪除，沒有value值(為null)。
+    CanNotBeDelete(2), //2.可由使用者自行編輯的欄位，但不可刪除，有value值。
+    AddColumn(3)       //3.由使用者自行新增欄位，可刪除，有value值。
 }
 
 
@@ -73,41 +73,45 @@ data class SettingDataItem(
     /**依照ID取得預設的設定檔*/
     companion object {
         fun getFirstDefaultSetting(context: Context) = SettingDataItem(id = 0, name = context.getString(R.string.splash_setting_default_name), haveSaved = true).apply {
-            fields.add(SettingField(fieldType = FieldType.CanNotBeDelete,
-                fieldName = context.getString(R.string.setting_password_title_default),
-                columnKey = context.getShare().getKeyPassword(),
-                columnValue = context.getString(R.string.splash_setting_default_password)))
+            fields.add(
+                SettingField(
+                    fieldType = FieldType.CanNotBeDelete.value,
+                    fieldName = context.getString(R.string.setting_password_title_default),
+                    columnKey = context.getShare().getKeyPassword(),
+                    columnValue = context.getString(R.string.splash_setting_default_password)
+                )
+            )
             addIDandNameKeyItem(context)
         }
 
-        fun getDefalutSetting(id: Int, context: Context) = SettingDataItem(id = id, name = (context.getString(R.string.setting_file_name_default))).apply {
-            fields.add(SettingField(fieldType = FieldType.CanNotBeDelete, fieldName = context.getString(R.string.setting_password_title_default), columnKey = context.getShare().getKeyPassword()))
+        fun getDefaultSetting(id: Int, context: Context) = SettingDataItem(id = id, name = (context.getString(R.string.setting_file_name_default))).apply {
+            fields.add(SettingField(fieldType = FieldType.CanNotBeDelete.value, fieldName = context.getString(R.string.setting_password_title_default), columnKey = context.getShare().getKeyPassword()))
             addIDandNameKeyItem(context)
         }
 
         private fun SettingDataItem.addIDandNameKeyItem(context: Context) {
-            fields.add(SettingField(fieldType = FieldType.KeyColumn, fieldName = context.getString(R.string.setting_id_title_default), columnKey = context.getShare().getKeyID(), columnValue = null))
-            fields.add(SettingField(fieldType = FieldType.KeyColumn, fieldName = context.getString(R.string.setting_name_title_default), columnKey = context.getShare().getKeyName(), columnValue = null))
+            fields.add(SettingField(fieldType = FieldType.KeyColumn.value, fieldName = context.getString(R.string.setting_id_title_default), columnKey = context.getShare().getKeyID(), columnValue = null))
+            fields.add(SettingField(fieldType = FieldType.KeyColumn.value, fieldName = context.getString(R.string.setting_name_title_default), columnKey = context.getShare().getKeyName(), columnValue = null))
         }
     }
 
     data class GoWebSiteByScan(
         @SerializedName("ScanMode")
-        var scanMode: SendMode = SendMode.ByScan,
+        var scanMode: Int = SendMode.ByScan.value,
         @SerializedName("SendHtml")
         var sendHtml: String = "https://"
     ) : Serializable
 
     data class AfterScanAction(
         @SerializedName("ActionMode")
-        var actionMode: ActionMode = ActionMode.StayApp,
+        var actionMode: Int = ActionMode.StayApp.value,
         @SerializedName("ToHtml")
         var toHtml: String = "https://"
     ) : Serializable
 
     data class SettingField(
         @SerializedName("fieldType")
-        val fieldType: FieldType = FieldType.AddColumn,
+        val fieldType: Int = FieldType.AddColumn.value,
         @SerializedName("fieldName")
         val fieldName: String = "",
         @SerializedName("ColumnName")

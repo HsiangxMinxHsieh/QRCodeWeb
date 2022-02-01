@@ -24,7 +24,7 @@ fun String.concatSettingColumn(context: Context): String {
     val settingDataItem = context.getShare().getNowUseSetting()!!
 //    logi("concatSettingColumn", "settingDataItem.field內容是=>${settingDataItem.fields}")
     val fieldsStr = "&" + settingDataItem.fields.filterNot { it.columnValue.isNullOrEmpty() }.map { field -> "${field.columnKey}=${field.columnValue}" }.toString().replace(", ", "&").replace("[", "").replace("]", "")
-    return if (settingDataItem.goWebSiteByScan.scanMode == SendMode.ByScan)
+    return if (settingDataItem.goWebSiteByScan.scanMode == SendMode.ByScan.value)
         this + fieldsStr
     else { // 這裡要把設定檔中的field重新組合，依照ID、Name、Password的欄位重組
 
