@@ -132,8 +132,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
             return false
         }
 
-        if (context.getShare().getStoreSettings().size >= maxSettingSize) {
-            if (context.getShare().getStoreSettings().size != maxSettingSize) //要想個辦法把「新增」和「更新」分開，不然到上限設定檔數量的時候會有問題 //收尾issue
+        if (context.getShare().getStoreSettings().size >= maxSettingSize) { //要想個辦法把「新增」和「更新」分開，不然到上限設定檔數量的時候會有問題 //收尾issue
                 context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_over_max_size).format(maxSettingSize))
             return false
         }
