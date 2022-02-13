@@ -6,10 +6,7 @@ import project.main.const.constantID
 import project.main.const.constantName
 import project.main.const.constantPassword
 import project.main.database.SendRecordEntity
-import project.main.model.KeyDefault
-import project.main.model.SettingData
-import project.main.model.SettingDataItem
-import utils.logi
+import project.main.model.*
 import utils.toDataBean
 import utils.toJson
 
@@ -208,20 +205,23 @@ class BaseSharePreference(val context: Context) {
 
     fun addID(id: Int) = putInt(context, KEY_ID, id + 1)
 
-    fun storeSetting(isNew: Boolean, item: SettingDataItem) {
+    /** 掃描到的設定檔，一律會儲存至SharedPreference。*/
+    fun scanStoreSetting(isNew: Boolean, item: SettingDataItem) {
         savaAllSettings( // 將掃描到的設定儲存至SharePreference
             getStoreSettings().apply {
                 var oid = 0
-                remove(firstOrNull { item.name == it.name }?.apply { oid = this.id })   // 用name找到settings裡面的那個，先移除再更新 // 如果找不到則移除失敗。
-                add(item.apply {
-                    id = if (isNew) // 新增
-                        context.getShare().getID()
-                    else // 更新
-                        oid
-                    haveSaved = true
-                })
+                this.indexOfFirst { it.name == item.name }.let { index ->
+                    remove(firstOrNull { item.name == it.name }?.apply { oid = this.id })   // 用name找到settings裡面的那個，先移除再更新 // 如果找不到則移除失敗。
+                    add(if (index >= 0) index else this.size - 1, item.apply {
+                        id = if (isNew) // 新增
+                            context.getShare().getID()
+                        else // 更新
+                            oid
+                        haveSaved = true
+                    })
+                }
             }
         )
-        setNowUseSetting(item )
+        setNowUseSetting(item)
     }
 }

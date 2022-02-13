@@ -81,7 +81,9 @@ QRCodeSighIn#{
 "themeColor": 0
 }
  */
-class SettingData : ArrayList<SettingDataItem>()
+class SettingData : ArrayList<SettingDataItem>(){
+    fun isNew(item:SettingDataItem) = this.none { it.name == item.name }
+}
 
 enum class SendMode(val value: Int) {
     ByScan(1),         // 1.依照掃碼掃到什麼送什麼

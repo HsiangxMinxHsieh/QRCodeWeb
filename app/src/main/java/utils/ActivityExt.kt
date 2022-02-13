@@ -9,6 +9,7 @@ import androidx.core.net.toUri
 import com.buddha.qrcodeweb.R
 import kotlinx.coroutines.*
 import project.main.api.getURLResponse
+import project.main.model.SettingData
 import project.main.model.SettingDataItem
 import tool.dialog.Dialog
 import tool.dialog.ProgressDialog
@@ -83,25 +84,53 @@ fun Activity.intentToWebPage(url: String?) {
     }
 }
 
-/** confirmAction比較複雜一點，它是用來給外部呼叫，但又要回Call判斷這裡能不能儲存的方法 //true為可儲存，false則為不可儲存。 */
-fun Activity.showDialogAndConfirmToSaveSetting(item: SettingDataItem, confirmAction: (item: SettingDataItem?) -> Boolean): Dialog {
+fun Activity.maxSettingSize() = this.resources.getInteger(R.integer.setting_size_max_size)
 
-    val isNew = this.getShare().getStoreSettings().none { it.name == item.name }
+/**
+ * 兩種情況無法新增失敗：
+ * 1.有設定檔沒有被儲存過(只有有設定名字才可以儲存)
+ * 2.當前設定檔已有20個，就不能再新增(已設計為無論掃描頁掃描到新增、設定頁面按下新增、設定頁面掃描頁面掃描到新增都無法再新增。)。
+ * */
+fun Activity.couldBeAdd(newItem: SettingDataItem, settings: SettingData, confirmAction: (item: SettingDataItem?) -> Unit = {}): Boolean {
 
-    val message = this.getString(R.string.setting_scan_action).format(
-        if (isNew)// 新增
-            getString(R.string.setting_scan_action_new)
-        else // 更新
-            getString(R.string.setting_scan_action_update),
-        item.name
-    )
+    if (settings.any { !it.haveSaved }) { // 如果有false(未儲存者)要return。
+        this.showMessageDialogOnlyOKButton(this.getString(R.string.dialog_notice_title), this.getString(R.string.setting_cant_add_by_not_saved_current))
+        return false
+    }
 
-    return showConfirmDialog(this.getString(R.string.dialog_notice_title), message,
-        confirmAction = {
-            if (confirmAction.invoke(item))
-                this.getShare().storeSetting(isNew, item)
-        },
-        cancelAction = {
-            confirmAction.invoke(null) //執行但不更新值
-        })
+    if (settings.isNew(newItem) && settings.size >= this.maxSettingSize()) {
+        this.showMessageDialogOnlyOKButton(this.getString(R.string.dialog_notice_title), this.getString(R.string.setting_cant_add_by_over_max_size).format(this.maxSettingSize())) {
+            confirmAction.invoke(null)
+        }
+        return false
+    }
+    confirmAction.invoke(newItem)
+    return true
+}
+
+/** 統一在此方法這裡判斷是否有新增成功 */
+fun Activity.showDialogAndConfirmToSaveSetting(newItem: SettingDataItem, settings: SettingData, confirmAction: (item: SettingDataItem?) -> Boolean): Dialog {
+
+    settings.isNew(newItem).let { isNew ->
+        val message = this.getString(R.string.setting_scan_action).format(
+            if (isNew)// 新增
+                getString(R.string.setting_scan_action_new)
+            else // 更新
+                getString(R.string.setting_scan_action_update),
+            newItem.name
+        )
+
+        return showConfirmDialog(this.getString(R.string.dialog_notice_title), message,
+            confirmAction = {
+                couldBeAdd(newItem, settings) {
+                    it?.let { store ->
+                        this.getShare().scanStoreSetting(isNew, store) // 一律會對儲存的資料作處理(因沒有辦法驗證設定頁的資料當前是否沒有儲存)
+                    }
+                    confirmAction.invoke(it)
+                }
+            },
+            cancelAction = {
+                confirmAction.invoke(null) //執行但不更新值
+            })
+    }
 }

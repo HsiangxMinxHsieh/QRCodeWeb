@@ -97,7 +97,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
     private var signInResult = ""
 
     private fun initObserver() {
-        liveResult.observe(activity, Observer { scanContent ->
+        liveResult.observe(activity, { scanContent ->
             if (scanMode == ScanMode.NORMAL) // 一般掃描
                 signInAction(scanContent)
             else { // 設定頁呼叫
@@ -125,32 +125,15 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
             resumeScreenAnimation()
     }
 
-    // 和SettingActivity不一樣的地方是，Scan比的是儲存空間內的檔案，Setting比的是當前頁面的檔案，因此沒有寫成同一個公用方法。
-    private fun couldBeAdd(): Boolean {
-        if (context.getShare().getStoreSettings().any { !it.haveSaved }) { // 如果有false(未儲存者)要return。
-            context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_not_saved_current))
-            return false
-        }
-
-        if (context.getShare().getStoreSettings().size >= maxSettingSize) { //要想個辦法把「新增」和「更新」分開，不然到上限設定檔數量的時候會有問題 //收尾issue
-                context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_over_max_size).format(maxSettingSize))
-            return false
-        }
-
-        return true
-    }
-
     private fun signInAction(scanContent: String) {
-        //            logi(TAG, "外面收到的內容是=>${scanContent}")
         if (scanContent.startsWith("QRCodeSignIn")) { // 掃描到設定檔
             scanContent.split("※").getOrNull(1)?.let {
                 if (!it.isJson())
                     return@let null
 
                 it.toDataBean(SettingDataItem())?.let { item ->
-                    activity.showDialogAndConfirmToSaveSetting(item) { itemCallBack ->
-                        resumeScreenAnimation() // 應該要在couldBeAdd的按鈕裡面才恢復動畫 // 收尾issue
-                        if (!couldBeAdd()) return@showDialogAndConfirmToSaveSetting false
+                    activity.showDialogAndConfirmToSaveSetting(item,context.getShare().getStoreSettings()) { itemCallBack ->
+                        resumeScreenAnimation()
                         itemCallBack?.let { update ->
                             nowSetting = update
                             mBinding.fabSetting.text = update.name

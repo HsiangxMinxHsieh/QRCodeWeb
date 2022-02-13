@@ -64,7 +64,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
     private val settings: SettingData by lazy { context.getShare().getStoreSettings() }
     private var nowTabIndex = 0
-    private var openBoolean = true
 
     private fun initTab() {
         //初始化TabLayout
@@ -87,7 +86,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(ImageView(context).apply { //無論如何都要在最尾端加一個+號
             Glide.with(context).load(R.drawable.ic_baseline_add).into(this)
-            clickWithTrigger { addSetting(settings.size) }
+            clickWithTrigger { addSetting(getDefaultSetting(context.getShare().getID())) }
         }))
 
         delayScrollToPosition(nowTabIndex)
@@ -225,13 +224,12 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
     private val scanActivityLauncher = registerForActivityResult(ScanActivityResultContract()) { item ->
         item?.let {
-            activity.showDialogAndConfirmToSaveSetting(item) { itemCallBack ->
+            activity.showDialogAndConfirmToSaveSetting(item, settings) { itemCallBack ->
 
                 // 變更頁面內容
                 itemCallBack?.let { update ->
                     settings.indexOf(settings.firstOrNull { it.name == update.name }).let { findIndex -> // 要先找到名稱來確認是否有更新，不然可能會造成「同名稱不同ID」的錯誤。
                         if (findIndex < 0) {
-                            if (!couldBeAdd()) return@showDialogAndConfirmToSaveSetting false
                             mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(getTabViewByText(it)), settings.size) // 掃描後確定要新增tab
                             settings.add(it)
                         } else
@@ -259,39 +257,25 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         activity.overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_up)
     }
 
-    private fun addSetting(index: Int) {
+    private fun addSetting(item: SettingDataItem) {
 
-        if (!couldBeAdd()) return
+        couldBeAdd(item, settings) { have ->
+            have?.let {
+                // 新增資料至本頁
+                settings.add(item)
 
-        // 新增預設資料
-        settings.add(getDefaultSetting(context.getShare().getID()))
+                // 新增tab
+                mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(getTabViewByText(item)), settings.size - 1)
 
-        // 新增tab
-        mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(getTabViewByText(settings.getOrNull(index) ?: return, (index == nowTabIndex))), index)
+                // 新增頁面內容
+                mBinding.vpContent.adapter = pagerAdapter //新增後更新Fragment內容(重新指定)
 
-        // 新增頁面內容
-        mBinding.vpContent.adapter = pagerAdapter //新增後更新Fragment內容(重新指定)
-
-        // 滑動到最後一個
-        delayScrollToPosition(index)
+                // 滑動到最後一個
+                delayScrollToPosition(settings.size - 1)
+            }
+        }
     }
 
-
-    // 若
-    private fun couldBeAdd(): Boolean {
-        if (settings.any { !it.haveSaved }) { // 如果有false(未儲存者)要return。
-            context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_not_saved_current))
-            return false
-        }
-
-        if (settings.size >= maxSettingSize) {
-            context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_over_max_size).format(maxSettingSize))
-            return false
-
-        }
-
-        return true
-    }
 
     private fun deleteSetting(index: Int) {
         if (settings.size == 1) {
@@ -325,6 +309,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         val saveData = settings.getOrNull(nowTabIndex) ?: return
 //        logi("saveData", "saveData時，saveData 是=>$saveData")
+//        logi("saveData", "saveData時，settings.name 是=>${settings.map { it.name }}")
         if (settings.any { it.name.isEmpty() }) {
             context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_name_title_hint))
             return

@@ -22,8 +22,6 @@ abstract class BaseActivity<B : ViewBinding>(val bindingFactory: (LayoutInflater
     open val activity by lazy { this }
     open val context: Context by lazy { this }
 
-    val maxSettingSize by lazy { context.resources.getInteger(R.integer.setting_size_max_size) }
-
     abstract var statusTextIsDark: Boolean
 
     fun setStatusBarText() {

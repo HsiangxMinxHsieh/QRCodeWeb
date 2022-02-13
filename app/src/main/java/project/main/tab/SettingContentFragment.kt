@@ -356,11 +356,11 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
 
         //找到當前的Fields裡面是否有editField，如果沒有就要新增，如果有就要更新舊的值
         if (settingData.fields.none { it.columnKey == editField?.columnKey || it.fieldName == editField?.fieldName }) { // 找不到，是新增，或代表只要名稱相同或欄位相同都是編輯。
-            settingData.fields.add(editField?:return false)
+            settingData.fields.add(editField ?: return false)
             mBinding.scContent.smoothScrollTo(0, mBinding.clMain.measuredHeight) // 新增的時候才要捲到最下面
         } else { //有找到，是編輯
             val editIndex = settingData.fields.indexOfFirst { it.columnKey == editField?.columnKey || it.fieldName == editField?.fieldName }
-            settingData.fields[editIndex] = editField?:return false
+            settingData.fields[editIndex] = editField ?: return false
         }
         mBinding.rvColumn.adapter?.notifyDataSetChanged() // 更新畫面
 //        logi(TAG, "儲存完畢的fields是=>${settingData.fields}")
@@ -488,7 +488,11 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
 
         settingData.apply {
             // 設定檔名稱
-            name = mBinding.edtSettingNameContent.text.toString()
+            mBinding.edtSettingNameContent.text.toString().let {
+                if (it.isEmpty())
+                    return@let
+                name = it
+            }
 
             // 掃碼網址內容
             goWebSiteByScan = SettingDataItem.GoWebSiteByScan().apply {
