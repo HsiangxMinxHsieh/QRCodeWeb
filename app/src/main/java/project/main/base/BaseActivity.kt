@@ -9,6 +9,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
+import com.buddha.qrcodeweb.R
 
 
 abstract class BaseActivity<B : ViewBinding>(val bindingFactory: (LayoutInflater) -> B) : AppCompatActivity() {
@@ -20,6 +21,8 @@ abstract class BaseActivity<B : ViewBinding>(val bindingFactory: (LayoutInflater
 
     open val activity by lazy { this }
     open val context: Context by lazy { this }
+
+    val maxSettingSize by lazy { context.resources.getInteger(R.integer.setting_size_max_size) }
 
     abstract var statusTextIsDark: Boolean
 

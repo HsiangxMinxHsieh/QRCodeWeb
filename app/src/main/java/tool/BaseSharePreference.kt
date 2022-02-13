@@ -208,5 +208,20 @@ class BaseSharePreference(val context: Context) {
 
     fun addID(id: Int) = putInt(context, KEY_ID, id + 1)
 
-
+    fun storeSetting(isNew: Boolean, item: SettingDataItem) {
+        savaAllSettings( // 將掃描到的設定儲存至SharePreference
+            getStoreSettings().apply {
+                var oid = 0
+                remove(firstOrNull { item.name == it.name }?.apply { oid = this.id })   // 用name找到settings裡面的那個，先移除再更新 // 如果找不到則移除失敗。
+                add(item.apply {
+                    id = if (isNew) // 新增
+                        context.getShare().getID()
+                    else // 更新
+                        oid
+                    haveSaved = true
+                })
+            }
+        )
+        setNowUseSetting(item )
+    }
 }

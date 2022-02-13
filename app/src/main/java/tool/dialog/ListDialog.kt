@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import project.main.base.BaseRecyclerViewDataBindingAdapter
 import uitool.getRectangleBg
 import uitool.*
+import utils.clickWithTrigger
 import utils.getColorByBuildVersion
 
 fun Context.showListDialog(title: String, list: MutableList<String>, selectAction:(selectIndex:Int,selectData:String)->Unit, cancelAction: () -> Unit = {}): ListDialog {
@@ -29,7 +30,7 @@ fun Context.showListDialog(title: String, list: MutableList<String>, selectActio
         this.list = list
         MainScope().launch {
             dialogBinding.btn.text = context.getString(R.string.dialog_cancel)
-            dialogBinding.btn.setOnClickListener {
+            dialogBinding.btn.clickWithTrigger {
                 cancelAction()
                 dialog.dismiss()
             }

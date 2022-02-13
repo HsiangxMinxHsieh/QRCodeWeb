@@ -1,5 +1,6 @@
 package project.main.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -15,6 +16,7 @@ import pub.devrel.easypermissions.EasyPermissions
 import tool.dialog.*
 import java.util.*
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.isVisible
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.ActivityScanBinding
 import project.main.const.PERMISSIONS_REQUEST_CODE
@@ -29,13 +31,25 @@ import tool.*
 import uitool.ViewTool
 import utils.*
 
+enum class ScanMode { //進入掃描頁的呼叫處
+    DEFAULT, // 無設定檔時，按下掃描
+    SETTING, // 設定頁面處，呼叫掃描
+    NORMAL   // 一般掃描
+}
 
 class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inflate(it) }), EasyPermissions.PermissionCallbacks {
+
+    companion object {
+        const val BUNDLE_KEY_SCAN_MODE = "BUNDLE_SCAN_MODE_KEY"
+        const val BUNDLE_KEY_SCAN_RESULT = "BUNDLE_SCAN_MODE_KEY"
+    }
 
     override var statusTextIsDark: Boolean = false
 
     private val liveResult by lazy { MutableLiveData<String>() }
 //    private val livePassword by lazy { MutableLiveData<String>() }
+
+    private val scanMode: ScanMode by lazy { (intent?.extras?.getSerializable(BUNDLE_KEY_SCAN_MODE) as? ScanMode) ?: ScanMode.NORMAL } // 不傳值是Normal
 
     private var textDialog: Dialog? = null
 //    var inputDialog: Dialog? = null
@@ -80,124 +94,143 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
         }
     }
 
-
     private var signInResult = ""
 
     private fun initObserver() {
         liveResult.observe(activity, Observer { scanContent ->
-//            logi(TAG, "外面收到的內容是=>${scanContent}")
-            if (scanContent.startsWith("QRCodeSignIn")) { // 掃描到設定檔
-                scanContent.split("※").getOrNull(1)?.toDataBean(SettingDataItem())?.let { item ->
-                    if (textDialog == null) {
-                        val isNew = context.getShare().getStoreSettings().none { it.name == item.name }
-                        val message = context.getString(R.string.setting_scan_action).format(
-                            if (isNew)// 新增
-                                getString(R.string.setting_scan_action_new)
-                            else // 更新
-                                getString(R.string.setting_scan_action_update),
-                            item.name
-                        )
-
-                        textDialog = showConfirmDialog(context.getString(R.string.dialog_notice_title), message,
-                            confirmAction = {
-                                context.getShare().storeSetting(isNew, item)
-                                mBinding.fabSetting.text = nowSetting?.name ?: ""
-                                resumeScreenAnimation()
-                                textDialog = null
-                            },
-                            cancelAction = {
-                                resumeScreenAnimation()
-                                textDialog = null
-                            })
-                    }
-
-                }?:resumeScreenAnimation()
-
-                return@Observer
+            if (scanMode == ScanMode.NORMAL) // 一般掃描
+                signInAction(scanContent)
+            else { // 設定頁呼叫
+                processSettingPageScan(scanContent)
             }
 
-            // 到這裡應該只要處理Google表單的網址，不是的話就不處理。
-            if (!scanContent.startsWith("https://docs.google.com/forms/")) {
-                resumeScreenAnimation()
-                return@Observer
-            }
-
-            // 處理掃描到的簽到QRCode：
-            val getScanSignInPersonName = scanContent.getSignInPersonByScan(context)
-
-            if (getScanSignInPersonName == "null") {
-                if (textDialog == null) {
-                    textDialog = activity.showSignInErrorDialog {
-                        resumeScreenAnimation()
-                        textDialog = null
-                    }
-                }
-                return@Observer
-            }
-            val signInTime = Date().time
-            signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${getScanSignInPersonName}簽到完成。"
-
-            val sendRequest = scanContent.concatSettingColumn(context)
-
-            if (nowSetting?.afterScanAction?.actionMode == ActionMode.OpenBrowser.value) {  // 導向至網頁
-                activity.getRecordDao().insertNewRecord(signInTime, scanContent, sendRequest, nowSetting ?: return@Observer)
-                activity.intentToWebPage(sendRequest)
-            } else {
-                // 應用程式內打API
-                MainScope().launch {
-                    if (activity.sendApi(sendRequest)) {
-                        // 顯示簽到結果視窗。
-                        if (nowSetting?.afterScanAction?.actionMode == ActionMode.StayApp.value) {
-                            if (textDialog == null && signInResult.isNotEmpty()) {
-                                textDialog = activity.showSignInCompleteDialog(signInResult) {
-                                    signInResult = ""
-                                    resumeScreenAnimation()
-                                    textDialog = null
-                                    activity.getRecordDao().insertNewRecord(signInTime, scanContent, sendRequest, nowSetting ?: return@showSignInCompleteDialog)
-                                }
-                            }
-                        } else { // 導向至設定的網頁
-                            activity.getRecordDao().insertNewRecord(signInTime, scanContent, sendRequest, nowSetting ?: return@launch)
-                            activity.intentToWebPage(nowSetting?.afterScanAction?.toHtml)
-                        }
-                    } else {
-                        if (textDialog == null) {
-                            textDialog = activity.showSignInErrorDialog {
-                                resumeScreenAnimation()
-                                textDialog = null
-                            }
-                        }
-                    }
-                }
-            }
         })
     }
 
-    private fun BaseSharePreference.storeSetting(isNew: Boolean, item: SettingDataItem) {
-        savaAllSettings( // 將掃描到的設定儲存至SharePreference
-            getStoreSettings().apply {
-                var oid = 0
-                remove(firstOrNull { item.name == it.name }?.apply { oid = this.id })   // 用name找到settings裡面的那個，先移除再更新 // 如果找不到則移除失敗。
-                add(item.apply {
-                    id = if (isNew) // 新增
-                        context.getShare().getID()
-                    else // 更新
-                        oid
-                    haveSaved = true
-                    nowSetting = this
-                })
-            }
-        )
-        setNowUseSetting(nowSetting ?: return)
+    private fun processSettingPageScan(scanContent: String) {
+        if (scanContent.startsWith("QRCodeSignIn")) { // 掃描到設定檔
+            scanContent.split("※").getOrNull(1)?.let {
+                if (!it.isJson())
+                    return@let null
+
+                it.toDataBean(SettingDataItem())?.let { item ->
+                    val intent = Intent().apply {
+                        putExtra(BUNDLE_KEY_SCAN_RESULT, item)
+                    }
+                    setResult(RESULT_OK, intent)
+                    finish()
+                }
+            } ?: resumeScreenAnimation()
+        } else //不是設定檔，直接回復掃描動畫。
+            resumeScreenAnimation()
     }
 
+    // 和SettingActivity不一樣的地方是，Scan比的是儲存空間內的檔案，Setting比的是當前頁面的檔案，因此沒有寫成同一個公用方法。
+    private fun couldBeAdd(): Boolean {
+        if (context.getShare().getStoreSettings().any { !it.haveSaved }) { // 如果有false(未儲存者)要return。
+            context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_not_saved_current))
+            return false
+        }
+
+        if (context.getShare().getStoreSettings().size >= maxSettingSize) {
+            if (context.getShare().getStoreSettings().size != maxSettingSize) //要想個辦法把「新增」和「更新」分開，不然到上限設定檔數量的時候會有問題 //收尾issue
+                context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_over_max_size).format(maxSettingSize))
+            return false
+        }
+
+        return true
+    }
+
+    private fun signInAction(scanContent: String) {
+        //            logi(TAG, "外面收到的內容是=>${scanContent}")
+        if (scanContent.startsWith("QRCodeSignIn")) { // 掃描到設定檔
+            scanContent.split("※").getOrNull(1)?.let {
+                if (!it.isJson())
+                    return@let null
+
+                it.toDataBean(SettingDataItem())?.let { item ->
+                    activity.showDialogAndConfirmToSaveSetting(item) { itemCallBack ->
+                        resumeScreenAnimation() // 應該要在couldBeAdd的按鈕裡面才恢復動畫 // 收尾issue
+                        if (!couldBeAdd()) return@showDialogAndConfirmToSaveSetting false
+                        itemCallBack?.let { update ->
+                            nowSetting = update
+                            mBinding.fabSetting.text = update.name
+                        }
+                        return@showDialogAndConfirmToSaveSetting true
+                    }
+                }
+                return
+            } ?: resumeScreenAnimation()
+        }
+
+
+        // 到這裡應該只要處理Google表單的網址，不是的話就不處理。
+        if (!scanContent.startsWith("https://docs.google.com/forms/")) {
+            resumeScreenAnimation()
+            return
+        }
+
+        // 處理掃描到的簽到QRCode：
+        val getScanSignInPersonName = scanContent.getSignInPersonByScan(context)
+
+        if (getScanSignInPersonName == "null") {
+            if (textDialog == null) {
+                textDialog = activity.showSignInErrorDialog {
+                    resumeScreenAnimation()
+                    textDialog = null
+                }
+            }
+            return
+        }
+        val signInTime = Date().time
+        signInResult = "${signInTime.toString("yyyy/MM/dd HH:mm:ss")}\n${getScanSignInPersonName}簽到完成。"
+
+        val sendRequest = scanContent.concatSettingColumn(context)
+
+        if (nowSetting?.afterScanAction?.actionMode == ActionMode.OpenBrowser.value) {  // 導向至網頁
+            activity.getRecordDao().insertNewRecord(signInTime, scanContent, sendRequest, nowSetting ?: return)
+            activity.intentToWebPage(sendRequest)
+        } else {
+            // 應用程式內打API
+            MainScope().launch {
+                if (activity.sendApi(sendRequest)) {
+                    // 顯示簽到結果視窗。
+                    if (nowSetting?.afterScanAction?.actionMode == ActionMode.StayApp.value) {
+                        if (textDialog == null && signInResult.isNotEmpty()) {
+                            textDialog = activity.showSignInCompleteDialog(signInResult) {
+                                signInResult = ""
+                                resumeScreenAnimation()
+                                textDialog = null
+                                activity.getRecordDao().insertNewRecord(signInTime, scanContent, sendRequest, nowSetting ?: return@showSignInCompleteDialog)
+                            }
+                        }
+                    } else { // 導向至設定的網頁
+                        activity.getRecordDao().insertNewRecord(signInTime, scanContent, sendRequest, nowSetting ?: return@launch)
+                        activity.intentToWebPage(nowSetting?.afterScanAction?.toHtml)
+                    }
+                } else {
+                    if (textDialog == null) {
+                        textDialog = activity.showSignInErrorDialog {
+                            resumeScreenAnimation()
+                            textDialog = null
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     private fun initData() {
 
     }
 
-    private fun initView() {
-        mBinding.lvScanQrcodeMotion.initialLottieByFileName(context, AnimationFileName.SCAN_MOTION, true)
+    private fun initView() = mBinding.run {
+        lvScanQrcodeMotion.initialLottieByFileName(context, if (scanMode == ScanMode.NORMAL) AnimationFileName.SIGN_IN_SCAN_MOTION else AnimationFileName.SETTING_SCAN_MOTION, true)
+        (scanMode == ScanMode.NORMAL).let {
+            fabRecord.isVisible = it
+            fabSetting.isVisible = it
+            tvTipScanSetting.isVisible = !it
+        }
     }
 
 
@@ -214,11 +247,11 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
             }
         })
 
-        mBinding.fabRecord.setOnClickListener {
+        mBinding.fabRecord.clickWithTrigger {
             clickToRecordPage()
         }
 
-        mBinding.fabSetting.setOnClickListener {
+        mBinding.fabSetting.clickWithTrigger {
             clickToSettingPage()
         }
     }
@@ -257,7 +290,10 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
 
     override fun finish() {
         super.finish()
-        activity.overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_up)
+        if (scanMode == ScanMode.NORMAL)
+            activity.overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_up)
+        else
+            activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_down)
     }
 
     private fun pauseScrennAnimation() {

@@ -16,13 +16,15 @@ import kotlinx.coroutines.launch
 import uitool.getRectangleBg
 import uitool.getScreenHeightPixels
 import uitool.setTextSize
+import utils.clickWithTrigger
+import utils.logi
 
 //fun showMessageDialogOnlyOKButton(context: Context, message: String, lambda: () -> Unit = {}): TextDialog {
 //    return TextDialog(context).apply {
 //        title = message
 //        dialogBinding.btnLift.visibility = View.GONE
 //        dialogBinding.btnRight.text = context.getString(R.string.dialog_ok)
-//        dialogBinding.btnRight.setOnClickListener {
+//        dialogBinding.btnRight.clickWithTrigger {
 //            lambda()
 //            dialog.dismiss()
 //        }
@@ -37,8 +39,7 @@ fun Context.showMessageDialogOnlyOKButton(title: String, message: String, lambda
         MainScope().launch {
             dialogBinding.btnLift.visibility = View.GONE
             dialogBinding.btnRight.text = context.getString(R.string.dialog_ok)
-            dialogBinding.btnRight.setOnClickListener {
-
+            dialogBinding.btnRight.clickWithTrigger {
                 lambda()
                 dialog.dismiss()
             }
@@ -48,7 +49,7 @@ fun Context.showMessageDialogOnlyOKButton(title: String, message: String, lambda
 }
 
 fun Context.showConfirmDialog(
-    title: String, message: String, confirmAction: () -> Unit, cancelAction: () -> Unit,
+    title: String, message: String, confirmAction: () -> Unit = {}, cancelAction: () -> Unit = {},
     confirmBtnStr: String = this.getString(R.string.dialog_ok),
     cancelBtnStr: String = this.getString(R.string.dialog_cancel)
 ): TextDialog {
@@ -56,12 +57,12 @@ fun Context.showConfirmDialog(
         this.title = title
         this.message = message
         dialogBinding.btnLift.text = cancelBtnStr
-        dialogBinding.btnLift.setOnClickListener {
+        dialogBinding.btnLift.clickWithTrigger {
             cancelAction.invoke()
             dialog.dismiss()
         }
         dialogBinding.btnRight.text = confirmBtnStr
-        dialogBinding.btnRight.setOnClickListener {
+        dialogBinding.btnRight.clickWithTrigger {
             confirmAction()
             dialog.dismiss()
         }

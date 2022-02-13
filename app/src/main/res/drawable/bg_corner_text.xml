@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 實心 -->
+    <solid android:color="@color/theme_blue" />
+    <!-- 圓角 -->
+    <corners android:radius="@dimen/dialog_button_corner" />
+    <!-- 邊距 -->
+    <padding
+        android:bottom="6dp"
+        android:left="6dp"
+        android:right="6dp"
+        android:top="6dp" />
+</shape>

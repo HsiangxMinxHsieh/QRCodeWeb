@@ -287,18 +287,18 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 
 
     private fun initEvent() {
-        mBinding.btnBack.setOnClickListener {
+        mBinding.btnBack.clickWithTrigger {
             activity.onBackPressed()
         }
 
-        mBinding.btnMultipleSelectMode.setOnClickListener {
+        mBinding.btnMultipleSelectMode.clickWithTrigger {
             chooseMultipleSelectMode()
         }
 
-        mBinding.btnResend.setOnClickListener {
+        mBinding.btnResend.clickWithTrigger {
             multipleResend()
         }
-        mBinding.btnDelete.setOnClickListener {
+        mBinding.btnDelete.clickWithTrigger {
             multipleDelete()
         }
     }
@@ -477,7 +477,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
 
                 ((listener as? InfoListener) != null).apply {
                     ivRecordResend.isVisible = this
-                    ivRecordResend.setOnClickListener {
+                    ivRecordResend.clickWithTrigger {
                         (listener as RecordActivity.InfoListener).resend(data.scanContent)
                     }
                 }

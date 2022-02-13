@@ -12,9 +12,11 @@ object AnimationFileName {
     /** Progress等待對話框的動畫 */
     val LOADING_DIALOG = "loading_motion.json"
 
-    /** BarCode掃描動畫 */
-    val SCAN_MOTION = "scan_barcode_motion_2.json"
+    /** 簽到QRCode掃描動畫 */
+    val SIGN_IN_SCAN_MOTION = "scan_barcode_motion_4.json"
 
+    /** 設定檔QRCode掃描動畫 */
+    val SETTING_SCAN_MOTION = "scan_barcode_motion_3.json"
 
     /** SPLASH頁面的進度條 */
     val SPLASH_LOADING = "loading_progress.json"

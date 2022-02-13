@@ -9,7 +9,10 @@ import androidx.core.net.toUri
 import com.buddha.qrcodeweb.R
 import kotlinx.coroutines.*
 import project.main.api.getURLResponse
+import project.main.model.SettingDataItem
+import tool.dialog.Dialog
 import tool.dialog.ProgressDialog
+import tool.dialog.showConfirmDialog
 import tool.dialog.showMessageDialogOnlyOKButton
 import tool.getShare
 import kotlin.coroutines.CoroutineContext
@@ -46,7 +49,7 @@ suspend fun Activity.sendApi(sendRequest: String, waitingText: String = this.get
     return result.await()
 }
 
-fun Activity.setKeyboard(open: Boolean, editFocus: EditText?= null) {
+fun Activity.setKeyboard(open: Boolean, editFocus: EditText? = null) {
     if (open) { // 關閉中，要打開
         if (editFocus?.requestFocus() == true) {
             val imm = (this.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager) ?: return
@@ -78,4 +81,27 @@ fun Activity.intentToWebPage(url: String?) {
         it.data = url?.toUri()
         this.startActivity(it)
     }
+}
+
+/** confirmAction比較複雜一點，它是用來給外部呼叫，但又要回Call判斷這裡能不能儲存的方法 //true為可儲存，false則為不可儲存。 */
+fun Activity.showDialogAndConfirmToSaveSetting(item: SettingDataItem, confirmAction: (item: SettingDataItem?) -> Boolean): Dialog {
+
+    val isNew = this.getShare().getStoreSettings().none { it.name == item.name }
+
+    val message = this.getString(R.string.setting_scan_action).format(
+        if (isNew)// 新增
+            getString(R.string.setting_scan_action_new)
+        else // 更新
+            getString(R.string.setting_scan_action_update),
+        item.name
+    )
+
+    return showConfirmDialog(this.getString(R.string.dialog_notice_title), message,
+        confirmAction = {
+            if (confirmAction.invoke(item))
+                this.getShare().storeSetting(isNew, item)
+        },
+        cancelAction = {
+            confirmAction.invoke(null) //執行但不更新值
+        })
 }

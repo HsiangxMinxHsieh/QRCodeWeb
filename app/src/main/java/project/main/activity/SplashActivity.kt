@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.view.View
 import com.buddha.qrcodeweb.BuildConfig
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.ActivitySplashBinding
@@ -23,7 +22,6 @@ import tool.dialog.showMessageDialogOnlyOKButton
 import uitool.setTextSize
 import utils.DateTool
 import utils.goToNextPageFinishThisPage
-import utils.logi
 
 
 class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBinding.inflate(it) }), EasyPermissions.PermissionCallbacks {
@@ -39,7 +37,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
     }
 
     //總計載入秒數
-    private val totalLoadingSec by lazy { (5..7).random().toLong().times(DateTool.oneSec) }
+    private val totalLoadingSec by lazy { (2..4).random().toLong().times(DateTool.oneSec) }
 
     private var subList: List<String> = mutableListOf()
 
@@ -120,8 +118,9 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
     }
 
     private fun toNextActivity() {
-        val intent = Intent(activity, ScanActivity::class.java)
-        activity.goToNextPageFinishThisPage(intent)
+        activity.goToNextPageFinishThisPage(Intent(activity, ScanActivity::class.java).apply {
+            putExtra(ScanActivity.BUNDLE_KEY_SCAN_MODE,ScanMode.NORMAL)
+        })
         activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 

@@ -51,6 +51,7 @@
     <string name="setting_scan_action">是否確定要%1$s「%2$s」設定檔並設定為該設定檔？</string>
     <string name="setting_scan_action_new">新增</string>
     <string name="setting_scan_action_update">更新</string>
+    <string name="setting_scan_action_no_content">無掃描內容。</string>
 
 
     <!--Record Page-->
@@ -95,6 +96,7 @@
     <string name="share_default_name_column">Null_Name_Column</string>
     <string name="share_default_password_column">Null_Password_Column</string>
     <string name="scan_no_setting">請先建立一個設定檔！</string>
+    <string name="scan_pls_scan_setting">請掃描設定檔</string>
 
 
 </resources>

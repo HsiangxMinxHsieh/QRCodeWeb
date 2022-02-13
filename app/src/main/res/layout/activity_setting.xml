@@ -44,119 +44,6 @@
             app:rippleColor="@color/transparent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_key_edit"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/light_yellow"
-            app:layout_constraintBottom_toTopOf="@+id/cl_control"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/gray"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/tv_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center"
-                    android:text="@string/splash_key_check_title"
-                    android:textColor="@color/theme_green"
-                    android:textSize="22sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/edt_id_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="16dp"
-                    android:hint="@string/splash_column_title_id"
-                    android:textColorHint="@color/theme_green"
-                    android:theme="@style/EditColumnDefault"
-                    app:endIconTint="@color/theme_green"
-                    app:errorEnabled="true"
-                    app:hintEnabled="true"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_title">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edt_id"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="text"
-                        android:paddingTop="20dp"
-                        android:text="entry.123456"
-                        android:textColor="@color/theme_blue" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/edt_name_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="16dp"
-                    android:hint="@string/splash_column_title_name"
-                    android:textColorHint="@color/theme_green"
-                    android:theme="@style/EditColumnDefault"
-                    app:endIconTint="@color/theme_green"
-                    app:errorEnabled="true"
-                    app:hintEnabled="true"
-                    app:layout_constraintTop_toBottomOf="@+id/edt_id_layout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edt_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="text"
-                        android:paddingTop="20dp"
-                        android:text="entry.123456"
-                        android:textColor="@color/theme_blue" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/edt_password_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="16dp"
-                    android:hint="@string/splash_column_title_password"
-                    android:textColorHint="@color/theme_green"
-                    android:theme="@style/EditColumnDefault"
-                    app:endIconTint="@color/theme_green"
-                    app:errorEnabled="true"
-                    app:hintEnabled="true"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/edt_name_layout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edt_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="text"
-                        android:paddingTop="20dp"
-                        android:text="entry.123456"
-                        android:textColor="@color/theme_blue" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_control"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -207,18 +94,18 @@
                 android:src="@drawable/ic_baseline_save"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="1"
-                app:layout_constraintEnd_toStartOf="@+id/btn_key_default_edit"
+                app:layout_constraintEnd_toStartOf="@+id/btn_scan_to_get"
                 app:layout_constraintStart_toEndOf="@+id/btn_delete"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/btn_key_default_edit"
+                android:id="@+id/btn_scan_to_get"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:background="@drawable/drawable_ripple_key_edit"
                 android:clickable="true"
                 android:focusable="true"
-                android:src="@drawable/ic_baseline_column_title"
+                android:src="@drawable/ic_baseline_qr_code_scanner_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="1"
                 app:layout_constraintEnd_toEndOf="parent"

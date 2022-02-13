@@ -20,11 +20,13 @@ import project.main.base.BaseRecyclerViewDataBindingAdapter
 import project.main.model.ActionMode
 import project.main.model.FieldType
 import project.main.model.SendMode
+import tool.dialog.Dialog
 import tool.dialog.TextDialog
 import tool.dialog.showConfirmDialog
 import tool.dialog.showMessageDialogOnlyOKButton
 import tool.getShare
 import uitool.setTextSize
+import utils.clickWithTrigger
 import utils.getColorByBuildVersion
 import utils.logi
 import utils.setKeyboard
@@ -44,7 +46,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
 
     private val upDateDataKey by lazy { mContext.getString(R.string.setting_receiver).format(position) }
 
-    private var textDialog: TextDialog? = null
+    private var textDialog: Dialog? = null
 
     private var storeStatus: Int = FieldType.AddColumn.value // 現在的欄位編輯狀態，決定儲存的內容與顯示的Type。
 
@@ -194,7 +196,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
     private fun initEvent() {
 
         // Layout打開與關閉設定
-        mBinding.clSettingName.setOnClickListener {
+        mBinding.clSettingName.clickWithTrigger {
             closeAllContentLayout(0)
 //            logi(TAG, "此時openLayout布林值是：$openBooleanList")
             mBinding.tvSettingNameShadow.isVisible = openBooleanList[0]
@@ -202,7 +204,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
             openBooleanList[0] = mBinding.clMain.openLayout(openBooleanList[0], mBinding.clSettingNameContent, mBinding.clSettingName)
         }
 
-        mBinding.clScanToDirect.setOnClickListener {
+        mBinding.clScanToDirect.clickWithTrigger {
             closeAllContentLayout(1)
 //            logi(TAG, "此時openLayout布林值是：$openBooleanList")
             mBinding.tvScanToDirectContentShadow.isVisible = openBooleanList[1]
@@ -211,7 +213,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
 //            judgeNeedShowHtmlEdit(true," settingData.goWebSiteByScan.sendHtml", mBinding.tvScanToDirectContentShadow, mBinding.edtScanToDirectContent)
         }
 
-        mBinding.clAfterScanAction.setOnClickListener {
+        mBinding.clAfterScanAction.clickWithTrigger {
             closeAllContentLayout(2)
 //            logi(TAG, "此時openLayout布林值是：$openBooleanList")
             mBinding.tvAfterScanActionHtmlShadow.isVisible = openBooleanList[2]
@@ -220,7 +222,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
 //            judgeNeedShowHtmlEdit(true, "settingData.afterScanAction.toHtml", mBinding.tvAfterScanActionHtmlShadow, mBinding.edtAfterScanToDirect)
         }
 
-        mBinding.clColumnTitle.setOnClickListener {
+        mBinding.clColumnTitle.clickWithTrigger {
             storeStatus = FieldType.AddColumn.value
             openColumnEditLayout()
         }
@@ -276,28 +278,28 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
             }
         }
 
-        mBinding.tvAfterScanActionShow1.setOnClickListener {
+        mBinding.tvAfterScanActionShow1.clickWithTrigger {
             mBinding.setAllChoiceTextToGrayExclusiveIndex(0)
             mBinding.tvAfterScanActionHtmlShadow.isVisible = false
             mBinding.edtAfterScanToDirect.isVisible = false
             settingData.afterScanAction.actionMode = ActionMode.StayApp.value
         }
 
-        mBinding.tvAfterScanActionShow2.setOnClickListener {
+        mBinding.tvAfterScanActionShow2.clickWithTrigger {
             mBinding.setAllChoiceTextToGrayExclusiveIndex(1)
             mBinding.tvAfterScanActionHtmlShadow.isVisible = false
             mBinding.edtAfterScanToDirect.isVisible = false
             settingData.afterScanAction.actionMode = ActionMode.OpenBrowser.value
         }
 
-        mBinding.tvAfterScanActionShow3.setOnClickListener {
+        mBinding.tvAfterScanActionShow3.clickWithTrigger {
             mBinding.setAllChoiceTextToGrayExclusiveIndex(2)
             mBinding.tvAfterScanActionHtmlShadow.isVisible = false
             mBinding.edtAfterScanToDirect.isVisible = true
             settingData.afterScanAction.actionMode = ActionMode.AnotherWeb.value
         }
 
-        mBinding.ivColumnCheck.setOnClickListener {
+        mBinding.ivColumnCheck.clickWithTrigger {
             if (saveFieldToData()) { //儲存成功才要收回編輯Layout與捲動頁面
                 openColumnEditLayout()
             }

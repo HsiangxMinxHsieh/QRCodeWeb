@@ -42,9 +42,6 @@ fun Double.format(format: String = "#.#"): String {
     return DecimalFormat(format).format(this)
 }
 
-fun Any.toJson() = Gson().toJson(this)
-
-inline fun <reified T> String.toDataBean(param: T) = Gson().fromJson<T>(this, object : TypeToken<T>() {}.type)
 
 fun getRaw(context: Context, id: Int): String {
     val stream: InputStream = context.resources.openRawResource(id)

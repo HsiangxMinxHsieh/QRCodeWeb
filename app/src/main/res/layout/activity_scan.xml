@@ -9,6 +9,8 @@
         android:layout_height="match_parent"
         tools:context="project.main.activity.ScanActivity">
 
+
+
         <com.journeyapps.barcodescanner.DecoratedBarcodeView
             android:id="@+id/zxing_qrcode_scanner"
             android:layout_width="match_parent"
@@ -23,6 +25,19 @@
 
         </com.journeyapps.barcodescanner.DecoratedBarcodeView>
 
+        <TextView
+            android:id="@+id/tv_tip_scan_setting"
+            android:background="@drawable/bg_corner_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:text="@string/scan_pls_scan_setting"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/lv_scan_qrcode_motion"
+            />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/lv_scan_qrcode_motion"

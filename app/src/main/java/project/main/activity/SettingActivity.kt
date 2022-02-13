@@ -1,5 +1,7 @@
 package project.main.activity
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -20,27 +22,18 @@ import project.main.base.BaseActivity
 import project.main.model.SettingData
 import project.main.model.SettingDataItem
 import project.main.tab.SettingContentFragment
-import tool.dialog.TextDialog
 import tool.dialog.showMessageDialogOnlyOKButton
-import utils.logAllData
-import utils.logi
 import android.content.Intent
-import androidx.core.content.ContextCompat
-import com.google.android.material.textfield.TextInputLayout
-import project.main.const.constantID
-import project.main.const.constantName
-import project.main.const.constantPassword
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContract
 import tool.dialog.showConfirmDialog
 import uitool.*
-import utils.getColorByBuildVersion
-import utils.toJson
+import utils.*
 
 
 class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBinding.inflate(it) }) {
 
     override var statusTextIsDark: Boolean = true
-
-    private val maxSettingSize by lazy { context.resources.getInteger(R.integer.setting_size_max_size) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,18 +44,10 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         initEvent()
 
-        initValue()
-
     }
 
 
     private fun initData() {
-
-        // 2021/11/06 嘉伸講師指示，如果用戶沒有設定檔的話，在開始畫面按下確認時應該就要產生一個預設的設定檔
-//        if (context.getShare().isFirstTimeStartThisApp()) {
-////            logi("initData", "偵測到是第一次進入！無設定檔，即將新增一筆預設的")
-//            settings.add(getDefaultSetting(0))
-//        }
 
     }
 
@@ -72,35 +57,13 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         initPagers()
 
-        initKeyDefalut()
 
-    }
-
-    private fun initKeyDefalut() {
-        mBinding.edtIdLayout.apply {
-            endIconMode = TextInputLayout.END_ICON_CUSTOM
-            isEndIconVisible = true
-            endIconDrawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_default_setting)
-        }
-
-        mBinding.edtNameLayout.apply {
-            endIconMode = TextInputLayout.END_ICON_CUSTOM
-            isEndIconVisible = true
-            endIconDrawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_default_setting)
-        }
-
-        mBinding.edtPasswordLayout.apply {
-            endIconMode = TextInputLayout.END_ICON_CUSTOM
-            isEndIconVisible = true
-            endIconDrawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_default_setting)
-        }
     }
 
     private val pagerAdapter: PagerAdapter get() = PagerAdapter(activity, settings)
 
     private val settings: SettingData by lazy { context.getShare().getStoreSettings() }
     private var nowTabIndex = 0
-    private var textDialog: TextDialog? = null
     private var openBoolean = true
 
     private fun initTab() {
@@ -124,7 +87,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(ImageView(context).apply { //無論如何都要在最尾端加一個+號
             Glide.with(context).load(R.drawable.ic_baseline_add).into(this)
-            setOnClickListener { addSetting(settings.size) }
+            clickWithTrigger { addSetting(settings.size) }
         }))
 
         delayScrollToPosition(nowTabIndex)
@@ -142,7 +105,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
     private fun initPagers() {
         mBinding.vpContent.adapter = pagerAdapter // 初始指定Fragment內容
-
     }
 
     private fun getDefaultSetting(id: Int) = SettingDataItem.getDefaultSetting(id, context)
@@ -227,82 +189,79 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         })
 
         // 按鈕事件
-        mBinding.btnDelete.setOnClickListener {
+        mBinding.btnDelete.clickWithTrigger {
             deleteSetting(nowTabIndex)
         }
 
         // 按鈕事件
-        mBinding.btnSave.setOnClickListener {
+        mBinding.btnSave.clickWithTrigger {
             saveData(nowTabIndex)
         }
 
-        mBinding.btnBack.setOnClickListener {
+        mBinding.btnBack.clickWithTrigger {
             activity.onBackPressed()
         }
 
-        //開發中，待完成後再改為長按觸發
-        mBinding.btnKeyDefaultEdit.setOnLongClickListener {
-            openBoolean = mBinding.clMain.popUpLayout(openBoolean, mBinding.clKeyEdit, mBinding.clControl)
-            true
+        mBinding.btnScanToGet.clickWithTrigger {
+            toScanActivity()
         }
-        mBinding.btnKeyDefaultEdit.setOnClickListener {
-            if (!openBoolean) { //若以打開，輕按即可關閉，不提示訊息。
-                openBoolean = mBinding.clMain.popUpLayout(openBoolean, mBinding.clKeyEdit, mBinding.clControl)
-            } else {
-                textDialog = activity.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_key_default_not_arbitrary_modify)) {
-                    textDialog = null
-                }
+
+    }
+
+    class ScanActivityResultContract : ActivityResultContract<ScanMode, SettingDataItem>() {
+        override fun createIntent(context: Context, input: ScanMode?): Intent {
+            return Intent(context, ScanActivity::class.java).apply {
+                putExtra(ScanActivity.BUNDLE_KEY_SCAN_MODE, input)
             }
         }
 
-        // 設定回預設值
-        mBinding.edtIdLayout.setEndIconOnLongClickListener {
-            mBinding.edtId.setText(constantID)
-            true
-        }
-
-        // 設定回預設值
-        mBinding.edtNameLayout.setEndIconOnLongClickListener {
-            mBinding.edtName.setText(constantName)
-            true
-        }
-
-        // 設定回預設值
-        mBinding.edtPasswordLayout.setEndIconOnLongClickListener {
-            mBinding.edtPassword.setText(constantPassword)
-            true
+        override fun parseResult(resultCode: Int, intent: Intent?): SettingDataItem? {
+            return if (resultCode == Activity.RESULT_OK)
+                intent?.getSerializableExtra(ScanActivity.BUNDLE_KEY_SCAN_RESULT) as? SettingDataItem
+            else
+                null
         }
     }
 
-    private fun initValue() {
-        mBinding.edtId.setText(context.getShare().getKeyID())
-        mBinding.edtName.setText(context.getShare().getKeyName())
-        mBinding.edtPassword.setText(context.getShare().getKeyPassword())
+    private val scanActivityLauncher = registerForActivityResult(ScanActivityResultContract()) { item ->
+        item?.let {
+            activity.showDialogAndConfirmToSaveSetting(item) { itemCallBack ->
+
+                // 變更頁面內容
+                itemCallBack?.let { update ->
+                    settings.indexOf(settings.firstOrNull { it.name == update.name }).let { findIndex -> // 要先找到名稱來確認是否有更新，不然可能會造成「同名稱不同ID」的錯誤。
+                        if (findIndex < 0) {
+                            if (!couldBeAdd()) return@showDialogAndConfirmToSaveSetting false
+                            mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(getTabViewByText(it)), settings.size) // 掃描後確定要新增tab
+                            settings.add(it)
+                        } else
+                            settings[findIndex] = update
+
+                        mBinding.vpContent.adapter = pagerAdapter //掃描後更新Fragment內容(重新指定)
+                        delayScrollToPosition(settings.indexOf(update)) // 滑動到找到的index
+                    }
+                }
+                return@showDialogAndConfirmToSaveSetting true
+            }
+
+        } ?: kotlin.run {
+            Toast.makeText(context, context.getString(R.string.setting_scan_action_no_content), Toast.LENGTH_SHORT).show()
+        }
+
     }
 
+    private fun toScanActivity() {
+
+        scanActivityLauncher.launch(ScanMode.SETTING)
+//        activity.startActivity(Intent(activity, ScanActivity::class.java).apply {
+//            putExtra(ScanActivity.BUNDLE_SCAN_MODE_KEY, ScanMode.SETTING)
+//        })
+        activity.overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_up)
+    }
 
     private fun addSetting(index: Int) {
 
-        if (settings.any { !it.haveSaved }) { // 如果有false(未儲存者)要return。
-
-            if (textDialog == null) {
-                textDialog = context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_not_saved_current)) {
-                    textDialog = null
-                }
-            }
-            return
-        }
-
-        if (settings.size >= maxSettingSize) {
-            if (textDialog == null) {
-                textDialog = context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_over_max_size).format(maxSettingSize)) {
-                    textDialog = null
-                }
-            }
-            return
-
-        }
-
+        if (!couldBeAdd()) return
 
         // 新增預設資料
         settings.add(getDefaultSetting(context.getShare().getID()))
@@ -317,32 +276,45 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         delayScrollToPosition(index)
     }
 
+
+    // 若
+    private fun couldBeAdd(): Boolean {
+        if (settings.any { !it.haveSaved }) { // 如果有false(未儲存者)要return。
+            context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_not_saved_current))
+            return false
+        }
+
+        if (settings.size >= maxSettingSize) {
+            context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_add_by_over_max_size).format(maxSettingSize))
+            return false
+
+        }
+
+        return true
+    }
+
     private fun deleteSetting(index: Int) {
         if (settings.size == 1) {
-            if (textDialog == null) {
-                textDialog = context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_delete_by_size_is_1)) {
-                    textDialog = null
-                }
-            }
+            context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_delete_by_size_is_1))
             return
         }
 
-        if (textDialog == null) {
-            val deleteSettingName = if (settings[index].name.isEmpty()) context.getString(R.string.setting_file_name_default) else settings[index].name
-            textDialog = context.showConfirmDialog(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_delete_confirm).format(deleteSettingName, "設定檔"), {
-                // 刪除第index筆資料
-                settings.removeAt(index)
-                // 刪除tab
-                mBinding.tlSettingTitle.removeTabAt(index)
-                // 更新頁面內容
-                mBinding.vpContent.adapter = pagerAdapter //刪除後更新Fragment內容 (重新指定)
-                // 滑動到上一個
-                delayScrollToPosition(index - 1)
-                textDialog = null
-            }, {
-                textDialog = null
-            })
-        }
+        val deleteSettingName = if (settings[index].name.isEmpty()) context.getString(R.string.setting_file_name_default) else settings[index].name
+        context.showConfirmDialog(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_delete_confirm).format(deleteSettingName, "設定檔"), {
+            // 刪除第index筆資料
+            settings.removeAt(index)
+            // 刪除tab
+            mBinding.tlSettingTitle.removeTabAt(index)
+            // 更新頁面內容
+            mBinding.vpContent.adapter = pagerAdapter //刪除後更新Fragment內容 (重新指定)
+            // 滑動到上一個
+            delayScrollToPosition(index - 1)
+            // 因測試的時候發現，若「刪除此設定檔再重新掃描，會出現是否更新的訊息，使用者必然會confuse，因此此處幫使用者儲存一次。」
+            context.getShare().savaAllSettings(settings)
+
+        }, {
+        })
+
 
     }
 
@@ -354,57 +326,27 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         val saveData = settings.getOrNull(nowTabIndex) ?: return
 //        logi("saveData", "saveData時，saveData 是=>$saveData")
         if (settings.any { it.name.isEmpty() }) {
-            if (textDialog == null) {
-                textDialog = context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_name_title_hint)) {
-                    textDialog = null
-                }
-            }
+            context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_name_title_hint))
             return
         }
         val sameName = settings.checkHaveRepeatName()
         if (sameName != null) {
-            if (textDialog == null) {
-                textDialog = context.showMessageDialogOnlyOKButton(
-                    context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_save_by_same_name).format(
-                        (if (afterSaveAction == empty)
-                            context.getString(R.string.setting_save_action)
-                        else
-                            context.getString((R.string.setting_leave_action))),
-                        sameName
-                    )
-                ) {
-                    textDialog = null
-                }
-            }
+            context.showMessageDialogOnlyOKButton(
+                context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_save_by_same_name).format(
+                    (if (afterSaveAction == empty)
+                        context.getString(R.string.setting_save_action)
+                    else
+                        context.getString((R.string.setting_leave_action))),
+                    sameName
+                )
+            )
             return
         }
-
-        if (mBinding.edtName.text.toString().isEmpty()) {
-            mBinding.edtNameLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
-            return
-        }
-
-        if (mBinding.edtPassword.text.toString().isEmpty()) {
-            mBinding.edtPasswordLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
-            return
-        }
-
-        mBinding.edtNameLayout.error = null
-        mBinding.edtPasswordLayout.error = null
-
-        mBinding.clMain.popUpLayout(false, mBinding.clKeyEdit, mBinding.clControl)
-
-        // 取出KeyDefault並存回SharedPreference
-        context.getShare().setNowKeyDefault(context.getShare().getNowKeyDefault()?.apply {
-            keyID = mBinding.edtId.text.toString()
-            keyName = mBinding.edtName.text.toString()
-            keyPassword = mBinding.edtPassword.text.toString()
-            settingStatus += 1
-        } ?: return)
 
         saveData.haveSaved = true
         logi("saveData", "saveData時，saveData 是=>${saveData.toJson()}")
-        context.getShare().savaAllSettings(settings.apply { this[index].haveSaved = true })
+        context.getShare().savaAllSettings(settings.apply
+        { this[index].haveSaved = true })
         context.getShare().setNowUseSetting(saveData)
         setTabText(saveData)
         sendBroadcastToUpdateFragment(index)
@@ -426,9 +368,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
     }
 
     override fun finish() {
-//        logi("finish", "即將儲存的設定檔案是=>${settings.getOrNull(nowTabIndex)?.name}")
         saveData(nowTabIndex) { super.finish() }
-//        activity.setResult(Activity.RESULT_OK, Intent().apply { putExtra(KEY_SETTING_RESULT, settings.getOrNull(nowTabIndex)?.name) })
         activity.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 

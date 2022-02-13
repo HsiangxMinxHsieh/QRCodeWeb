@@ -16,6 +16,7 @@ import project.main.model.SettingDataItem
 import tool.getShare
 import uitool.getRectangleBg
 import uitool.setTextSize
+import utils.clickWithTrigger
 import utils.logi
 import utils.toJson
 
@@ -27,21 +28,21 @@ fun Activity.showKeyDefaultCheckDialog(data: KeyDefault = KeyDefault(), finishAc
             dialogBinding.edtNameLayout.isErrorEnabled = true
             dialogBinding.btnLift.visibility = View.GONE
             dialogBinding.btnRight.text = context.getString(R.string.dialog_ok)
-            dialogBinding.btnRight.setOnClickListener {
+            dialogBinding.btnRight.clickWithTrigger {
 
                 if (dialogBinding.edtId.text.toString().isEmpty()) {
                     dialogBinding.edtIdLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
-                    return@setOnClickListener
+                    return@clickWithTrigger
                 }
 
                 if (dialogBinding.edtName.text.toString().isEmpty()) {
                     dialogBinding.edtNameLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
-                    return@setOnClickListener
+                    return@clickWithTrigger
                 }
 
                 if (dialogBinding.edtPassword.text.toString().isEmpty()) {
                     dialogBinding.edtPasswordLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
-                    return@setOnClickListener
+                    return@clickWithTrigger
                 }
 
                 context.getShare().setNowKeyDefault(data.apply {
