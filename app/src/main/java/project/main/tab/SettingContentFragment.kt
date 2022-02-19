@@ -550,7 +550,7 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
                     root.setBackgroundColor(context.getColorByBuildVersion(R.color.theme_blue))
                     setTextViewsToColor(context.getColorByBuildVersion(R.color.white), icKey.tvSettingColumnName, icKey.tvSettingColumnKey, icKey.tvSettingColumnKey, icValue.tvSettingColumnName, icValue.tvSettingColumnKey, icValue.tvSettingColumnValue)
                 } else {
-                    root.setBackgroundColor(context.getColorByBuildVersion(R.color.white))
+                    root.setBackgroundColor(context.getColorByBuildVersion(R.color.transparent))
                     setTextViewsToColor(context.getColorByBuildVersion(R.color.theme_blue), icKey.tvSettingColumnName, icKey.tvSettingColumnKey, icValue.tvSettingColumnName, icValue.tvSettingColumnKey, icValue.tvSettingColumnValue)
                 }
 

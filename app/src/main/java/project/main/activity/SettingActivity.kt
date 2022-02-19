@@ -225,7 +225,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
     private val scanActivityLauncher = registerForActivityResult(ScanActivityResultContract()) { item ->
         item?.let {
             activity.showDialogAndConfirmToSaveSetting(item, settings) { itemCallBack ->
-
                 // 變更頁面內容
                 itemCallBack?.let { update ->
                     settings.indexOf(settings.firstOrNull { it.name == update.name }).let { findIndex -> // 要先找到名稱來確認是否有更新，不然可能會造成「同名稱不同ID」的錯誤。

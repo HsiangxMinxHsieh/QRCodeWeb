@@ -2,6 +2,7 @@ package tool.dialog
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
@@ -11,6 +12,8 @@ import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.DialogKeyCheckBinding
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import project.main.activity.ScanActivity
+import project.main.activity.ScanMode
 import project.main.model.KeyDefault
 import project.main.model.SettingDataItem
 import tool.getShare
@@ -25,49 +28,57 @@ fun Activity.showKeyDefaultCheckDialog(data: KeyDefault = KeyDefault(), finishAc
     KeyDefaultCheckDialog(context, data).apply {
         this.title = context.getString(R.string.splash_key_check_title)
         MainScope().launch {
-            dialogBinding.edtNameLayout.isErrorEnabled = true
-            dialogBinding.btnLift.visibility = View.GONE
-            dialogBinding.btnRight.text = context.getString(R.string.dialog_ok)
-            dialogBinding.btnRight.clickWithTrigger {
+            dialogBinding.run {
+                edtNameLayout.isErrorEnabled = true
+                btnLift.visibility = View.GONE
+                btnScanToGet.clickWithTrigger { // 進入掃描設定檔頁面
+                    startActivity(Intent(context, ScanActivity::class.java).apply {
+                        putExtra(ScanActivity.BUNDLE_KEY_SCAN_MODE, ScanMode.SPLASH)
+                    })
+                    overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_up)
 
-                if (dialogBinding.edtId.text.toString().isEmpty()) {
-                    dialogBinding.edtIdLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
-                    return@clickWithTrigger
                 }
+                btnRight.text = context.getString(R.string.dialog_ok)
+                btnRight.clickWithTrigger {
 
-                if (dialogBinding.edtName.text.toString().isEmpty()) {
-                    dialogBinding.edtNameLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
-                    return@clickWithTrigger
-                }
-
-                if (dialogBinding.edtPassword.text.toString().isEmpty()) {
-                    dialogBinding.edtPasswordLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
-                    return@clickWithTrigger
-                }
-
-                context.getShare().setNowKeyDefault(data.apply {
-                    keyID = dialogBinding.edtId.text.toString()
-                    keyName = dialogBinding.edtName.text.toString()
-                    keyPassword = dialogBinding.edtPassword.text.toString()
-                    settingStatus = data.settingStatus + 1
-                })
-
-                //嘉伸講師指示，第一次按下確定後，自動產生一個預設設定檔供使用者直接使用。
-                val initSetting = SettingDataItem.getFirstDefaultSetting(context)
-                context.apply {
-                    getShare().apply {
-                        getID()
-                        savaAllSettings(getShare().getStoreSettings().also {
-                            it.add(initSetting)
-                        })
-                        setNowUseSetting(initSetting)
-
+                    if (edtId.text.toString().isEmpty()) {
+                        edtIdLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
+                        return@clickWithTrigger
                     }
+
+                    if (edtName.text.toString().isEmpty()) {
+                        edtNameLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
+                        return@clickWithTrigger
+                    }
+
+                    if (edtPassword.text.toString().isEmpty()) {
+                        edtPasswordLayout.error = context.getString(R.string.splash_column_could_not_be_empty)
+                        return@clickWithTrigger
+                    }
+
+                    context.getShare().setNowKeyDefault(data.apply {
+                        keyID = edtId.text.toString()
+                        keyName = edtName.text.toString()
+                        keyPassword = edtPassword.text.toString()
+                        settingStatus = data.settingStatus + 1
+                    })
+
+                    //嘉伸講師指示，第一次按下確定後，自動產生一個預設設定檔供使用者直接使用。
+                    val initSetting = SettingDataItem.getFirstDefaultSetting(context)
+                    context.apply {
+                        getShare().apply {
+                            getID()
+                            savaAllSettings(getShare().getStoreSettings().also {
+                                it.add(initSetting)
+                            })
+                            setNowUseSetting(initSetting)
+                        }
+                    }
+                    finishAction.invoke()
+                    dialog.dismiss()
                 }
-                finishAction.invoke()
-                dialog.dismiss()
+                show()
             }
-            show()
         }
     }
 }

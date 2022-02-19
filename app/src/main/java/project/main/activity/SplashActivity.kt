@@ -22,9 +22,13 @@ import tool.dialog.showMessageDialogOnlyOKButton
 import uitool.setTextSize
 import utils.DateTool
 import utils.goToNextPageFinishThisPage
+import utils.logi
 
 
 class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBinding.inflate(it) }), EasyPermissions.PermissionCallbacks {
+    companion object {
+        var splashActivity: SplashActivity? = null
+    }
 
     override var statusTextIsDark: Boolean = false
 
@@ -56,6 +60,8 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        splashActivity = this
+
         initView()
 
         initLoading()
@@ -84,7 +90,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
 
     var job: Job? = null
 
-    /**遞迴方法，每次只載入第一個，完成後傳下一個 loadingTextArray
+    /**遞迴方法，依照index執行內容，完成後傳下一個 loadingTextArray
      * 依照設定的總秒數，分階段載入不同文字與設定的載入比例*/
     private fun loadingByStep(loadingTextArray: List<String>, loadingPercent: List<Double>, totalLoadingSec: Long, nowExeCuteIndex: Int = 0) {
         if (activity.isFinishing)
@@ -105,8 +111,8 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
         } else {
             val totalPercent = loadingPercent.take(nowExeCuteIndex + 1).sum().toFloat() // 前 nowExeCuteIndex + 1 的總和
             val nowPercent = loadingPercent[nowExeCuteIndex]
-            val delayTime = if (nowPercent < 1.0) (totalLoadingSec * nowPercent).toLong() else nowPercent.toLong() * DateTool.oneSec // 若大於等於1的話直接等該秒數
-//            logi(TAG, "延遲時間是=>$delayTime,index是=>$nowExeCuteIndex")
+            val delayTime = if (nowExeCuteIndex != loadingPercent.lastIndex) (totalLoadingSec * nowPercent).toLong() else (nowPercent * DateTool.oneSec).toLong() // 最後一個計算方法不一樣
+//            logi(TAG, "延遲時間是=>$delayTime,index是=>$nowExeCuteIndex,nowPercent是=>$nowPercent")
 //            logi(TAG, "顯示百分比是=>$nowPercent,總百分比要設定的是=>${totalPercent},loadingPercent是=>${loadingPercent}")
             mBinding.lvLoadingProgress.setProgressValue(mBinding.lvLoadingProgress.progress, totalPercent, delayTime)
             job = MainScope().launch {
@@ -119,7 +125,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>({ ActivitySplashBindi
 
     private fun toNextActivity() {
         activity.goToNextPageFinishThisPage(Intent(activity, ScanActivity::class.java).apply {
-            putExtra(ScanActivity.BUNDLE_KEY_SCAN_MODE,ScanMode.NORMAL)
+            putExtra(ScanActivity.BUNDLE_KEY_SCAN_MODE, ScanMode.NORMAL)
         })
         activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }

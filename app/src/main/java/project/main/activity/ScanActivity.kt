@@ -1,12 +1,10 @@
 package project.main.activity
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
@@ -32,7 +30,7 @@ import uitool.ViewTool
 import utils.*
 
 enum class ScanMode { //進入掃描頁的呼叫處
-    DEFAULT, // 無設定檔時，按下掃描
+    SPLASH, // 無設定檔時，按下掃描
     SETTING, // 設定頁面處，呼叫掃描
     NORMAL   // 一般掃描
 }
@@ -47,23 +45,14 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
     override var statusTextIsDark: Boolean = false
 
     private val liveResult by lazy { MutableLiveData<String>() }
-//    private val livePassword by lazy { MutableLiveData<String>() }
 
-    private val scanMode: ScanMode by lazy { (intent?.extras?.getSerializable(BUNDLE_KEY_SCAN_MODE) as? ScanMode) ?: ScanMode.NORMAL } // 不傳值是Normal
+    private var scanMode: ScanMode = ScanMode.NORMAL
 
     private var textDialog: Dialog? = null
-//    var inputDialog: Dialog? = null
-
-//    private lateinit var forSettingResult: ActivityResultLauncher<Intent>
 
 
-    //如果在未取得權限的情況下onResume，要判斷是否權限取得成功。
-
-    //    lateinit var mBinding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_main)
-//        mBinding = DataBindingUtil.setContentView(activity, R.layout.activity_main)
 
         initData()
 
@@ -98,53 +87,70 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
 
     private fun initObserver() {
         liveResult.observe(activity, { scanContent ->
-            if (scanMode == ScanMode.NORMAL) // 一般掃描
-                signInAction(scanContent)
-            else { // 設定頁呼叫
-                processSettingPageScan(scanContent)
+            when (scanMode) {
+                ScanMode.NORMAL -> signInAction(scanContent)// 一般掃描
+                ScanMode.SETTING -> processSettingPageScan(scanContent) // 設定頁呼叫
+                ScanMode.SPLASH -> splashSettingToScan(scanContent)// Splash頁呼叫
             }
-
         })
     }
 
-    private fun processSettingPageScan(scanContent: String) {
-        if (scanContent.startsWith("QRCodeSignIn")) { // 掃描到設定檔
-            scanContent.split("※").getOrNull(1)?.let {
-                if (!it.isJson())
-                    return@let null
+    private fun splashSettingToScan(scanContent: String) {
 
-                it.toDataBean(SettingDataItem())?.let { item ->
-                    val intent = Intent().apply {
-                        putExtra(BUNDLE_KEY_SCAN_RESULT, item)
-                    }
-                    setResult(RESULT_OK, intent)
-                    finish()
+        judgeIsSettingAndConfirmToSave(scanContent,
+            dataProcessAction = { item ->
+                activity.showDialogAndConfirmToSaveSetting(item ?: return@judgeIsSettingAndConfirmToSave, context.getShare().getStoreSettings()) { itemCallBack ->
+                    resumeScreenAnimation()
+                    itemCallBack?.let { update ->
+                        // 更新當前設定檔
+                        nowSetting = update
+
+                        // 結束SplashActivity，避免返回的時候返回Splash
+                        SplashActivity.splashActivity?.finish()
+
+                        // 更新掃描模式
+                        scanMode = ScanMode.NORMAL
+
+                        // 重新更新本頁動畫
+                        initView()
+
+                        // 設定浮動按鈕文字
+                        setSettingFabText()
+
+                    } ?: finish() // 使用者取消，則返回Splash頁。
+                    return@showDialogAndConfirmToSaveSetting true
                 }
-            } ?: resumeScreenAnimation()
-        } else //不是設定檔，直接回復掃描動畫。
-            resumeScreenAnimation()
+            }, resumeAction = {
+                resumeScreenAnimation()
+            })
+    }
+
+    private fun processSettingPageScan(scanContent: String) {
+        judgeIsSettingAndConfirmToSave(scanContent,
+            dataProcessAction = { item ->
+                val intent = Intent().apply {
+                    putExtra(BUNDLE_KEY_SCAN_RESULT, item)
+                }
+                setResult(RESULT_OK, intent)
+                finish()
+            }, resumeAction = { resumeScreenAnimation() })
     }
 
     private fun signInAction(scanContent: String) {
-        if (scanContent.startsWith("QRCodeSignIn")) { // 掃描到設定檔
-            scanContent.split("※").getOrNull(1)?.let {
-                if (!it.isJson())
-                    return@let null
+        // 正常掃碼，先判斷是否是設定檔
+        judgeIsSettingAndConfirmToSave(scanContent, dataProcessAction = { item ->
 
-                it.toDataBean(SettingDataItem())?.let { item ->
-                    activity.showDialogAndConfirmToSaveSetting(item,context.getShare().getStoreSettings()) { itemCallBack ->
-                        resumeScreenAnimation()
-                        itemCallBack?.let { update ->
-                            nowSetting = update
-                            mBinding.fabSetting.text = update.name
-                        }
-                        return@showDialogAndConfirmToSaveSetting true
-                    }
+            activity.showDialogAndConfirmToSaveSetting(item ?: return@judgeIsSettingAndConfirmToSave, context.getShare().getStoreSettings()) { itemCallBack ->
+                resumeScreenAnimation()
+                itemCallBack?.let { update ->
+                    nowSetting = update
+                    mBinding.fabSetting.text = update.name
+
                 }
-                return
-            } ?: resumeScreenAnimation()
-        }
+                return@showDialogAndConfirmToSaveSetting true
+            }
 
+        }) ?: return
 
         // 到這裡應該只要處理Google表單的網址，不是的話就不處理。
         if (!scanContent.startsWith("https://docs.google.com/forms/")) {
@@ -202,7 +208,28 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
         }
     }
 
+    private fun judgeIsSettingAndConfirmToSave(
+        scanContent: String, dataProcessAction: (item: SettingDataItem?) -> Unit = {}, resumeAction: () -> Unit = {}
+    ): Boolean? {
+
+        if (scanContent.startsWith("QRCodeSignIn※")) { // 掃描到設定檔
+            scanContent.split("※").getOrNull(1)?.let {
+                if (!it.isJson())
+                    return@let null
+
+                it.toDataBean(SettingDataItem())?.let { item ->
+                    dataProcessAction.invoke(item)
+                }
+                return null
+            } ?: resumeScreenAnimation() // 辨識失敗，無條件回復相機
+        } else {//不是設定檔，不能直接call resumeScreenAnimation()方法(不能直接回復相機，因為有可能是是簽到的時候掃到簽到，要接下去處理。)
+            resumeAction.invoke()
+        }
+        return true
+    }
+
     private fun initData() {
+        scanMode = (intent?.extras?.getSerializable(BUNDLE_KEY_SCAN_MODE) as? ScanMode) ?: ScanMode.NORMAL  // 沒接到值是Normal(實際上都有傳)
 
     }
 

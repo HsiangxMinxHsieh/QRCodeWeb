@@ -85,6 +85,7 @@ fun Activity.intentToWebPage(url: String?) {
 }
 
 fun Activity.maxSettingSize() = this.resources.getInteger(R.integer.setting_size_max_size)
+fun Activity.maxSettingNameSize() = this.resources.getInteger(R.integer.edit_text_max_size)
 
 /**
  * 兩種情況無法新增失敗：
@@ -98,7 +99,21 @@ fun Activity.couldBeAdd(newItem: SettingDataItem, settings: SettingData, confirm
         return false
     }
 
-    if (settings.isNew(newItem) && settings.size >= this.maxSettingSize()) {
+    if (newItem.name.isEmpty()) { // 設定檔的名稱不可為空
+        this.showMessageDialogOnlyOKButton(this.getString(R.string.dialog_notice_title), this.getString(R.string.setting_cant_add_by_empty_name)) {
+            confirmAction.invoke(null)
+        }
+        return false
+    }
+
+    if (newItem.name.length > this.maxSettingNameSize()) { // 設定檔的名稱不可大於設定的數字
+        this.showMessageDialogOnlyOKButton(this.getString(R.string.dialog_notice_title), this.getString(R.string.setting_cant_add_by_over_max_name).format(this.maxSettingNameSize())) {
+            confirmAction.invoke(null)
+        }
+        return false
+    }
+
+    if (settings.isNew(newItem) && settings.size >= this.maxSettingSize()) { // 設定檔的數目不能大於設定的數字
         this.showMessageDialogOnlyOKButton(this.getString(R.string.dialog_notice_title), this.getString(R.string.setting_cant_add_by_over_max_size).format(this.maxSettingSize())) {
             confirmAction.invoke(null)
         }
@@ -108,7 +123,9 @@ fun Activity.couldBeAdd(newItem: SettingDataItem, settings: SettingData, confirm
     return true
 }
 
-/** 統一在此方法這裡判斷是否有新增成功 */
+/** 統一在此方法這裡判斷是否有新增成功
+ * confirmAction比較複雜一點，因為它是用來給外部呼叫，但又要回Call判斷這裡能不能儲存的方法
+ * */
 fun Activity.showDialogAndConfirmToSaveSetting(newItem: SettingDataItem, settings: SettingData, confirmAction: (item: SettingDataItem?) -> Boolean): Dialog {
 
     settings.isNew(newItem).let { isNew ->
@@ -127,6 +144,8 @@ fun Activity.showDialogAndConfirmToSaveSetting(newItem: SettingDataItem, setting
                         this.getShare().scanStoreSetting(isNew, store) // 一律會對儲存的資料作處理(因沒有辦法驗證設定頁的資料當前是否沒有儲存)
                     }
                     confirmAction.invoke(it)
+                }.run {
+
                 }
             },
             cancelAction = {

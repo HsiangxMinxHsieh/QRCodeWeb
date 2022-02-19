@@ -205,14 +205,14 @@ class BaseSharePreference(val context: Context) {
 
     fun addID(id: Int) = putInt(context, KEY_ID, id + 1)
 
-    /** 掃描到的設定檔，一律會儲存至SharedPreference。*/
+    /** 掃描到的設定檔，儲存至SharedPreference的方法。*/
     fun scanStoreSetting(isNew: Boolean, item: SettingDataItem) {
         savaAllSettings( // 將掃描到的設定儲存至SharePreference
             getStoreSettings().apply {
                 var oid = 0
                 this.indexOfFirst { it.name == item.name }.let { index ->
                     remove(firstOrNull { item.name == it.name }?.apply { oid = this.id })   // 用name找到settings裡面的那個，先移除再更新 // 如果找不到則移除失敗。
-                    add(if (index >= 0) index else this.size - 1, item.apply {
+                    add(if (index >= 0) index else if (size == 0) 0 else this.size - 1, item.apply {
                         id = if (isNew) // 新增
                             context.getShare().getID()
                         else // 更新
