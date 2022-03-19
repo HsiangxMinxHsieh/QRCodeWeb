@@ -13,7 +13,7 @@ fun Context.getURLResponse(url: String, TAG: String = "getURLResponse"): Respons
     logi(TAG, "getURLResponse 取得的資料是===>${response ?: "null"}")
     logi(TAG, "getURLResponse 取到的內容長度是=>${response.body()?.length}")
     return when {
-        response.body()?.length ?: 40000 > 30000 -> Response.error(418, ResponseBody.create(null, "Response Error")) //若有錯誤則會10萬起跳
+        response.body()?.length ?: 60000 > 50000 -> Response.error(418, ResponseBody.create(null, "Response Error")) //若有錯誤則會10萬起跳
         response.isSuccessful -> { // 新增導向錯誤的判斷
             null
         }
