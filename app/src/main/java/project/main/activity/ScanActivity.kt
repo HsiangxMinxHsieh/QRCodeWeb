@@ -158,6 +158,16 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
             return
         }
 
+        if (nowSetting?.afterScanAction?.illegal() == true || nowSetting?.goWebSiteByScan?.illegal() == true) {
+            if (textDialog == null) {
+                textDialog = activity.showSignInErrorDialog {
+                    resumeScreenAnimation()
+                    textDialog = null
+                }
+            }
+            return
+        }
+
         // 處理掃描到的簽到QRCode：
         val getScanSignInPersonName = scanContent.getSignInPersonByScan(context)
 

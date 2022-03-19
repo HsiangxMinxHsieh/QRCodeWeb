@@ -81,8 +81,8 @@ QRCodeSighIn#{
 "themeColor": 0
 }
  */
-class SettingData : ArrayList<SettingDataItem>(){
-    fun isNew(item:SettingDataItem) = this.none { it.name == item.name }
+class SettingData : ArrayList<SettingDataItem>() {
+    fun isNew(item: SettingDataItem) = this.none { it.name == item.name }
 }
 
 enum class SendMode(val value: Int) {
@@ -163,14 +163,20 @@ data class SettingDataItem(
         var scanMode: Int = SendMode.ByScan.value,
         @SerializedName("SendHtml")
         var sendHtml: String = "https://"
-    ) : Serializable
+    ) : Serializable{
+        // 判斷是否非法 // 只有當動作模式是openBrowser && toHtml 網址錯誤才會回傳true
+        fun illegal() = scanMode == SendMode.ByCustom.value && !sendHtml.startsWith("https://docs.google.com/forms")
+    }
 
     data class AfterScanAction(
         @SerializedName("ActionMode")
         var actionMode: Int = ActionMode.StayApp.value,
         @SerializedName("ToHtml")
         var toHtml: String = "https://"
-    ) : Serializable
+    ) : Serializable {
+        // 判斷是否非法 // 只有當動作模式是openBrowser && toHtml 網址錯誤才會回傳true
+        fun illegal() = actionMode == ActionMode.OpenBrowser.value && !toHtml.startsWith("https://")
+    }
 
     data class SettingField(
         @SerializedName("fieldType")

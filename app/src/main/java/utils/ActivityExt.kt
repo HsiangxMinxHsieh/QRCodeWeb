@@ -35,7 +35,7 @@ suspend fun Activity.sendApi(sendRequest: String, waitingText: String = this.get
 //            logi("Send", "組合後的發送內容是=>$sendRequest")
             val response = getURLResponse(sendRequest)
 //            logi("Send", "取得的錯誤內容是=>${response?.errorBody()?.string()}")
-            return@async response == null // 等於null代表有成功
+            return@async response?.errorBody()?.string() == null // 等於null代表有成功
         } catch (e: Exception) {
 //            e.printStackTrace()
             return@async false
