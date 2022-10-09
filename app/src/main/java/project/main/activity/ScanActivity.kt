@@ -159,6 +159,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
         }
 
         if (nowSetting?.afterScanAction?.illegal() == true || nowSetting?.goWebSiteByScan?.illegal() == true) {
+            loge(TAG, "nowSetting?.afterScanAction?.illegal()=>${nowSetting?.afterScanAction?.illegal()},,,nowSetting?.goWebSiteByScan?.illegal() =>${nowSetting?.goWebSiteByScan?.illegal()}")
             if (textDialog == null) {
                 textDialog = activity.showSignInErrorDialog {
                     resumeScreenAnimation()
@@ -172,6 +173,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
         val getScanSignInPersonName = scanContent.getSignInPersonByScan(context)
 
         if (getScanSignInPersonName == "null") {
+            loge(TAG, "getScanSignInPersonName=>${getScanSignInPersonName}")
             if (textDialog == null) {
                 textDialog = activity.showSignInErrorDialog {
                     resumeScreenAnimation()
@@ -223,7 +225,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
     ): Boolean? {
 
         if (scanContent.startsWith("QRCodeSignIn※")) { // 掃描到設定檔
-            scanContent.split("※").getOrNull(1)?.let {
+            scanContent.split("※").getOrNull(1)?.replace("&", "")?.let {
                 if (!it.isJson())
                     return@let null
 

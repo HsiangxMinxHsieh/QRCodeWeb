@@ -2,6 +2,7 @@ package project.main.api
 
 import android.content.Context
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -11,22 +12,25 @@ object ApiConnect {
 
     private var apiService: ApiService? = null
 
-    fun getService(context: Context): ApiService {
+    fun getService(): ApiService {
         if (apiService == null) {
-            apiService = init(context)
+            apiService = init()
         }
-        return apiService ?: init(context)
+        return apiService ?: init()
     }
 
     fun resetService(context: Context): ApiService {
-        apiService = init(context)
-        return apiService ?: init(context)
+        apiService = init()
+        return apiService ?: init()
     }
 
-    private fun init(context: Context): ApiService {
+    private fun init(): ApiService {
         val okHttpClient = OkHttpClient.Builder()
             .readTimeout(10, TimeUnit.SECONDS)
             .connectTimeout(10, TimeUnit.SECONDS)
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
             .build()
 
 //
