@@ -174,8 +174,8 @@ data class SettingDataItem(
         @SerializedName("ToHtml")
         var toHtml: String = "https://"
     ) : Serializable {
-        // 判斷是否非法 // 只有當動作模式是openBrowser && toHtml 網址錯誤才會回傳true
-        fun illegal() = actionMode == ActionMode.OpenBrowser.value && !toHtml.startsWith("https://")
+        // 判斷是否非法 // 只有當動作模式是 AnotherWeb && toHtml 網址錯誤才會回傳true
+        fun illegal() = actionMode == ActionMode.AnotherWeb.value && !toHtml.startsWith("https://")
     }
 
     data class SettingField(
