@@ -9,15 +9,12 @@ import androidx.databinding.DataBindingUtil
 import com.afollestad.materialdialogs.MaterialDialog
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.DialogTextBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import com.timmymike.viewtool.clickWithTrigger
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import uitool.getRectangleBg
 import uitool.getScreenHeightPixels
 import uitool.setTextSize
-import utils.clickWithTrigger
-import utils.logi
 
 //fun showMessageDialogOnlyOKButton(context: Context, message: String, lambda: () -> Unit = {}): TextDialog {
 //    return TextDialog(context).apply {

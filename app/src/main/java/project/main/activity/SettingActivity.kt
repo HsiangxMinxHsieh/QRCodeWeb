@@ -26,6 +26,7 @@ import tool.dialog.showMessageDialogOnlyOKButton
 import android.content.Intent
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContract
+import com.timmymike.viewtool.clickWithTrigger
 import tool.dialog.showConfirmDialog
 import uitool.*
 import utils.*
@@ -201,60 +202,60 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             activity.onBackPressed()
         }
 
-        mBinding.btnScanToGet.clickWithTrigger {
-            toScanActivity()
-        }
+//        mBinding.btnScanToGet.clickWithTrigger {
+//            toScanActivity()
+//        }
 
     }
-
-    class ScanActivityResultContract : ActivityResultContract<ScanMode, SettingDataItem>() {
-        override fun createIntent(context: Context, input: ScanMode?): Intent {
-            return Intent(context, ScanActivity::class.java).apply {
-                putExtra(ScanActivity.BUNDLE_KEY_SCAN_MODE, input)
-            }
-        }
-
-        override fun parseResult(resultCode: Int, intent: Intent?): SettingDataItem? {
-            return if (resultCode == Activity.RESULT_OK)
-                intent?.getSerializableExtra(ScanActivity.BUNDLE_KEY_SCAN_RESULT) as? SettingDataItem
-            else
-                null
-        }
-    }
-
-    private val scanActivityLauncher = registerForActivityResult(ScanActivityResultContract()) { item ->
-        item?.let {
-            activity.showDialogAndConfirmToSaveSetting(item, settings) { itemCallBack ->
-                // 變更頁面內容
-                itemCallBack?.let { update ->
-                    settings.indexOf(settings.firstOrNull { it.name == update.name }).let { findIndex -> // 要先找到名稱來確認是否有更新，不然可能會造成「同名稱不同ID」的錯誤。
-                        if (findIndex < 0) {
-                            mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(getTabViewByText(it)), settings.size) // 掃描後確定要新增tab
-                            settings.add(it)
-                        } else
-                            settings[findIndex] = update
-
-                        mBinding.vpContent.adapter = pagerAdapter //掃描後更新Fragment內容(重新指定)
-                        delayScrollToPosition(settings.indexOf(update)) // 滑動到找到的index
-                    }
-                }
-                return@showDialogAndConfirmToSaveSetting true
-            }
-
-        } ?: kotlin.run {
-            Toast.makeText(context, context.getString(R.string.setting_scan_action_no_content), Toast.LENGTH_SHORT).show()
-        }
-
-    }
-
-    private fun toScanActivity() {
-
-        scanActivityLauncher.launch(ScanMode.SETTING)
-//        activity.startActivity(Intent(activity, ScanActivity::class.java).apply {
-//            putExtra(ScanActivity.BUNDLE_SCAN_MODE_KEY, ScanMode.SETTING)
-//        })
-        activity.overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_up)
-    }
+//
+//    class ScanActivityResultContract : ActivityResultContract<ScanMode, SettingDataItem>() {
+//        override fun createIntent(context: Context, input: ScanMode?): Intent {
+//            return Intent(context, ScanActivity::class.java).apply {
+//                putExtra(ScanActivity.BUNDLE_KEY_SCAN_MODE, input)
+//            }
+//        }
+//
+//        override fun parseResult(resultCode: Int, intent: Intent?): SettingDataItem? {
+//            return if (resultCode == Activity.RESULT_OK)
+//                intent?.getSerializableExtra(ScanActivity.BUNDLE_KEY_SCAN_RESULT) as? SettingDataItem
+//            else
+//                null
+//        }
+//    }
+//
+//    private val scanActivityLauncher = registerForActivityResult(ScanActivityResultContract()) { item ->
+//        item?.let {
+//            activity.showDialogAndConfirmToSaveSetting(item, settings) { itemCallBack ->
+//                // 變更頁面內容
+//                itemCallBack?.let { update ->
+//                    settings.indexOf(settings.firstOrNull { it.name == update.name }).let { findIndex -> // 要先找到名稱來確認是否有更新，不然可能會造成「同名稱不同ID」的錯誤。
+//                        if (findIndex < 0) {
+//                            mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(getTabViewByText(it)), settings.size) // 掃描後確定要新增tab
+//                            settings.add(it)
+//                        } else
+//                            settings[findIndex] = update
+//
+//                        mBinding.vpContent.adapter = pagerAdapter //掃描後更新Fragment內容(重新指定)
+//                        delayScrollToPosition(settings.indexOf(update)) // 滑動到找到的index
+//                    }
+//                }
+//                return@showDialogAndConfirmToSaveSetting true
+//            }
+//
+//        } ?: kotlin.run {
+//            Toast.makeText(context, context.getString(R.string.setting_scan_action_no_content), Toast.LENGTH_SHORT).show()
+//        }
+//
+//    }
+//
+//    private fun toScanActivity() {
+//
+//        scanActivityLauncher.launch(ScanMode.SETTING)
+////        activity.startActivity(Intent(activity, ScanActivity::class.java).apply {
+////            putExtra(ScanActivity.BUNDLE_SCAN_MODE_KEY, ScanMode.SETTING)
+////        })
+//        activity.overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_up)
+//    }
 
     private fun addSetting(item: SettingDataItem) {
 

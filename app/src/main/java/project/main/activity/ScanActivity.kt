@@ -4,30 +4,43 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.isVisible
 import androidx.lifecycle.MutableLiveData
+import com.buddha.qrcodeweb.R
+import com.buddha.qrcodeweb.databinding.ActivityScanBinding
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
+import com.timmymike.viewtool.clickWithTrigger
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import pub.devrel.easypermissions.EasyPermissions
-import tool.dialog.*
-import java.util.*
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.view.isVisible
-import com.buddha.qrcodeweb.R
-import com.buddha.qrcodeweb.databinding.ActivityScanBinding
+import project.main.base.BaseActivity
 import project.main.const.PERMISSIONS_REQUEST_CODE
 import project.main.const.permissionPerms
-import project.main.base.BaseActivity
 import project.main.database.getRecordDao
 import project.main.database.getSignInPersonByScan
 import project.main.database.insertNewRecord
 import project.main.model.ActionMode
 import project.main.model.SettingDataItem
-import tool.*
+import pub.devrel.easypermissions.EasyPermissions
+import tool.AnimationFileName
+import tool.dialog.Dialog
+import tool.dialog.showMessageDialogOnlyOKButton
+import tool.getShare
+import tool.initialLottieByFileName
 import uitool.ViewTool
-import utils.*
+import utils.concatSettingColumn
+import utils.intentToWebPage
+import utils.isJson
+import utils.loge
+import utils.sendApi
+import utils.showDialogAndConfirmToSaveSetting
+import utils.showSignInCompleteDialog
+import utils.showSignInErrorDialog
+import utils.toDataBean
+import utils.toString
+import java.util.Date
 
 enum class ScanMode { //進入掃描頁的呼叫處
     SPLASH, // 無設定檔時，按下掃描
@@ -86,13 +99,13 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
     private var signInResult = ""
 
     private fun initObserver() {
-        liveResult.observe(activity, { scanContent ->
+        liveResult.observe(activity) { scanContent ->
             when (scanMode) {
                 ScanMode.NORMAL -> signInAction(scanContent)// 一般掃描
                 ScanMode.SETTING -> processSettingPageScan(scanContent) // 設定頁呼叫
                 ScanMode.SPLASH -> splashSettingToScan(scanContent)// Splash頁呼叫
             }
-        })
+        }
     }
 
     private fun splashSettingToScan(scanContent: String) {

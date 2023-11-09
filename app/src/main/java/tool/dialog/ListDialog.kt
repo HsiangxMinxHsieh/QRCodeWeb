@@ -15,12 +15,12 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.AdapterDialogListBinding
 import com.buddha.qrcodeweb.databinding.DialogListBinding
+import com.timmymike.viewtool.clickWithTrigger
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import project.main.base.BaseRecyclerViewDataBindingAdapter
 import uitool.getRectangleBg
 import uitool.*
-import utils.clickWithTrigger
 import utils.getColorByBuildVersion
 
 fun Context.showListDialog(title: String, list: MutableList<String>, selectAction:(selectIndex:Int,selectData:String)->Unit, cancelAction: () -> Unit = {}): ListDialog {
@@ -67,7 +67,7 @@ class ListDialog(val context: Context) :Dialog{
                 tvTitle.visibility = View.GONE
             }
             //
-            val layoutManager = object : LinearLayoutManager(context!!, VERTICAL, false) {
+            val layoutManager = object : LinearLayoutManager(context, VERTICAL, false) {
                 override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State) = try {
                     super.onLayoutChildren(recycler, state)
                 } catch (e: IndexOutOfBoundsException) {

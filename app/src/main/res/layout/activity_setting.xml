@@ -94,23 +94,23 @@
                 android:src="@drawable/ic_baseline_save"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="1"
-                app:layout_constraintEnd_toStartOf="@+id/btn_scan_to_get"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/btn_delete"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/btn_scan_to_get"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:background="@drawable/drawable_ripple_key_edit"
-                android:clickable="true"
-                android:focusable="true"
-                android:src="@drawable/ic_baseline_qr_code_scanner_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintDimensionRatio="1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/btn_save"
-                app:layout_constraintTop_toTopOf="parent" />
+<!--            <TextView-->
+<!--                android:id="@+id/btn_scan_to_get"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:background="@drawable/drawable_ripple_key_edit"-->
+<!--                android:clickable="true"-->
+<!--                android:focusable="true"-->
+<!--                android:src="@drawable/ic_baseline_qr_code_scanner_24"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintDimensionRatio="1"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@+id/btn_save"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

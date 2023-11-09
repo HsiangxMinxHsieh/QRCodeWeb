@@ -10,6 +10,7 @@ import androidx.databinding.DataBindingUtil
 import com.afollestad.materialdialogs.MaterialDialog
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.DialogKeyCheckBinding
+import com.timmymike.viewtool.clickWithTrigger
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import project.main.activity.ScanActivity
@@ -19,7 +20,6 @@ import project.main.model.SettingDataItem
 import tool.getShare
 import uitool.getRectangleBg
 import uitool.setTextSize
-import utils.clickWithTrigger
 import utils.logi
 import utils.toJson
 
