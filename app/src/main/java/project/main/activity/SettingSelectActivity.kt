@@ -73,8 +73,8 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
                 }
 
                 override fun resort(item: SettingDataItem) {
-//                    addItem(item)
-                 
+//                    addItem(context.getShare().getStoreSettings().sortedBy { it.themeColor } )
+
                 }
 
             }
@@ -210,12 +210,14 @@ class SettingSelectAdapter(val context: Context) : BaseRecyclerViewDataBindingAd
             // 設定釘選動作
             ivPin.click {
                 data.themeColor = -1
-                clickListener?.resort(data)
+
                 it?.run {
                     isSelected = isSelected.not()
                     it.animRotate(if (isSelected) 0f else -45f, if (isSelected) -45f else 0f)
                     it.animColor(getResourceColor(if (isSelected) R.color.gray else R.color.orange), getResourceColor(if (isSelected) R.color.orange else R.color.gray))
                 }
+
+                clickListener?.resort(data)
             }
 
             if (data.id == context.getShare().getNowUseSetting()?.id) {

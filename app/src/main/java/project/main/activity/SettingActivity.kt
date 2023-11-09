@@ -67,8 +67,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
         if (type == SettingType.Add) {
             addSetting(getDefaultSetting(context.getShare().getID()))
-        } else {
-
         }
     }
 
@@ -221,7 +219,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         }
 
         mBinding.btnBack.clickWithTrigger {
-            activity.onBackPressed()
+            saveData(nowTabIndex) { activity.onBackPressed() }
         }
 
 //        mBinding.btnScanToGet.clickWithTrigger {
@@ -306,15 +304,24 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         }
 
         val deleteSettingName = if (settings[index].name.isEmpty()) context.getString(R.string.setting_file_name_default) else settings[index].name
+
         context.showConfirmDialog(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_delete_confirm).format(deleteSettingName, "設定檔"), {
             // 刪除第index筆資料
             settings.removeAt(index)
+            // 變更設定流程，刪除後要回到上一頁。
+
             // 刪除tab
-            mBinding.tlSettingTitle.removeTabAt(index)
-            // 更新頁面內容
-            mBinding.vpContent.adapter = pagerAdapter //刪除後更新Fragment內容 (重新指定)
+//            mBinding.tlSettingTitle.removeTabAt(index)
+//            // 更新頁面內容 // 變更設定流程，不更新畫面後直接結束此頁面。
+//            mBinding.vpContent.adapter = pagerAdapter //刪除後更新Fragment內容 (重新指定)
+
+            // 如果刪除的是正在使用的設定檔，則要將這個設定檔設定成上一個內容。
+            if (type.settingId == context.getShare().getNowUseSetting()?.id)
+                context.getShare().setNowUseSetting(settings[(index - 1).takeIf { it > 0 } ?: 0]) // 如果是刪除第一個的話，一樣要設定成第一個。7
+
+            onBackPressed() // 變更設定流程，刪除後要回到上一頁。
             // 滑動到上一個
-            delayScrollToPosition(index - 1)
+//            delayScrollToPosition(index - 1)
             // 因測試的時候發現，若「刪除此設定檔再重新掃描，會出現是否更新的訊息，使用者必然會confuse，因此此處幫使用者儲存一次。」
             context.getShare().savaAllSettings(settings)
 
@@ -375,7 +382,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
     }
 
     override fun finish() {
-        saveData(nowTabIndex) { super.finish() }
+        super.finish()
         activity.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
