@@ -286,7 +286,7 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
     }
 
     private fun clickToSettingPage() {
-        val intent = Intent(activity, SettingActivity::class.java)
+        val intent = Intent(activity, SettingSelectActivity::class.java)
         activity.startActivity(intent)
         activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }

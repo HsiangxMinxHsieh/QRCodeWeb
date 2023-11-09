@@ -42,7 +42,7 @@ enum class SelectMode {
     All // 全部選擇
 }
 
-class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBinding.inflate(it) }) {
+class RecordActivity : BaseActivity<ActivityRecordBinding>({ ActivityRecordBinding.inflate(it) }) {
 
     override var statusTextIsDark: Boolean = true
 
@@ -107,7 +107,7 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
             mBinding.rvRecord.postDelayed({ mBinding.rvRecord.smoothScrollToPosition(0) }, 20L)
         })
 
-        nowMultipleStatus.observe(activity, {
+        nowMultipleStatus.observe(activity) {
 //            logi(TAG, "觀察到的內容是=>${it}")
             when (it.first) {
                 MultipleStatus.None -> {
@@ -119,9 +119,11 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                         btnMultipleSelectMode.background = ContextCompat.getDrawable(context, R.drawable.ic_baseline_multiple_select_mode)
                     }
                 }
+
                 MultipleStatus.SelectMode -> {
                     mBinding.btnMultipleSelectMode.background = ContextCompat.getDrawable(context, R.drawable.ic_baseline_multiple_selecting_mode)
                 }
+
                 MultipleStatus.Selecting -> {
                     mBinding.btnMultipleSelectMode.background = ContextCompat.getDrawable(
                         context, when (it.second) {
@@ -142,13 +144,14 @@ class RecordActivity() : BaseActivity<ActivityRecordBinding>({ ActivityRecordBin
                         btnDelete.isVisible = true
                     }
                 }
+
                 MultipleStatus.Send -> {
                     adapter.clearSelectMap()
                     mBinding.btnMultipleSelectMode.background = null
                     mBinding.clControl.visibility = View.INVISIBLE
                 }
             }
-        })
+        }
     }
 
     private val adapter by lazy {

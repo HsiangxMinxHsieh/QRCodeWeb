@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.buddha.qrcodeweb">
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -15,6 +19,9 @@
         android:screenOrientation="portrait"
         android:theme="@style/Theme.QRCodeWeb"
         android:windowSoftInputMode="adjustResize">
+        <activity
+            android:name="project.main.activity.SettingSelectActivity"
+            android:exported="false" />
 
         <activity
             android:name="project.main.activity.SplashActivity"
@@ -25,26 +32,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="project.main.activity.ScanActivity"
             android:exported="false" />
-
         <activity
             android:name="project.main.activity.SettingActivity"
             android:exported="true">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
-
-
         <activity
             android:name="project.main.activity.RecordActivity"
             android:exported="false" />
-
     </application>
 
 </manifest>
