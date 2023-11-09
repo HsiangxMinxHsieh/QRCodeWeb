@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContract
 import com.buddha.qrcodeweb.R
@@ -18,6 +19,7 @@ import com.timmymike.viewtool.dpToPx
 import com.timmymike.viewtool.getResourceColor
 import com.timmymike.viewtool.setClickBgState
 import com.timmymike.viewtool.setClickTextColorStateById
+import com.timmymike.viewtool.setRippleBackgroundById
 import com.timmymike.viewtool.setTextSize
 import project.main.base.BaseActivity
 import project.main.base.BaseRecyclerViewDataBindingAdapter
@@ -60,9 +62,24 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
 
     private fun initRecyclerView() = mBinding.rvSettings.run {
         adapter = SettingSelectAdapter(this@SettingSelectActivity).apply {
-            addItem(settings)
-        }
+            clickListener = object : SettingSelectAdapter.ClickListener {
+                override fun edit(item: SettingDataItem) { // 點擊編輯要到編輯頁
+                    toSettingActivity(type = SettingType.Edit.apply { settingId = item.id })
+                }
 
+                override fun select(item: SettingDataItem) { // 選擇後要返回掃描頁
+                    saveData(item)
+                    finish()
+                }
+
+                override fun resort(item: SettingDataItem) {
+//                    addItem(item)
+                 
+                }
+
+            }
+
+        }
     }
 
     private fun initEvent() {
@@ -102,6 +119,13 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
         }
     }
 
+    private val empty: (Throwable?) -> Unit = {} // 用於不讓使用者經檢查後才可返回的方法判斷變數(用於判斷是在何處呼叫saveData方法)
+
+    //將 選擇到的資料存到sharedPreference內。
+    private fun saveData(item: SettingDataItem) {
+        context.getShare().setNowUseSetting(item)
+    }
+
 
     private val scanActivityLauncher = registerForActivityResult(ScanActivityResultContract()) { item ->
         item?.let {
@@ -137,6 +161,12 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
         activity.overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_up)
     }
 
+    override fun onResume() {
+        super.onResume()
+        // 返回畫面的時候，必須更新一次列表，以確保每次顯示的時候都是最新的。
+        (mBinding.rvSettings.adapter as BaseRecyclerViewDataBindingAdapter<SettingDataItem>).addItem(context.getShare().getStoreSettings())
+
+    }
 
     override fun finish() {
         super.finish()
@@ -148,19 +178,30 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
 
 class SettingSelectAdapter(val context: Context) : BaseRecyclerViewDataBindingAdapter<SettingDataItem>(context, R.layout.adapter_setting_select) {
 
+    interface ClickListener {
+        fun edit(item: SettingDataItem)
+
+        fun select(item: SettingDataItem)
+
+        fun resort(item: SettingDataItem)
+    }
+
+    var clickListener: ClickListener? = null
+
     override fun initViewHolder(viewHolder: ViewHolder) {
-        (viewHolder.binding as? AdapterSettingSelectBinding)?.run {
-            tvSettingName.run {
-                this.setTextSize(20)
-                10.dpToPx.let {
-                    setPadding(it, it, it, it)
-                }
-                setClickBgState(
-                    getRoundBg(context, 10, R.color.theme_blue, R.color.black, 2)
-                )
-                setClickTextColorStateById(R.color.white)
-            }
+    }
+
+    private fun TextView.setTextStatus(status: Status) = this.run {
+        // 設定文字顯示效果
+        this.setTextSize(20)
+        10.dpToPx.let {
+            setPadding(it, it, it, it)
         }
+        setClickBgState(
+            getRoundBg(context, 10, if (status == Status.Normal) R.color.theme_blue else R.color.theme_green, R.color.black, if (status == Status.Normal) 2 else 5)
+        )
+        setClickTextColorStateById(R.color.white)
+        setRippleBackgroundById(if (status == Status.Normal) R.color.white else R.color.black)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int, data: SettingDataItem) {
@@ -168,11 +209,29 @@ class SettingSelectAdapter(val context: Context) : BaseRecyclerViewDataBindingAd
             tvSettingName.text = data.name
             // 設定釘選動作
             ivPin.click {
+                data.themeColor = -1
+                clickListener?.resort(data)
                 it?.run {
                     isSelected = isSelected.not()
                     it.animRotate(if (isSelected) 0f else -45f, if (isSelected) -45f else 0f)
                     it.animColor(getResourceColor(if (isSelected) R.color.gray else R.color.orange), getResourceColor(if (isSelected) R.color.orange else R.color.gray))
                 }
+            }
+
+            if (data.id == context.getShare().getNowUseSetting()?.id) {
+                tvSettingName.setTextStatus(status = Status.Choice)
+            } else {
+                tvSettingName.setTextStatus(status = Status.Normal)
+            }
+
+            // 設定文字選擇動作
+            tvSettingName.clickWithTrigger {
+                clickListener?.select(data)
+            }
+
+            // 設定編輯按鈕點擊動作
+            ivEdit.clickWithTrigger {
+                clickListener?.edit(data)
             }
 
         }
@@ -187,8 +246,13 @@ class SettingSelectAdapter(val context: Context) : BaseRecyclerViewDataBindingAd
     }
 }
 
+enum class Status {
+    Normal,
+    Choice
+}
 
-enum class SettingType(var settingName: String) {
-    Add("NoneSettingName"),
-    Edit(""),
+
+enum class SettingType(var settingId: Int) {
+    Add(-1),
+    Edit(0),
 }

@@ -84,14 +84,17 @@ abstract class BaseRecyclerViewDataBindingAdapter<T>(private val context: Contex
 
      fun addItem(list: List<T>) {
           this.list =  list as MutableList<T>
+          notifyDataSetChanged()
      }
 
      fun addItem(list: ArrayList<T>) {
           this.list = list
+          notifyDataSetChanged()
      }
 
      fun addItem(data: T) {
           list.add(data)
+          notifyDataSetChanged()
      }
 
      fun clear(data: T) {

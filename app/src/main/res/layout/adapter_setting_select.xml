@@ -4,13 +4,13 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
 
         <ImageView
             android:id="@+id/ivPin"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_margin="10dp"
             android:src="@drawable/baseline_push_pin"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1"
@@ -24,8 +24,6 @@
             android:id="@+id/tv_setting_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
             android:gravity="center"
             android:text="TextView"
             android:textColor="@color/dialog_txt_message"
@@ -39,7 +37,6 @@
             android:id="@+id/ivEdit"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_margin="10dp"
             android:src="@drawable/ic_baseline_mode_edit_outline"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1"

@@ -1,51 +1,57 @@
 package project.main.activity
 
-import android.app.Activity
-import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
 import android.widget.TableLayout
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import tool.getShare
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.ActivitySettingBinding
-import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
+import com.timmymike.viewtool.clickWithTrigger
 import project.main.base.BaseActivity
 import project.main.model.SettingData
 import project.main.model.SettingDataItem
 import project.main.tab.SettingContentFragment
-import tool.dialog.showMessageDialogOnlyOKButton
-import android.content.Intent
-import android.os.Build
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContract
-import androidx.core.view.isVisible
-import com.timmymike.logtool.forLoge
-import com.timmymike.logtool.loge
-import com.timmymike.viewtool.clickWithTrigger
 import tool.dialog.showConfirmDialog
-import uitool.*
-import utils.*
+import tool.dialog.showMessageDialogOnlyOKButton
+import tool.getShare
+import uitool.setMarginByDpUnit
+import uitool.setTextSize
+import uitool.setViewSize
+import utils.couldBeAdd
+import utils.getColorByBuildVersion
+import utils.logAllData
+import utils.logi
+import utils.toJson
 
 
 class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBinding.inflate(it) }) {
 
-    companion object{
-        const val SETTING_TYPE_KEY="SETTING_TYPE_KEY"
+    companion object {
+        const val SETTING_TYPE_KEY = "SETTING_TYPE_KEY"
     }
+
     override var statusTextIsDark: Boolean = true
+
+    private val type: SettingType by lazy {
+        (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent?.extras?.getSerializable(SETTING_TYPE_KEY, SettingType::class.java)
+        } else {
+            intent?.extras?.getSerializable(SETTING_TYPE_KEY)
+        }) as SettingType
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
         initView()
 
@@ -57,18 +63,11 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
 
     private fun initData() {
-        val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent?.extras?.getSerializable(SETTING_TYPE_KEY,SettingType::class.java)
-        } else {
-            intent?.extras?.getSerializable(SETTING_TYPE_KEY)
-        }
 
-        loge("type->$type")
-        (type as SettingType).settingName.forLoge("settingName=>")
 
-        if(type== SettingType.Add){
+        if (type == SettingType.Add) {
             addSetting(getDefaultSetting(context.getShare().getID()))
-        }else{
+        } else {
 
         }
     }
@@ -95,11 +94,11 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
 //        logi("initTab", "storeSetting 是=>${storeSetting?.name}")
 
-        nowTabIndex = if (storeSetting == null) { // 無資料傳入，初始在第一頁
+        nowTabIndex = if (type.settingId == -1) { // 無資料傳入，初始在第一頁
             0
         } else {
             //有設定檔，找到這筆設定檔的位置
-            settings.indexOf(settings.find { it.id == storeSetting.id })
+            settings.indexOf(settings.find { it.id == type.settingId })
         }
 //        logi("initTab", "nowTabIndex 是=>${nowTabIndex}")
         //判斷當前設定檔數量與在上面新增tab。
@@ -107,10 +106,10 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(getTabViewByText(settings.getOrNull(index) ?: break, (index == nowTabIndex))))
         }
 
-        mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(ImageView(context).apply { //無論如何都要在最尾端加一個+號
-            Glide.with(context).load(R.drawable.ic_baseline_add).into(this)
-            clickWithTrigger {  }
-        }))
+//        mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(ImageView(context).apply { //無論如何都要在最尾端加一個+號
+//            Glide.with(context).load(R.drawable.ic_baseline_add).into(this)
+//            clickWithTrigger {  }
+//        }))
 
         delayScrollToPosition(nowTabIndex)
     }
@@ -127,7 +126,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
     private fun initPagers() {
         mBinding.vpContent.adapter = pagerAdapter // 初始指定Fragment內容
-        mBinding.vpContent.isUserInputEnabled = false // 初始指定Fragment內容
+        mBinding.vpContent.isUserInputEnabled = false
     }
 
     private fun getDefaultSetting(id: Int) = SettingDataItem.getDefaultSetting(id, context)
