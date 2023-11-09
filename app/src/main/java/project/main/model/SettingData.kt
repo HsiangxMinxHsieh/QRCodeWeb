@@ -109,7 +109,7 @@ data class SettingDataItem(
     var id: Int = 0, // 此設定檔的ID，會儲存在sharedPreference，只會加不會減
 
     @SerializedName("themeColor")
-    var themeColor: Int = 0, // 此設定檔的主題顏色
+    var sortIndex: Int = 0, // 此設定檔的主題顏色
 
     @SerializedName("haveSaved")
     var haveSaved: Boolean = false, // 是否儲存過(用於不能讓使用者連續新增設定檔)(一定要為true才能新增下一個)

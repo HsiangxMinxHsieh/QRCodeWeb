@@ -4,10 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.DisplayMetrics
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.recyclerview.widget.LinearSmoothScroller
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.ActivitySettingSelectBinding
 import com.buddha.qrcodeweb.databinding.AdapterSettingSelectBinding
@@ -61,7 +65,9 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
     }
 
     private fun initRecyclerView() = mBinding.rvSettings.run {
+
         adapter = SettingSelectAdapter(this@SettingSelectActivity).apply {
+
             clickListener = object : SettingSelectAdapter.ClickListener {
                 override fun edit(item: SettingDataItem) { // 點擊編輯要到編輯頁
                     toSettingActivity(type = SettingType.Edit.apply { settingId = item.id })
@@ -73,8 +79,13 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
                 }
 
                 override fun resort(item: SettingDataItem) {
-//                    addItem(context.getShare().getStoreSettings().sortedBy { it.themeColor } )
 
+
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        this@run.layoutManager?.startSmoothScroll(SlowLinearSmoothScroller(context).apply {
+                            targetPosition = 0
+                        })
+                    }, 300L)
                 }
 
             }
@@ -206,25 +217,45 @@ class SettingSelectAdapter(val context: Context) : BaseRecyclerViewDataBindingAd
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int, data: SettingDataItem) {
         (viewHolder.binding as AdapterSettingSelectBinding).run {
+
             tvSettingName.text = data.name
             // 設定釘選動作
-            ivPin.click {
-                data.themeColor = -1
+            ivPin.run {
 
-                it?.run {
-                    isSelected = isSelected.not()
-                    it.animRotate(if (isSelected) 0f else -45f, if (isSelected) -45f else 0f)
-                    it.animColor(getResourceColor(if (isSelected) R.color.gray else R.color.orange), getResourceColor(if (isSelected) R.color.orange else R.color.gray))
+                isSelected = data.sortIndex < 0
+                rotation = if (isSelected) -45f else 0f
+
+                setColorFilter(getResourceColor(if (isSelected) R.color.orange else R.color.gray))
+
+                click {
+
+                    // 點擊效果
+                    it?.run {
+                        isSelected = isSelected.not()
+                        animRotate(if (isSelected) 0f else -45f, if (isSelected) -45f else 0f)
+                        animColor(getResourceColor(if (isSelected) R.color.gray else R.color.orange), getResourceColor(if (isSelected) R.color.orange else R.color.gray))
+                    }
+
+                    // 本來有選中，改為沒選中的要改成0。
+                    if (!isSelected) {
+                        data.sortIndex = 0
+                        notifyItemMoved(position, context.getShare().getStoreSettings().indexOf(data))
+                    } else { // 本來沒選中，後來有選中，外部要跳轉順序
+                        clickListener?.resort(data)
+                        notifyItemMoved(position, 0)
+                        data.sortIndex = context.getShare().getStoreSettings().map { it.sortIndex }.min() - 1 // 找到比當前最小的，再-1。
+                    }
+
+                    reorderDataList()
+                    // Notify adapter about the data change with animation
+
+
                 }
-
-                clickListener?.resort(data)
             }
 
-            if (data.id == context.getShare().getNowUseSetting()?.id) {
-                tvSettingName.setTextStatus(status = Status.Choice)
-            } else {
-                tvSettingName.setTextStatus(status = Status.Normal)
-            }
+
+            // 設定文字效果
+            tvSettingName.setTextStatus(status = if (data.id == context.getShare().getNowUseSetting()?.id) Status.Choice else Status.Normal)
 
             // 設定文字選擇動作
             tvSettingName.clickWithTrigger {
@@ -239,12 +270,28 @@ class SettingSelectAdapter(val context: Context) : BaseRecyclerViewDataBindingAd
         }
     }
 
+    private fun reorderDataList() {
+        list.sortWith(compareBy<SettingDataItem> {
+            if (it.sortIndex < 0) it.sortIndex else 0
+        }.thenBy { it.id })
+    }
+
     override fun onItemClick(view: View, position: Int, data: SettingDataItem): Boolean {
         return true
     }
 
     override fun onItemLongClick(view: View, position: Int, data: SettingDataItem): Boolean {
         return true
+    }
+}
+
+class SlowLinearSmoothScroller(context: Context) : LinearSmoothScroller(context) {
+    companion object {
+        private const val MILLISECONDS_PER_INCH = 300f // 調整這個值來設置滾動速度
+    }
+
+    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
+        return MILLISECONDS_PER_INCH / displayMetrics.densityDpi
     }
 }
 

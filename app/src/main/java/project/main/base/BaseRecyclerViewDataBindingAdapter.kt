@@ -12,7 +12,7 @@ import kotlin.collections.ArrayList
 abstract class BaseRecyclerViewDataBindingAdapter<T>(private val context: Context, private val layoutID:Int) :
      androidx.recyclerview.widget.RecyclerView.Adapter<BaseRecyclerViewDataBindingAdapter<T>.ViewHolder>(), View.OnClickListener, View.OnLongClickListener {
      val TAG = javaClass.simpleName
-     private var list = mutableListOf<T>()
+     var list = mutableListOf<T>()
 
      private val myInflater: LayoutInflater? = null
      private var sortKey: String? = null
