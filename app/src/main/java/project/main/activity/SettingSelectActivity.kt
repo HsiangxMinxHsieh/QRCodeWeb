@@ -60,7 +60,11 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
     }
 
     private fun toSettingActivity(type: SettingType) {
-
+        val intent = Intent(activity, SettingActivity::class.java).apply {
+            putExtra(SettingActivity.SETTING_TYPE_KEY, type)
+        }
+        activity.startActivity(intent)
+        activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
     class ScanActivityResultContract : ActivityResultContract<ScanMode, SettingDataItem>() {
@@ -121,7 +125,7 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
 
 }
 
-enum class SettingType {
-    Add,
-    Edit,
+enum class SettingType(var settingName: String) {
+    Add("NoneSettingName"),
+    Edit(""),
 }
