@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QRCodeWeb</string>
+    <string name="app_name">掃碼簽到</string>
     <string name="permission_request">請給App相機權限以開啟掃碼功能。</string>
 
     <!--Splash-->

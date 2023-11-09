@@ -113,12 +113,12 @@ fun Activity.couldBeAdd(newItem: SettingDataItem, settings: SettingData, confirm
         return false
     }
 
-    if (settings.isNew(newItem) && settings.size >= this.maxSettingSize()) { // 設定檔的數目不能大於設定的數字
-        this.showMessageDialogOnlyOKButton(this.getString(R.string.dialog_notice_title), this.getString(R.string.setting_cant_add_by_over_max_size).format(this.maxSettingSize())) {
-            confirmAction.invoke(null)
-        }
-        return false
-    }
+//    if (settings.isNew(newItem) && settings.size >= this.maxSettingSize()) { // 設定檔的數目不能大於設定的數字
+//        this.showMessageDialogOnlyOKButton(this.getString(R.string.dialog_notice_title), this.getString(R.string.setting_cant_add_by_over_max_size).format(this.maxSettingSize())) {
+//            confirmAction.invoke(null)
+//        }
+//        return false
+//    }
     confirmAction.invoke(newItem)
     return true
 }
