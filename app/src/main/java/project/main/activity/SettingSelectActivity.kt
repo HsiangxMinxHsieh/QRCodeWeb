@@ -4,15 +4,27 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContract
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.ActivitySettingSelectBinding
+import com.buddha.qrcodeweb.databinding.AdapterSettingSelectBinding
+import com.timmymike.viewtool.animColor
+import com.timmymike.viewtool.animRotate
+import com.timmymike.viewtool.click
 import com.timmymike.viewtool.clickWithTrigger
+import com.timmymike.viewtool.dpToPx
+import com.timmymike.viewtool.getResourceColor
+import com.timmymike.viewtool.setClickBgState
+import com.timmymike.viewtool.setClickTextColorStateById
+import com.timmymike.viewtool.setTextSize
 import project.main.base.BaseActivity
+import project.main.base.BaseRecyclerViewDataBindingAdapter
 import project.main.model.SettingData
 import project.main.model.SettingDataItem
 import tool.getShare
+import uitool.getRoundBg
 import utils.showDialogAndConfirmToSaveSetting
 
 class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ ActivitySettingSelectBinding.inflate(it) }) {
@@ -43,6 +55,14 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
     }
 
     private fun initView() {
+        initRecyclerView()
+    }
+
+    private fun initRecyclerView() = mBinding.rvSettings.run {
+        adapter = SettingSelectAdapter(this@SettingSelectActivity).apply {
+            addItem(settings)
+        }
+
     }
 
     private fun initEvent() {
@@ -124,6 +144,49 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
     }
 
 }
+
+
+class SettingSelectAdapter(val context: Context) : BaseRecyclerViewDataBindingAdapter<SettingDataItem>(context, R.layout.adapter_setting_select) {
+
+    override fun initViewHolder(viewHolder: ViewHolder) {
+        (viewHolder.binding as? AdapterSettingSelectBinding)?.run {
+            tvSettingName.run {
+                this.setTextSize(20)
+                10.dpToPx.let {
+                    setPadding(it, it, it, it)
+                }
+                setClickBgState(
+                    getRoundBg(context, 10, R.color.theme_blue, R.color.black, 2)
+                )
+                setClickTextColorStateById(R.color.white)
+            }
+        }
+    }
+
+    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int, data: SettingDataItem) {
+        (viewHolder.binding as AdapterSettingSelectBinding).run {
+            tvSettingName.text = data.name
+            // 設定釘選動作
+            ivPin.click {
+                it?.run {
+                    isSelected = isSelected.not()
+                    it.animRotate(if (isSelected) 0f else -45f, if (isSelected) -45f else 0f)
+                    it.animColor(getResourceColor(if (isSelected) R.color.gray else R.color.orange), getResourceColor(if (isSelected) R.color.orange else R.color.gray))
+                }
+            }
+
+        }
+    }
+
+    override fun onItemClick(view: View, position: Int, data: SettingDataItem): Boolean {
+        return true
+    }
+
+    override fun onItemLongClick(view: View, position: Int, data: SettingDataItem): Boolean {
+        return true
+    }
+}
+
 
 enum class SettingType(var settingName: String) {
     Add("NoneSettingName"),
