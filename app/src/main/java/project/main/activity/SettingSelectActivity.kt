@@ -30,7 +30,6 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
     }
 
     private fun initView() {
-//        mBinding.tvTitle.text = activity.toString()
     }
 
     private fun initEvent() {
