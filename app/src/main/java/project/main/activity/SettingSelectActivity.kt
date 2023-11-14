@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.ActivitySettingSelectBinding
 import com.buddha.qrcodeweb.databinding.AdapterSettingSelectBinding
-import com.timmymike.logtool.forLoge
 import com.timmymike.viewtool.animColor
 import com.timmymike.viewtool.animRotate
 import com.timmymike.viewtool.click
@@ -38,7 +37,6 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
 
     override var statusTextIsDark: Boolean = true
 
-    private val settings: SettingData by lazy { context.getShare().getStoreSettings() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,9 +63,12 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
         initRecyclerView()
     }
 
+    private val settingSelectAdapter:SettingSelectAdapter by lazy{
+        SettingSelectAdapter(this@SettingSelectActivity)
+    }
     private fun initRecyclerView() = mBinding.rvSettings.run {
 
-        adapter = SettingSelectAdapter(this@SettingSelectActivity).apply {
+        adapter = settingSelectAdapter.apply {
 
             clickListener = object : SettingSelectAdapter.ClickListener {
                 override fun edit(item: SettingDataItem) { // 點擊編輯要到編輯頁
@@ -80,8 +81,6 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
                 }
 
                 override fun resort(item: SettingDataItem) {
-
-
                     Handler(Looper.getMainLooper()).postDelayed({
                         this@run.layoutManager?.startSmoothScroll(SlowLinearSmoothScroller(context).apply {
                             targetPosition = 0
@@ -131,8 +130,6 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
         }
     }
 
-    private val empty: (Throwable?) -> Unit = {} // 用於不讓使用者經檢查後才可返回的方法判斷變數(用於判斷是在何處呼叫saveData方法)
-
     //將 選擇到的資料存到sharedPreference內。
     private fun saveData(item: SettingDataItem) {
         context.getShare().setNowUseSetting(item)
@@ -141,15 +138,23 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
 
     private val scanActivityLauncher = registerForActivityResult(ScanActivityResultContract()) { item ->
         item?.let {
+            val settings = context.getShare().getStoreSettings()
             activity.showDialogAndConfirmToSaveSetting(item, settings) { itemCallBack ->
+
                 // 變更頁面內容
                 itemCallBack?.let { update ->
                     settings.indexOf(settings.firstOrNull { it.name == update.name }).let { findIndex -> // 要先找到名稱來確認是否有更新，不然可能會造成「同名稱不同ID」的錯誤。
                         if (findIndex < 0) { // 找不到要新增
 //                            mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(getTabViewByText(it)), settings.size) // 掃描後確定要新增tab
                             settings.add(it)
-                        } else // 找得到要更新
+
+                        } else { // 找得到要更新
                             settings[findIndex] = update
+                        }
+
+                        // 更新畫面
+
+                        settingSelectAdapter.addItem(settings)
 
 //                        mBinding.vpContent.adapter = pagerAdapter //掃描後更新Fragment內容(重新指定)
 //                        delayScrollToPosition(settings.indexOf(update)) // 滑動到找到的index
@@ -176,14 +181,14 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
     override fun onResume() {
         super.onResume()
         // 返回畫面的時候，必須更新一次列表，以確保每次顯示的時候都是最新的。
-        (mBinding.rvSettings.adapter as BaseRecyclerViewDataBindingAdapter<SettingDataItem>).addItem(context.getShare().getStoreSettings())
+        settingSelectAdapter.addItem(context.getShare().getStoreSettings())
 
     }
 
     override fun finish() {
         super.finish()
         val settingData: SettingData = SettingData()
-        settingData.addAll((mBinding.rvSettings.adapter as BaseRecyclerViewDataBindingAdapter<SettingDataItem>).list)
+        settingData.addAll(settingSelectAdapter.list)
 
         context.getShare().savaAllSettings(settingData)
         activity.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)

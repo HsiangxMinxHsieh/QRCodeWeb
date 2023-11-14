@@ -212,7 +212,7 @@ class BaseSharePreference(val context: Context) {
             getStoreSettings().apply {
                 var oid = 0
                 this.indexOfFirst { it.name == item.name }.let { index ->
-                    remove(firstOrNull { item.name == it.name }?.apply { oid = this.id })   // 用name找到settings裡面的那個，先移除再更新 // 如果找不到則移除失敗。
+                    remove(firstOrNull { item.name == it.name }?.apply { oid = this.id })   // 用name找到settings裡面的那個設定檔，先移除再更新 // 如果找不到則移除失敗。
                     add(if (index >= 0) index else if (size == 0) 0 else this.size , item.apply {
                         id = if (isNew) // 新增
                             context.getShare().getID()
