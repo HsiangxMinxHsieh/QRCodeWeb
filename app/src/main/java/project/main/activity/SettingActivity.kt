@@ -64,7 +64,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
     private fun initData() {
 
-
         if (type == SettingType.Add) {
             addSetting(getDefaultSetting(context.getShare().getID()))
         }
@@ -88,7 +87,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         mBinding.tlSettingTitle.isVisible = false
         //初始化TabLayout
 
-        val storeSetting = context.getShare().getNowUseSetting() // 取出之前儲存的，滑到那個位置。
+//        val storeSetting = context.getShare().getNowUseSetting() // 取出之前儲存的，滑到那個位置。
 
 //        logi("initTab", "storeSetting 是=>${storeSetting?.name}")
 
@@ -208,74 +207,49 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             }
         })
 
-        // 按鈕事件
+        // 刪除按鈕事件
         mBinding.btnDelete.clickWithTrigger {
             deleteSetting(nowTabIndex)
         }
 
-        // 按鈕事件
+        // 儲存按鈕事件
         mBinding.btnSave.clickWithTrigger {
             saveData(nowTabIndex)
         }
 
         mBinding.btnBack.clickWithTrigger {
-            saveData(nowTabIndex) { activity.onBackPressed() }
+            activity.onBackPressed()
         }
 
-//        mBinding.btnScanToGet.clickWithTrigger {
-//            toScanActivity()
-//        }
-
     }
-//
-//    class ScanActivityResultContract : ActivityResultContract<ScanMode, SettingDataItem>() {
-//        override fun createIntent(context: Context, input: ScanMode?): Intent {
-//            return Intent(context, ScanActivity::class.java).apply {
-//                putExtra(ScanActivity.BUNDLE_KEY_SCAN_MODE, input)
-//            }
-//        }
-//
-//        override fun parseResult(resultCode: Int, intent: Intent?): SettingDataItem? {
-//            return if (resultCode == Activity.RESULT_OK)
-//                intent?.getSerializableExtra(ScanActivity.BUNDLE_KEY_SCAN_RESULT) as? SettingDataItem
-//            else
-//                null
-//        }
-//    }
-//
-//    private val scanActivityLauncher = registerForActivityResult(ScanActivityResultContract()) { item ->
-//        item?.let {
-//            activity.showDialogAndConfirmToSaveSetting(item, settings) { itemCallBack ->
-//                // 變更頁面內容
-//                itemCallBack?.let { update ->
-//                    settings.indexOf(settings.firstOrNull { it.name == update.name }).let { findIndex -> // 要先找到名稱來確認是否有更新，不然可能會造成「同名稱不同ID」的錯誤。
-//                        if (findIndex < 0) {
-//                            mBinding.tlSettingTitle.addTab(mBinding.tlSettingTitle.newTab().setCustomView(getTabViewByText(it)), settings.size) // 掃描後確定要新增tab
-//                            settings.add(it)
-//                        } else
-//                            settings[findIndex] = update
-//
-//                        mBinding.vpContent.adapter = pagerAdapter //掃描後更新Fragment內容(重新指定)
-//                        delayScrollToPosition(settings.indexOf(update)) // 滑動到找到的index
-//                    }
-//                }
-//                return@showDialogAndConfirmToSaveSetting true
-//            }
-//
-//        } ?: kotlin.run {
-//            Toast.makeText(context, context.getString(R.string.setting_scan_action_no_content), Toast.LENGTH_SHORT).show()
-//        }
-//
-//    }
-//
-//    private fun toScanActivity() {
-//
-//        scanActivityLauncher.launch(ScanMode.SETTING)
-////        activity.startActivity(Intent(activity, ScanActivity::class.java).apply {
-////            putExtra(ScanActivity.BUNDLE_SCAN_MODE_KEY, ScanMode.SETTING)
-////        })
-//        activity.overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_up)
-//    }
+
+    override fun onBackPressed() {
+        judgeCouldBack { super.onBackPressed() }
+    }
+
+    /**2023/11/14嘉伸講師提出，不自動儲存，因此若直接返回要判斷是否取消變更。
+     *
+     * 有變更，沒儲存的情況下，才要提示「是否取消變更？」的對話框
+     * */
+    private fun judgeCouldBack(action: () -> Unit) {
+        val newSaveData = settings.getOrNull(nowTabIndex) ?: return
+
+        if (type == SettingType.Add) { // 嘉伸講師要求，新增的時候，可以不判斷直接返回。
+            action.invoke()
+            return
+        }
+
+        val oldSaveData = context.getShare().getStoreSettings().let { it[it.indexOf(it.find { fd -> fd.id == type.settingId })] }
+
+        if (newSaveData.toJson() != oldSaveData.toJson()) { // 有變更，沒儲存的情況下，才要提示「是否取消變更？」的對話框
+            context.showConfirmDialog(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_name_title_edit_cancel), {
+                action.invoke()
+            })
+            return
+        } else { //新舊資料不同
+            action.invoke()
+        }
+    }
 
     private fun addSetting(item: SettingDataItem) {
 
@@ -331,10 +305,8 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
     }
 
-    private val empty: (Throwable?) -> Unit = {} // 用於不讓使用者經檢查後才可返回的方法判斷變數(用於判斷是在何處呼叫saveData方法)
-
     //將 index的資料存到sharedPreference內。
-    private fun saveData(index: Int, afterSaveAction: (Throwable) -> Unit = empty) {
+    private fun saveData(index: Int) {
 
         val saveData = settings.getOrNull(nowTabIndex) ?: return
 //        logi("saveData", "saveData時，saveData 是=>$saveData")
@@ -343,19 +315,18 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             context.showMessageDialogOnlyOKButton(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_name_title_hint))
             return
         }
-        val sameName = settings.checkHaveRepeatName()
-        if (sameName != null) {
-            context.showMessageDialogOnlyOKButton(
-                context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_cant_save_by_same_name).format(
-                    (if (afterSaveAction == empty)
-                        context.getString(R.string.setting_save_action)
-                    else
-                        context.getString((R.string.setting_leave_action))),
-                    sameName
+        settings.checkHaveRepeatName()
+            .takeIf { it != null }
+            ?.let { sameName ->
+                context.showMessageDialogOnlyOKButton(
+                    context.getString(R.string.dialog_notice_title),
+                    context.getString(R.string.setting_cant_save_by_same_name).format(
+                        context.getString(R.string.setting_save_action),
+                        sameName
+                    )
                 )
-            )
-            return
-        }
+                return
+            }
 
         saveData.haveSaved = true
         logi("saveData", "saveData時，saveData 是=>${saveData.toJson()}")
@@ -364,7 +335,6 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         context.getShare().setNowUseSetting(saveData)
         setTabText(saveData)
         sendBroadcastToUpdateFragment(index)
-        afterSaveAction.invoke(Throwable())
     }
 
     private fun sendBroadcastToUpdateFragment(index: Int) {

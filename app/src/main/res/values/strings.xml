@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">掃碼簽到</string>
+    <string name="app_name">忠恕掃碼簽到</string>
     <string name="permission_request">請給App相機權限以開啟掃碼功能。</string>
 
     <!--Splash-->
@@ -29,6 +29,7 @@
     <string name="setting_cant_add_by_over_max_size">新增失敗！您無法擁有超過%1$s個設定檔。</string>
     <string name="setting_cant_save_by_same_name">%1$s失敗！因設定中已有兩個或兩個以上名稱是「%2$s」的檔案。</string>
     <string name="setting_name_title_hint">設定檔名稱不可為空！</string>
+    <string name="setting_name_title_edit_cancel">是否取消變更？</string>
     <string name="setting_column_content_can_not_blank_hint">此欄位不可為空！</string>
     <string name="setting_save_action">儲存</string>
     <string name="setting_leave_action">返回</string>
