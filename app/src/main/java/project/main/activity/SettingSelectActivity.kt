@@ -284,6 +284,7 @@ class SettingSelectAdapter(val context: Context) : BaseRecyclerViewDataBindingAd
     }
 }
 
+/**為了自定義滑動速度，而使用的捲動器*/
 class SlowLinearSmoothScroller(context: Context) : LinearSmoothScroller(context) {
     companion object {
         private const val MILLISECONDS_PER_INCH = 200f // 調整這個值來設置滾動速度
@@ -294,12 +295,13 @@ class SlowLinearSmoothScroller(context: Context) : LinearSmoothScroller(context)
     }
 }
 
+/**這筆設定檔是否正在被使用*/
 enum class Status {
     Normal,
     Choice
 }
 
-
+/**設定狀態類別(新增or編輯)2*/
 enum class SettingType(var settingId: Int) {
     Add(-1),
     Edit(0),
