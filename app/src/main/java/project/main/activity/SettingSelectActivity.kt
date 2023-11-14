@@ -239,17 +239,14 @@ class SettingSelectAdapter(val context: Context) : BaseRecyclerViewDataBindingAd
                     // 本來有選中，改為沒選中的要改成0。
                     if (!isSelected) {
                         data.sortIndex = 0
-                        notifyItemMoved(position, context.getShare().getStoreSettings().indexOf(data))
+                        notifyItemMoved(list.indexOf(data), reorderDataList().indexOf(data))
                     } else { // 本來沒選中，後來有選中，外部要跳轉順序
                         clickListener?.resort(data)
-                        notifyItemMoved(position, 0)
-                        data.sortIndex = context.getShare().getStoreSettings().map { it.sortIndex }.min() - 1 // 找到比當前最小的，再-1。
+                        notifyItemMoved(list.indexOf(data), 0)
+                        data.sortIndex = list.map { it.sortIndex }.min() - 1 // 找到比當前最小的，再-1。
                     }
 
                     reorderDataList()
-                    // Notify adapter about the data change with animation
-
-
                 }
             }
 
@@ -270,10 +267,12 @@ class SettingSelectAdapter(val context: Context) : BaseRecyclerViewDataBindingAd
         }
     }
 
-    private fun reorderDataList() {
+    private fun reorderDataList(): List<SettingDataItem> {
         list.sortWith(compareBy<SettingDataItem> {
             if (it.sortIndex < 0) it.sortIndex else 0
         }.thenBy { it.id })
+
+        return  list
     }
 
     override fun onItemClick(view: View, position: Int, data: SettingDataItem): Boolean {
@@ -287,7 +286,7 @@ class SettingSelectAdapter(val context: Context) : BaseRecyclerViewDataBindingAd
 
 class SlowLinearSmoothScroller(context: Context) : LinearSmoothScroller(context) {
     companion object {
-        private const val MILLISECONDS_PER_INCH = 300f // 調整這個值來設置滾動速度
+        private const val MILLISECONDS_PER_INCH = 200f // 調整這個值來設置滾動速度
     }
 
     override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
