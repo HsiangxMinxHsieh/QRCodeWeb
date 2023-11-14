@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 import com.buddha.qrcodeweb.R
 import com.buddha.qrcodeweb.databinding.ActivitySettingSelectBinding
 import com.buddha.qrcodeweb.databinding.AdapterSettingSelectBinding
+import com.timmymike.logtool.forLoge
 import com.timmymike.viewtool.animColor
 import com.timmymike.viewtool.animRotate
 import com.timmymike.viewtool.click
@@ -181,6 +182,10 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
 
     override fun finish() {
         super.finish()
+        val settingData: SettingData = SettingData()
+        settingData.addAll((mBinding.rvSettings.adapter as BaseRecyclerViewDataBindingAdapter<SettingDataItem>).list)
+
+        context.getShare().savaAllSettings(settingData)
         activity.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
@@ -272,7 +277,7 @@ class SettingSelectAdapter(val context: Context) : BaseRecyclerViewDataBindingAd
             if (it.sortIndex < 0) it.sortIndex else 0
         }.thenBy { it.id })
 
-        return  list
+        return list
     }
 
     override fun onItemClick(view: View, position: Int, data: SettingDataItem): Boolean {

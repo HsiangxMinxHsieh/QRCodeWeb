@@ -2,6 +2,7 @@ package tool
 
 import android.content.Context
 import com.buddha.qrcodeweb.BuildConfig
+import project.main.base.BaseRecyclerViewDataBindingAdapter
 import project.main.const.constantID
 import project.main.const.constantName
 import project.main.const.constantPassword

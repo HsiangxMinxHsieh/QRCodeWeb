@@ -81,7 +81,9 @@ QRCodeSighIn#{
 "themeColor": 0
 }
  */
-class SettingData : ArrayList<SettingDataItem>() {
+class SettingData() : ArrayList<SettingDataItem>() {
+    constructor(list: List<SettingDataItem>) : this()
+
     fun isNew(item: SettingDataItem) = this.none { it.name == item.name }
 }
 
