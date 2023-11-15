@@ -32,7 +32,6 @@
     <string name="setting_name_title_edit_cancel">是否取消變更？</string>
     <string name="setting_column_content_can_not_blank_hint">此欄位不可為空！</string>
     <string name="setting_save_action">儲存</string>
-    <string name="setting_leave_action">返回</string>
     <string name="setting_receiver">updateDataKey_%1$s</string>
     <string name="setting_scan_to_direct_title">掃描導向方式</string>
     <string name="setting_file_send_mode_by_scan">依照掃描內容</string>
