@@ -2,6 +2,7 @@ package project.main.activity
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.constraintlayout.widget.ConstraintSet
@@ -254,7 +255,11 @@ class ScanActivity : BaseActivity<ActivityScanBinding>({ ActivityScanBinding.inf
     }
 
     private fun initData() {
-        scanMode = (intent?.extras?.getSerializable(BUNDLE_KEY_SCAN_MODE) as? ScanMode) ?: ScanMode.NORMAL  // 沒接到值是Normal(實際上都有傳)
+        scanMode = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            (intent?.extras?.getSerializable(BUNDLE_KEY_SCAN_MODE, ScanMode::class.java)) ?: ScanMode.NORMAL // 沒接到值是Normal(實際上都有傳)
+        } else {
+            (intent?.extras?.getSerializable(BUNDLE_KEY_SCAN_MODE) ?: ScanMode.NORMAL)
+        }) as ScanMode
 
     }
 

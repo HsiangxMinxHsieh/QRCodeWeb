@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -37,7 +38,11 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
     }
 
     private val settingData by lazy {
-        arguments?.getSerializable(BUNDLE_KEY_SETTING_DATA) as SettingDataItem
+        (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arguments?.getSerializable(BUNDLE_KEY_SETTING_DATA, SettingDataItem::class.java)
+        } else {
+            arguments?.getSerializable(BUNDLE_KEY_SETTING_DATA)
+        }) as SettingDataItem
     }
 
     private val position by lazy { arguments?.getInt(BUNDLE_KEY_POSITION) }
