@@ -232,16 +232,20 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
      * 有變更，沒儲存的情況下，才要提示「是否取消變更？」的對話框
      * */
     private fun judgeCouldBack(action: () -> Unit) {
-        val newSaveData = settings.getOrNull(nowTabIndex) ?: return
+
 
         if (type == SettingType.Add) { // 嘉伸講師要求，新增的時候，可以不判斷直接返回。
             action.invoke()
             return
         }
 
-        val oldSaveData = context.getShare().getStoreSettings().let { it[it.indexOf(it.find { fd -> fd.id == type.settingId })] }
+        val newSaveData = settings.getOrNull(nowTabIndex) ?: run {// 刪除設定檔的時候，沒有找到這個內容時，會導致錯誤。
+            action.invoke()
+            return
+        }
 
-        if (newSaveData.toJson() != oldSaveData.toJson()) { // 有變更，沒儲存的情況下，才要提示「是否取消變更？」的對話框
+        val oldSaveData = context.getShare().getStoreSettings().let { it.getOrNull(it.indexOf(it.find { fd -> fd.id == type.settingId })) }
+        if (newSaveData.toJson() != oldSaveData?.toJson()) { // 有變更，沒儲存的情況下，才要提示「是否取消變更？」的對話框
             context.showConfirmDialog(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_name_title_edit_cancel), {
                 action.invoke()
             })
