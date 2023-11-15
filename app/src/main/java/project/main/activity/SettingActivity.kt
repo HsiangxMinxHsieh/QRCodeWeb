@@ -297,7 +297,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
             if (type.settingId == context.getShare().getNowUseSetting()?.id)
                 context.getShare().setNowUseSetting(settings[(index - 1).takeIf { it > 0 } ?: 0]) // 如果是刪除第一個的話，一樣要設定成第一個。7
 
-            onBackPressed() // 變更設定流程，刪除後要回到上一頁。
+            finish() // 變更設定流程，刪除後要回到上一頁。
             // 滑動到上一個
 //            delayScrollToPosition(index - 1)
             // 因測試的時候發現，若「刪除此設定檔再重新掃描，會出現是否更新的訊息，使用者必然會confuse，因此此處幫使用者儲存一次。」

@@ -63,9 +63,10 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
         initRecyclerView()
     }
 
-    private val settingSelectAdapter:SettingSelectAdapter by lazy{
+    private val settingSelectAdapter: SettingSelectAdapter by lazy {
         SettingSelectAdapter(this@SettingSelectActivity)
     }
+
     private fun initRecyclerView() = mBinding.rvSettings.run {
 
         adapter = settingSelectAdapter.apply {
