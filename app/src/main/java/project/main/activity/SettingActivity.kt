@@ -248,7 +248,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
         if (newSaveData.toJson() != oldSaveData?.toJson()) { // 有變更，沒儲存的情況下，才要提示「是否取消變更？」的對話框
             context.showConfirmDialog(context.getString(R.string.dialog_notice_title), context.getString(R.string.setting_name_title_edit_cancel), {
                 action.invoke()
-            })
+            }, confirmBtnStr = context.getString(R.string.dialog_edit_cancel_confirm), cancelBtnStr = context.getString(R.string.dialog_edit_cancel))
             return
         } else { //新舊資料不同
             action.invoke()

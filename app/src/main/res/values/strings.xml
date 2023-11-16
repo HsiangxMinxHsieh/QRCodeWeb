@@ -99,6 +99,8 @@
     <string name="share_default_password_column">Null_Password_Column</string>
     <string name="scan_no_setting">請先建立一個設定檔！</string>
     <string name="scan_pls_scan_setting">請掃描設定檔</string>
+    <string name="dialog_edit_cancel">返回編輯</string>
+    <string name="dialog_edit_cancel_confirm">確定取消</string>
 
 
 </resources>

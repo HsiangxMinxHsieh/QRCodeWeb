@@ -13,8 +13,8 @@ android {
         applicationId "com.buddha.qrcodeweb"
         minSdk 21
         targetSdk 33
-        versionCode 19
-        versionName "0.3.1_Beta"
+        versionCode 20
+        versionName "0.3.2_Beta"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -112,8 +112,8 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:29.0.4')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
-    // ※timmymike tool
 
+    // ※timmymike tool
     implementation 'com.github.timmymike:LogTool:1.2.1'
     implementation 'com.github.timmymike:ComponentTool:1.2.1'
     implementation 'com.github.timmymike:ViewTool:1.4.1'

@@ -173,9 +173,6 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
     private fun toScanActivity() {
 
         scanActivityLauncher.launch(ScanMode.SETTING)
-//        activity.startActivity(Intent(activity, ScanActivity::class.java).apply {
-//            putExtra(ScanActivity.BUNDLE_SCAN_MODE_KEY, ScanMode.SETTING)
-//        })
         activity.overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_up)
     }
 
