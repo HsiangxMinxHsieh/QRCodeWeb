@@ -223,6 +223,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>({ ActivitySettingBi
 
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         judgeCouldBack { super.onBackPressed() }
     }

@@ -5,16 +5,50 @@ plugins {
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
 }
+// Helper function to get the current date in a desired format
+static def getDate() {
+    def date = new Date()
+    def formattedDate = date.format('yyMMdd-HHmm')
+    return formattedDate
+}
+
+// Helper function to get the last part of applicationId
+static def getLastApplicationIdPart(appId) {
+    def parts = appId.split('\\.') // Split by dot (need to escape dot with \\)
+    return parts.last() // Get the last element
+}
 
 android {
-    compileSdk 33
 
+    // apk打包文檔
+    applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach { output ->
+            def versionName = variant.versionName
+            def lastAppIdPart = getLastApplicationIdPart(applicationId) // Get the last part
+
+            def formattedName = "${lastAppIdPart}" + // Use the last part here
+                    "_${versionName}" +
+                    "_${variant.versionCode}" +
+                    "-${getDate()}"
+
+            // Set the output file name directly
+            if (output.outputFileName != null) { // Check if outputFileName is available
+                output.outputFileName = "${formattedName}.apk"
+            }
+        }
+    }
+
+    compileSdk 36
+    buildFeatures {
+        buildConfig = true
+    }
     defaultConfig {
+        namespace "com.buddha.qrcodeweb"
         applicationId "com.buddha.qrcodeweb"
         minSdk 21
-        targetSdk 33
-        versionCode 21
-        versionName "0.4.0_Beta"
+        targetSdk 36
+        versionCode 22
+        versionName "0.4.1_Beta"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,21 +79,21 @@ android {
         dataBinding = true
     }
 
-    //自動命名產生出的apk檔案
-    android.applicationVariants.all { variant ->
-        variant.outputs.all { output ->
-            def versionName = variant.versionName
-            def formattedName = "${applicationId}" +
-                    "-${variant.buildType.name}" +
-                    "-${versionName}" +
-                    ".${variant.versionCode}" +
-                    "-${getDate()}"
-            def outputFile = output.outputFile
-            if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                outputFileName = "${formattedName}.apk"
-            }
-        }
-    }
+//    //自動命名產生出的apk檔案
+//    android.applicationVariants.all { variant ->
+//        variant.outputs.all { output ->
+//            def versionName = variant.versionName
+//            def formattedName = "${applicationId}" +
+//                    "-${variant.buildType.name}" +
+//                    "-${versionName}" +
+//                    ".${variant.versionCode}" +
+//                    "-${getDate()}"
+//            def outputFile = output.outputFile
+//            if (outputFile != null && outputFile.name.endsWith('.apk')) {
+//                outputFileName = "${formattedName}.apk"
+//            }
+//        }
+//    }
 }
 
 dependencies {
@@ -114,13 +148,14 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
 
     // ※timmymike tool
-    implementation 'com.github.timmymike:LogTool:1.2.1'
-    implementation 'com.github.timmymike:ComponentTool:1.2.1'
-    implementation 'com.github.timmymike:ViewTool:1.4.1'
-    implementation 'com.github.timmymike:TimeTool:1.0.1'
+
+    implementation 'com.github.timmymike:LogTool:1.2.3'
+    implementation 'com.github.timmymike:ComponentTool:1.3.6'
+    implementation 'com.github.timmymike:ViewTool:1.4.7'
+    implementation 'com.github.timmymike:TimeTool:1.0.2'
 
 }
 
-def getDate() {
-    return new Date().format('yyyyMMdd')
-}
+//def getDate() {
+//    return new Date().format('yyyyMMdd')
+//}

@@ -116,8 +116,14 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
         activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
-    class ScanActivityResultContract : ActivityResultContract<ScanMode, SettingDataItem>() {
-        override fun createIntent(context: Context, input: ScanMode?): Intent {
+
+    //將 選擇到的資料存到sharedPreference內。
+    private fun saveData(item: SettingDataItem) {
+        context.getShare().setNowUseSetting(item)
+    }
+
+    class ScanActivityResultContract : ActivityResultContract<ScanMode, SettingDataItem?>() {
+        override fun createIntent(context: Context, input: ScanMode): Intent {
             return Intent(context, ScanActivity::class.java).apply {
                 putExtra(ScanActivity.BUNDLE_KEY_SCAN_MODE, input)
             }
@@ -130,13 +136,6 @@ class SettingSelectActivity : BaseActivity<ActivitySettingSelectBinding>({ Activ
                 null
         }
     }
-
-    //將 選擇到的資料存到sharedPreference內。
-    private fun saveData(item: SettingDataItem) {
-        context.getShare().setNowUseSetting(item)
-    }
-
-
     private val scanActivityLauncher = registerForActivityResult(ScanActivityResultContract()) { item ->
         item?.let {
             val settings = context.getShare().getStoreSettings()

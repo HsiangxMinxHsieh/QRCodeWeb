@@ -1,13 +1,8 @@
 package tool
 
 import android.net.Uri
-import utils.logi
-import utils.toJson
-import java.lang.Exception
-import java.lang.StringBuilder
 import java.net.URL
 import java.net.URLDecoder
-import java.util.LinkedHashMap
 
 /**
  * 类：UrlParse
@@ -36,7 +31,7 @@ fun String.getUrlKey(index: Int): String? {
 }
 
 /**
- * 获得解析后的URL参数
+ * 獲得解析後的URL參數
  * @param url url对象
  * @return URL参数map集合
  */
