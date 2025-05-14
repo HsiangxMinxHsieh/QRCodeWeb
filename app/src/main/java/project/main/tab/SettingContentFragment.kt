@@ -464,7 +464,12 @@ class SettingContentFragment : BaseFragment<FragmentSettingContentBinding>(Fragm
     private fun initReceiver() {
         val intentFilter = IntentFilter() // 過濾器
         intentFilter.addAction(upDateDataKey) // 指定Action
-        mActivity.registerReceiver(mBroadcastReceiver, intentFilter) // 註冊廣播接收器
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            mActivity.registerReceiver(mBroadcastReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            mActivity.registerReceiver(mBroadcastReceiver, intentFilter)
+        }
+
     }
 
     // 初始化所有設定項，使其為關閉
